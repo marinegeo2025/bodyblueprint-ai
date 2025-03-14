@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>本来の面目, Honrai No Menmoku - Weight Tracking</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Make sure the chart container scales nicely */
+      #weightChart {
+        width: 100%;
+        /* You can set a max-height if you like, e.g. 600px */
+        max-height: 600px;
+      }
+      
+      /* Simple responsive helper for the canvas container */
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 800px; /* Adjust as desired */
+        margin: 0 auto;   /* Center it */
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav>
+      <ul>
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="bmr.html">🏋️ BMR</a></li>
+        <li><a href="weight.html">📉 Weight</a></li>
+        <li><a href="meals.html">🍽️ Meals</a></li>
+        <li><a href="chat.html">💬 AI Chat</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <section id="weight" class="page">
+        <h1>Weight Tracking</h1>
+        
+        <!-- Responsive Chart Container -->
+        <div class="chart-container">
+          <canvas id="weightChart"></canvas>
+        </div>
+
+        <!-- Additional line breaks before the form -->
+        <br><br>
+
+        <form id="weightForm">
+          <label for="weightInput">Enter Weight (kg):</label><br>
+          <input type="number" id="weightInput" step="0.1" required /><br><br>
+          
+          <label for="notes">Notes:</label><br>
+          <input type="text" id="notes" placeholder="E.g., morning post-poo" /><br><br>
+          
+          <button type="submit">Add Weight</button>
+        </form>
+
+        <h2>Weight Records</h2>
+        <table id="weightTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Weight (kg)</th>
+              <th>Weekly Avg</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer>
+      <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
+    </footer>
+
+    <script>
+      // Handle form submission
+      document.getElementById("weightForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const weight = parseFloat(document.getElementById("weightInput").value);
+        const notes = document.getElementById("notes").value;
+        // Use today's date in YYYY-MM-DD format
+        const date = new Date().toISOString().split("T")[0];
+        
+        let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
+        // Insert the new record at the front (most recent first)
+        weightData.unshift({ date, weight, notes });
+        localStorage.setItem("weightData", JSON.stringify(weightData));
+        
+        updateWeightTable();
+        updateChart();
+      });
+
+      // Update the table of past weights
+      function updateWeightTable() {
+        const tbody = document.querySelector("#weightTable tbody");
+        tbody.innerHTML = "";
+
+        let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
+        // We'll compute a rolling 7-day average in a simple way:
+        let weeklySum = 0, weeklyCount = 0;
+
+        weightData.forEach((entry, index) => {
+          weeklySum += entry.weight;
+          weeklyCount++;
+          // Only show a 7-day average if we have 7 or more entries
+          let weeklyAvg = (weeklyCount >= 7) ? (weeklySum / 7).toFixed(1) : "-";
+          
+          tbody.innerHTML += `
+            <tr>
+              <td>${entry.date}</td>
+              <td>${entry.weight}</td>
+              <td>${weeklyAvg}</td>
+              <td>${entry.notes}</td>
+            </tr>
+          `;
+        });
+      }
+
+      // Generate / Update Chart
+      function updateChart() {
+        let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
+        if (weightData.length === 0) return; // No data? Nothing to plot!
+
+        // weightData[0] is the most recent, weightData[weightData.length - 1] is the oldest
+        // We'll find the earliest date and the latest date in the data
+        const latestEntryDate = new Date(weightData[0].date);
+        const earliestEntryDate = new Date(weightData[weightData.length - 1].date);
+
+        // Extend x-axis 1 month beyond the latest data point
+        const endDate = new Date(latestEntryDate);
+        endDate.setDate(endDate.getDate() + 30);
+
+        // Build a chronological list of date labels from earliest to (latest + 30 days)
+        const dates = [];
+        let tempDate = new Date(earliestEntryDate);
+
+        while (tempDate <= endDate) {
+          dates.push(tempDate.toISOString().split("T")[0]);
+          tempDate.setDate(tempDate.getDate() + 1);
+        }
+
+        // Build the 'weights' array in chronological order
+        // The user data is stored "most recent first", so we reverse to get earliest -> latest
+        const chronologicalData = [...weightData].reverse(); 
+        const weights = chronologicalData.map(entry => entry.weight);
+
+        // Compute a 7-day average array in the same order
+        // For i < 6, we won't have enough data for a full 7-day average, so set null
+        const weeklyAverages = weights.map((_, i, arr) => {
+          if (i < 6) return null; // Not enough data for 7 days
+          const windowSlice = arr.slice(i - 6, i + 1);
+          const avg = windowSlice.reduce((a, b) => a + b, 0) / 7;
+          return avg.toFixed(1);
+        });
+
+        // Linear Regression function to generate a trend line 
+        // plus extending 30 points (1 month) into the future
+        function linearRegression(x, y, futurePoints) {
+          const n = x.length;
+          const sumX = x.reduce((a, b) => a + b, 0);
+          const sumY = y.reduce((a, b) => a + b, 0);
+          const sumXY = x.map((xi, i) => xi * y[i]).reduce((a, b) => a + b, 0);
+          const sumX2 = x.map(xi => xi * xi).reduce((a, b) => a + b, 0);
+
+          const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+          const intercept = (sumY - slope * sumX) / n;
+          
+          // Predicted array for existing + future points
+          const predicted = x.map(xi => slope * xi + intercept);
+          for (let i = 1; i <= futurePoints; i++) {
+            predicted.push(slope * (n + i) + intercept);
+          }
+          return predicted;
+        }
+
+        // x-values for the existing data: 0..(weights.length - 1)
+        // We'll add 30 future points for the next 30 days
+        const xVals = [...Array(weights.length).keys()];
+        const trendline = linearRegression(xVals, weights, 30);
+
+        // Define a custom plugin to draw month labels centered below each month
+        const monthLabelPlugin = {
+          id: 'monthLabels',
+          afterDraw(chart) {
+            const { ctx, chartArea, scales: { x } } = chart;
+            if (!x || !x.ticks) return;
+
+            // Group ticks by year-month
+            const monthGroups = {};
+            x.ticks.forEach((tick, i) => {
+              // Instead of tick.label (which is just day #), use the 'dates' array
+              const dateStr = chart.data.labels[i]; 
+              const dateObj = new Date(dateStr);
+
+              const ym = dateObj.getFullYear() + '-' + dateObj.getMonth();
+              if (!monthGroups[ym]) {
+                monthGroups[ym] = {
+                  startIndex: i,
+                  endIndex: i,
+                  monthName: dateObj.toLocaleString('default', { month: 'long' }),
+                  year: dateObj.getFullYear()
+                };
+              } else {
+                monthGroups[ym].endIndex = i;
+              }
+            });
+
+            // Draw each month label
+            Object.values(monthGroups).forEach(group => {
+              const { startIndex, endIndex, monthName } = group;
+              const startPixel = x.getPixelForTick(startIndex);
+              const endPixel = x.getPixelForTick(endIndex);
+              const midpoint = (startPixel + endPixel) / 2;
+
+              ctx.save();
+              ctx.font = 'bold 14px sans-serif'; // Adjust as you like
+              ctx.fillStyle = '#000';
+              ctx.textAlign = 'center';
+
+              // Position the text slightly below the bottom of the chart
+              // 'chartArea.bottom' is where the grid ends, so we add some offset
+              const textY = chartArea.bottom + 45; 
+              ctx.fillText(monthName, midpoint, textY);
+              ctx.restore();
+            });
+          }
+        };
+
+        // Destroy any existing chart instance before creating a new one
+        const ctx = document.getElementById("weightChart").getContext("2d");
+        if (window.myChart) {
+          window.myChart.destroy();
+        }
+
+        window.myChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: dates, // Our daily date labels, earliest -> (latest+30 days)
+            datasets: [
+              {
+                label: "Daily Weight",
+                data: weights,  // length = # of actual data points
+                borderColor: "blue",
+                fill: false,
+              },
+              {
+                label: "Weekly Avg",
+                data: weeklyAverages, // length = # of actual data points
+                borderColor: "orange",
+                fill: false,
+              },
+              {
+                label: "Trendline",
+                data: trendline, // length = # of actual data + 30 future points
+                borderColor: "red",
+                borderDash: [5, 5],
+                fill: false,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            // Add extra bottom padding so month labels aren’t cut off
+            layout: {
+              padding: {
+                bottom: 60
+              }
+            },
+            scales: {
+              x: {
+                ticks: {
+                  // Only display the day number in the normal x-axis ticks
+                  callback: function (value, index) {
+                    const dateStr = this.getLabelForValue(value);
+                    const dateObj = new Date(dateStr);
+                    return dateObj.getDate(); // Just the day-of-month
+                  },
+                  maxRotation: 0,
+                  minRotation: 0
+                }
+              },
+              y: {
+                beginAtZero: false
+              },
+            },
+          },
+          // Add our custom plugin for month labels
+          plugins: [ monthLabelPlugin ]
+        });
+      }
+
+      // On load, update table & chart right away
+      window.onload = function () {
+        updateWeightTable();
+        updateChart();
+      };
+    </script>
+  </body>
+</html>

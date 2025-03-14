@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="bmr.html">🏋️ BMR</a></li>
+            <li><a href="weight.html">📉 Weight</a></li>
+            <li><a href="meals.html">🍽️ Meals</a></li>
+            <li><a href="chat.html">💬 AI Chat</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Meal Tracker</h1>
+        <p>Enter your meal below and get calorie & protein estimates.</p>
+
+        <form id="mealForm">
+            <label for="mealInput">Describe your meal:</label><br>
+            <input type="text" id="mealInput" placeholder="E.g., 2 eggs, toast, butter" required>
+            <button type="submit">Add Meal</button>
+        </form>
+
+        <h2>Today's Nutrition</h2>
+        <p><strong>Calories:</strong> <span id="totalCalories">0</span> kcal</p>
+        <p><strong>Protein:</strong> <span id="totalProtein">0</span> g</p>
+
+        <h2>Meal Records</h2>
+        <ul id="mealList"></ul>
+    </main>
+
+    <footer>
+        <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
+    </footer>
+
+    <script>
+        document.getElementById("mealForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const mealInput = document.getElementById("mealInput").value;
+            if (!mealInput) return;
+
+            // Fetch API Key securely from Glitch
+            const apiKey = await fetch("/.env")
+                .then(res => res.text())
+                .then(text => text.match(/OPENAI_API_KEY=(.+)/)[1].trim());
+
+            if (!apiKey) {
+                alert("Error: API Key not found!");
+                return;
+            }
+
+            // Call OpenAI API
+            const result = await fetchOpenAI(mealInput, apiKey);
+
+            if (result) {
+                updateMealList(mealInput, result.calories, result.protein);
+            }
+        });
+
+        async function fetchOpenAI(mealText, apiKey) {
+            try {
+                const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4-turbo",
+                        messages: [
+                            { role: "system", content: "Estimate the calorie and protein content of the following meal." },
+                            { role: "user", content: `Meal: ${mealText}. Reply only with JSON { "calories": <number>, "protein": <number> }` }
+                        ],
+                        max_tokens: 100
+                    })
+                });
+
+                const data = await response.json();
+                console.log(data);
+                return JSON.parse(data.choices[0].message.content);
+            } catch (error) {
+                console.error("Error fetching OpenAI API:", error);
+                return null;
+            }
+        }
+
+        function updateMealList(meal, calories, protein) {
+            const mealList = document.getElementById("mealList");
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `<strong>${meal}</strong> - ${calories} kcal, ${protein}g protein`;
+            mealList.appendChild(listItem);
+
+            // Update totals
+            let totalCalories = parseInt(document.getElementById("totalCalories").innerText) + calories;
+            let totalProtein = parseInt(document.getElementById("totalProtein").innerText) + protein;
+            document.getElementById("totalCalories").innerText = totalCalories;
+            document.getElementById("totalProtein").innerText = totalProtein;
+
+            // Clear input field
+            document.getElementById("mealInput").value = "";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>本来の面目, Honrai No Menmoku</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="bmr.html">🏋️ BMR</a></li>
+        <li><a href="weight.html">📉 Weight</a></li>
+        <li><a href="meals.html">🍽️ Meals</a></li>
+        <li><a href="chat.html">💬 AI Chat</a></li>
+      </ul>
+    </nav>
+    <main>
+      <section id="bmr" class="page">
+        <h1>BMR & Calorie Goal</h1>
+        <p>Calculate your Basal Metabolic Rate and set your calorie goal.</p>
+        <form id="bmrForm">
+          <label for="age">Age:</label><br>
+          <input type="number" id="age" required /><br><br>
+
+          <label for="gender">Gender:</label><br>
+          <select id="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select><br><br>
+
+          <label for="height">Height (cm):</label><br>
+          <input type="number" id="height" required /><br><br>
+
+          <label for="weight">Weight (kg):</label><br>
+          <input type="number" id="weight" required /><br><br>
+
+          <button type="submit">Calculate BMR</button>
+        </form>
+        <div id="bmrResults"></div>
+      </section>
+    </main>
+    <footer>
+      <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
+    </footer>
+    <script>
+      document
+        .getElementById("bmrForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const age = parseInt(document.getElementById("age").value);
+          const gender = document.getElementById("gender").value;
+          const weight = parseFloat(document.getElementById("weight").value);
+          const height = parseFloat(document.getElementById("height").value);
+
+          let bmr;
+          if (gender === "male") {
+            bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+          } else {
+            bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+          }
+
+          const cutCaloriesBMR = bmr - 250;
+          const deepCutCaloriesBMR = bmr - 500;
+
+          const resultsHTML = `
+                <h2>Your Results</h2>
+                <p><strong>BMR (Used as TDEE):</strong> ${bmr.toFixed(
+                  2
+                )} kcal/day</p>
+                <p><strong>Maintain Calories:</strong> ${bmr.toFixed(
+                  2
+                )} kcal/day</p>
+                <p><strong>Cut Calories (-250 kcal):</strong> ${cutCaloriesBMR.toFixed(
+                  2
+                )} kcal/day</p>
+                <p><strong>Deep Cut Calories (-500 kcal):</strong> ${deepCutCaloriesBMR.toFixed(
+                  2
+                )} kcal/day</p>
+            `;
+
+          document.getElementById("bmrResults").innerHTML = resultsHTML;
+
+          localStorage.setItem("bmr", bmr);
+          localStorage.setItem("cutCaloriesBMR", cutCaloriesBMR);
+          localStorage.setItem("deepCutCaloriesBMR", deepCutCaloriesBMR);
+        });
+    </script>
+  </body>
+</html>
