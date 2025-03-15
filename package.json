@@ -2,9 +2,11 @@
   "name": "my-project",
   "version": "1.0.0",
   "engines": {
+    // Attempt to use Node 16.x on Glitch
     "node": "16.x"
   },
   "scripts": {
+    // This is how Glitch (and most hosts) will start your server
     "start": "node server.js"
   },
   "dependencies": {
