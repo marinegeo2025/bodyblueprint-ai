@@ -8,11 +8,11 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.21.2",
-    "cors": "^2.8.5",
     "body-parser": "^2.1.0",
-    "openai": "^4.87.3",
-    "dotenv": "^16.4.7"
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "openai": "^4.87.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
