@@ -1,131 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Meal Tracker</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <nav>
-        <ul>
-            <li><a href="index.html">🏠 Home</a></li>
-            <li><a href="bmr.html">🏋️ BMR</a></li>
-            <li><a href="weight.html">📉 Weight</a></li>
-            <li><a href="meals.html">🍽️ Meals</a></li>
-            <li><a href="chat.html">💬 AI Chat</a></li>
-        </ul>
+      <ul>
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="bmr.html">🏋️ BMR</a></li>
+        <li><a href="weight.html">📉 Weight</a></li>
+        <li><a href="meals.html">🍽️ Meals</a></li>
+        <li><a href="chat.html">💬 AI Chat</a></li>
+      </ul>
     </nav>
 
     <main>
-        <h1>Meal Tracker</h1>
-        <p>Enter your meal below and get calorie & protein estimates.</p>
+      <h1>Meal Tracker</h1>
+      <p>Enter your meal below and get calorie & protein estimates.</p>
 
-        <form id="mealForm">
-            <label for="mealInput">Describe your meal:</label><br>
-            <input type="text" id="mealInput" placeholder="E.g., 2 eggs, toast, butter" required>
-            <button type="submit">Add Meal</button>
-        </form>
+      <form id="mealForm">
+        <label for="mealInput">Describe your meal:</label><br />
+        <input
+          type="text"
+          id="mealInput"
+          placeholder="E.g., 2 eggs, toast, butter"
+          required
+        />
+        <button type="submit">Add Meal</button>
+      </form>
 
-        <!-- Debug button for testing connection -->
-        <button id="debugButton" type="button" style="margin-top: 10px;">Test Connection</button>
+      <!-- Debug button for testing connection -->
+      <button id="debugButton" type="button" style="margin-top: 10px">
+        Test Connection
+      </button>
 
-        <h2>Today's Nutrition</h2>
-        <p><strong>Calories:</strong> <span id="totalCalories">0</span> kcal</p>
-        <p><strong>Protein:</strong> <span id="totalProtein">0</span> g</p>
+      <h2>Today's Nutrition</h2>
+      <p><strong>Calories:</strong> <span id="totalCalories">0</span> kcal</p>
+      <p><strong>Protein:</strong> <span id="totalProtein">0</span> g</p>
 
-        <h2>Meal Records</h2>
-        <ul id="mealList"></ul>
+      <h2>Meal Records</h2>
+      <ul id="mealList"></ul>
     </main>
 
     <footer>
-        <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
+      <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
     </footer>
 
     <script>
-        document.getElementById("mealForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
-            const mealInput = document.getElementById("mealInput").value;
-            if (!mealInput) return;
-            
-            // Show loading state
-            const submitButton = this.querySelector('button[type="submit"]');
-            submitButton.textContent = "Processing...";
-            submitButton.disabled = true;
-            
+      document
+        .getElementById("mealForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const mealInput = document.getElementById("mealInput").value;
+          if (!mealInput) return;
+
+          // Show loading state
+          const submitButton = this.querySelector('button[type="submit"]');
+          submitButton.textContent = "Processing...";
+          submitButton.disabled = true;
+
+          try {
+            console.log("Submitting meal:", mealInput);
+
+            // Call our server endpoint
+            const response = await fetch("/api/analyze-meal", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ meal: mealInput }),
+            });
+
+            // Get the raw text first for debugging
+            const responseText = await response.text();
+            console.log("Raw server response:", responseText);
+
+            // Try to parse the response as JSON
+            let result;
             try {
-                console.log("Submitting meal:", mealInput);
-                
-                // Call our server endpoint
-                const response = await fetch("/api/analyze-meal", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ meal: mealInput })
-                });
-                
-                // Get the raw text first for debugging
-                const responseText = await response.text();
-                console.log("Raw server response:", responseText);
-                
-                // Try to parse the response as JSON
-                let result;
-                try {
-                    result = JSON.parse(responseText);
-                } catch (parseError) {
-                    console.error("Failed to parse server response:", parseError);
-                    throw new Error("Invalid response from server: " + responseText.substring(0, 50));
-                }
-                
-                // Check for error response
-                if (!response.ok || result.error) {
-                    throw new Error(result.error || "Server error");
-                }
-                
-                // Validate the result has the expected structure
-                if (result && typeof result.calories === 'number' && typeof result.protein === 'number') {
-                    updateMealList(mealInput, result.calories, result.protein);
-                } else {
-                    console.error("Invalid result structure:", result);
-                    throw new Error("Invalid nutrition data format");
-                }
-            } catch (error) {
-                console.error("Error processing meal:", error);
-                alert("Failed to process meal: " + error.message);
-            } finally {
-                // Reset button state
-                submitButton.textContent = "Add Meal";
-                submitButton.disabled = false;
+              result = JSON.parse(responseText);
+            } catch (parseError) {
+              console.error("Failed to parse server response:", parseError);
+              throw new Error(
+                "Invalid response from server: " + responseText.substring(0, 50)
+              );
             }
+
+            // Check for error response
+            if (!response.ok || result.error) {
+              throw new Error(result.error || "Server error");
+            }
+
+            // Validate the result has the expected structure
+            if (
+              result &&
+              typeof result.calories === "number" &&
+              typeof result.protein === "number"
+            ) {
+              updateMealList(mealInput, result.calories, result.protein);
+            } else {
+              console.error("Invalid result structure:", result);
+              throw new Error("Invalid nutrition data format");
+            }
+          } catch (error) {
+            console.error("Error processing meal:", error);
+            alert("Failed to process meal: " + error.message);
+          } finally {
+            // Reset button state
+            submitButton.textContent = "Add Meal";
+            submitButton.disabled = false;
+          }
         });
 
-        // Debug button event listener
-        document.getElementById("debugButton").addEventListener("click", async function() {
-            try {
-                const response = await fetch("/api/debug");
-                const data = await response.json();
-                alert("Server status: " + JSON.stringify(data));
-            } catch (error) {
-                alert("Connection error: " + error.message);
-            }
+      // Debug button event listener
+      document
+        .getElementById("debugButton")
+        .addEventListener("click", async function () {
+          try {
+            const response = await fetch("/api/debug");
+            const data = await response.json();
+            alert("Server status: " + JSON.stringify(data));
+          } catch (error) {
+            alert("Connection error: " + error.message);
+          }
         });
 
-        function updateMealList(meal, calories, protein) {
-            const mealList = document.getElementById("mealList");
-            const listItem = document.createElement("li");
-            listItem.innerHTML = `<strong>${meal}</strong> - ${calories} kcal, ${protein}g protein`;
-            mealList.appendChild(listItem);
+      function updateMealList(meal, calories, protein) {
+        const mealList = document.getElementById("mealList");
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `<strong>${meal}</strong> - ${calories} kcal, ${protein}g protein`;
+        mealList.appendChild(listItem);
 
-            // Update totals
-            let totalCalories = parseInt(document.getElementById("totalCalories").innerText) + calories;
-            let totalProtein = parseInt(document.getElementById("totalProtein").innerText) + protein;
-            document.getElementById("totalCalories").innerText = totalCalories;
-            document.getElementById("totalProtein").innerText = totalProtein;
+        // Update totals
+        let totalCalories =
+          parseInt(document.getElementById("totalCalories").innerText) +
+          calories;
+        let totalProtein =
+          parseInt(document.getElementById("totalProtein").innerText) + protein;
+        document.getElementById("totalCalories").innerText = totalCalories;
+        document.getElementById("totalProtein").innerText = totalProtein;
 
-            // Clear input field
-            document.getElementById("mealInput").value = "";
-        }
+        // Clear input field
+        document.getElementById("mealInput").value = "";
+      }
     </script>
-</body>
+  </body>
 </html>
