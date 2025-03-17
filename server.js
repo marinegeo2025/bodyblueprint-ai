@@ -23,7 +23,7 @@ if (!process.env.OPENAI_API_KEY) {
 let openai;
 try {
   openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY, // Make sure .env contains this
+    apiKey: process.env.OPENAI_API_KEY, // Ensure .env contains this
   });
   console.log("✅ OpenAI client initialized successfully");
 } catch (error) {
@@ -68,7 +68,7 @@ app.post("/api/analyze-meal", async (req, res) => {
         {
           role: "system",
           content:
-            "You are a nutrition expert. Analyze the given meal and estimate calories & protein. Return ONLY a JSON object: {'calories': <num>, 'protein': <num>}. No extra text.",
+            "You are a nutrition expert. Analyze the given meal and estimate calories & protein. Return ONLY a valid JSON object: {\"calories\": <num>, \"protein\": <num>}. No extra text.",
         },
         {
           role: "user",
@@ -81,12 +81,10 @@ app.post("/api/analyze-meal", async (req, res) => {
     const responseText = completion.choices[0].message.content.trim();
     console.log("🤖 OpenAI Response:", responseText);
 
-    // ✅ Parse JSON response
+    // ✅ Ensure OpenAI Response is Valid JSON
     let nutritionData;
     try {
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-      const jsonStr = jsonMatch ? jsonMatch[0] : responseText;
-      nutritionData = JSON.parse(jsonStr);
+      nutritionData = JSON.parse(responseText);
     } catch (parseError) {
       console.error("❌ Failed to parse OpenAI response:", parseError);
       return res.status(500).json({
