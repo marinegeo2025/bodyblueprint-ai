@@ -1,13 +1,13 @@
-// server.js - Backend for Meal Tracker App (FIXED FOR GLITCH)
-
-require("dotenv").config(); // Load .env variables
+// ✅ FIXED FOR GLITCH: Backend for Meal Tracker App
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
-// Use OpenAI v3.2.1 (compatible with Node.js 16)
+// ✅ Use OpenAI v3.2.1 (Compatible with Node.js 16)
 const OpenAI = require("openai");
 
+// Initialize Express
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -30,9 +30,9 @@ try {
   console.error("❌ Failed to initialize OpenAI client:", error);
 }
 
-// Debug endpoint to check if the server is running
+// ✅ Debug endpoint to check server status
 app.get("/api/debug", (req, res) => {
-  console.log("Debug endpoint called");
+  console.log("🛠️ Debug endpoint called");
   res.json({
     status: "ok",
     message: "Server is running correctly",
@@ -43,7 +43,7 @@ app.get("/api/debug", (req, res) => {
   });
 });
 
-// Meal analysis endpoint
+// ✅ Meal analysis endpoint (calls OpenAI)
 app.post("/api/analyze-meal", async (req, res) => {
   console.log("🍽️ Meal analysis request received:", req.body);
 
@@ -61,27 +61,27 @@ app.post("/api/analyze-meal", async (req, res) => {
 
     console.log("🔎 Analyzing meal:", meal);
 
-    // OpenAI API call
-    const completion = await openai.createChatCompletion({
+    // ✅ OpenAI API call (Updated for v3.2.1)
+    const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
           content:
-            "You are a nutrition expert. Analyze the given meal and provide an accurate estimate of calories and protein content. Return ONLY a JSON object with 'calories' and 'protein' fields, both as numbers. No extra text.",
+            "You are a nutrition expert. Analyze the given meal and estimate calories & protein. Return ONLY a JSON object: {'calories': <num>, 'protein': <num>}. No extra text.",
         },
         {
           role: "user",
-          content: `Analyze this meal and estimate calories and protein: ${meal}`,
+          content: `Meal: ${meal}. Return JSON.`,
         },
       ],
     });
 
-    // Extract response
+    // ✅ Extract AI Response
     const responseText = completion.choices[0].message.content.trim();
     console.log("🤖 OpenAI Response:", responseText);
 
-    // Parse JSON response
+    // ✅ Parse JSON response
     let nutritionData;
     try {
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -95,7 +95,7 @@ app.post("/api/analyze-meal", async (req, res) => {
       });
     }
 
-    // Validate response format
+    // ✅ Validate response format
     if (
       typeof nutritionData.calories !== "number" ||
       typeof nutritionData.protein !== "number"
@@ -107,7 +107,7 @@ app.post("/api/analyze-meal", async (req, res) => {
       });
     }
 
-    // Send result back to client
+    // ✅ Send response to client
     res.json(nutritionData);
   } catch (error) {
     console.error("❌ Error analyzing meal:", error.message);
@@ -118,7 +118,7 @@ app.post("/api/analyze-meal", async (req, res) => {
   }
 });
 
-// Start the server
+// ✅ Start the server
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
 });
