@@ -1,43 +1,36 @@
-// server.js - Backend for Meal Tracker App
-require("dotenv").config(); // so we can use process.env in local .env files
+// server.js - Backend for Meal Tracker App (FIXED FOR GLITCH)
+
+require("dotenv").config(); // Load .env variables
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
-// Import modern OpenAI usage
-const { Configuration, OpenAIApi } = require("openai");
+// Use OpenAI v3.2.1 (compatible with Node.js 16)
+const OpenAI = require("openai");
 
-// Initialize Express
 const app = express();
-
-// Middlewares
 app.use(cors());
 app.use(bodyParser.json());
-
-// Serve static files (like your index.html) from the project root
 app.use(express.static("./"));
 
-// Grab port from Glitch or default to 3000
 const port = process.env.PORT || 3000;
 
-// Check for OpenAI API key in environment
+// Check if OpenAI API Key is available
 if (!process.env.OPENAI_API_KEY) {
-  console.error("OPENAI_API_KEY is not set in environment variables");
+  console.error("⚠️ OPENAI_API_KEY is not set in environment variables!");
 }
 
-// Attempt to configure OpenAI
 let openai;
 try {
-  const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY, // Make sure .env contains this
   });
-  openai = new OpenAIApi(configuration);
-  console.log("OpenAI client initialized successfully");
+  console.log("✅ OpenAI client initialized successfully");
 } catch (error) {
-  console.error("Failed to initialize OpenAI client:", error);
+  console.error("❌ Failed to initialize OpenAI client:", error);
 }
 
-// Debug endpoint to check server status
+// Debug endpoint to check if the server is running
 app.get("/api/debug", (req, res) => {
   console.log("Debug endpoint called");
   res.json({
@@ -52,24 +45,23 @@ app.get("/api/debug", (req, res) => {
 
 // Meal analysis endpoint
 app.post("/api/analyze-meal", async (req, res) => {
-  console.log("Meal analysis endpoint called with body:", req.body);
+  console.log("🍽️ Meal analysis request received:", req.body);
 
   try {
     const { meal } = req.body;
     if (!meal) {
-      console.log("No meal provided in request");
+      console.log("⚠️ No meal description provided!");
       return res.status(400).json({ error: "Meal description is required" });
     }
 
-    // If openai was not initialized, bail
     if (!openai) {
-      console.error("OpenAI client not initialized");
+      console.error("❌ OpenAI client not initialized!");
       return res.status(500).json({ error: "AI service not available" });
     }
 
-    console.log("Analyzing meal:", meal);
+    console.log("🔎 Analyzing meal:", meal);
 
-    // Call OpenAI
+    // OpenAI API call
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [
@@ -86,39 +78,39 @@ app.post("/api/analyze-meal", async (req, res) => {
     });
 
     // Extract response
-    const responseText = completion.data.choices[0].message.content.trim();
-    console.log("OpenAI response:", responseText);
+    const responseText = completion.choices[0].message.content.trim();
+    console.log("🤖 OpenAI Response:", responseText);
 
-    // Attempt to parse JSON from the response
+    // Parse JSON response
     let nutritionData;
     try {
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       const jsonStr = jsonMatch ? jsonMatch[0] : responseText;
       nutritionData = JSON.parse(jsonStr);
     } catch (parseError) {
-      console.error("Failed to parse OpenAI response as JSON:", parseError);
+      console.error("❌ Failed to parse OpenAI response:", parseError);
       return res.status(500).json({
         error: "Invalid response format from AI service",
         rawResponse: responseText,
       });
     }
 
-    // Validate the fields
+    // Validate response format
     if (
       typeof nutritionData.calories !== "number" ||
       typeof nutritionData.protein !== "number"
     ) {
-      console.error("Invalid nutrition data format:", nutritionData);
+      console.error("⚠️ Invalid nutrition data format:", nutritionData);
       return res.status(500).json({
         error: "Invalid nutrition data format",
         data: nutritionData,
       });
     }
 
-    // Return the data
+    // Send result back to client
     res.json(nutritionData);
   } catch (error) {
-    console.error("Error analyzing meal:", error.message);
+    console.error("❌ Error analyzing meal:", error.message);
     return res.status(500).json({
       error: "Failed to analyze meal",
       message: error.message,
@@ -128,5 +120,5 @@ app.post("/api/analyze-meal", async (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`🚀 Server running on port ${port}`);
 });
