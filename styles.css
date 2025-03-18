@@ -34,7 +34,7 @@ main {
 }
 
 button {
-  background-color: #4CAF50;
+  background-color: #444; /* Zen Dark Grey */
   color: white;
   border: none;
   padding: 10px 15px;
@@ -43,7 +43,7 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #333; /* Slightly Darker Zen Grey on Hover */
 }
 
 /* Progress Bar Styles */
@@ -70,4 +70,22 @@ button:hover {
 
 .yellow {
   background-color: #f4c542; /* Mellow Yellow for Protein */
+}
+
+/* Activity Level Section */
+.activity-level {
+  margin-top: 20px;
+}
+
+.activity-level label {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.activity-level select {
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
