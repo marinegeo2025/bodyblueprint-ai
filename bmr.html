@@ -20,6 +20,8 @@
       <section id="bmr" class="page">
         <h1>BMR & Calorie Goal</h1>
         <p>Calculate your Basal Metabolic Rate and set your calorie goal.</p>
+        
+        <!-- BMR Form -->
         <form id="bmrForm">
           <label for="age">Age:</label><br />
           <input type="number" id="age" required /><br /><br />
@@ -27,8 +29,8 @@
           <label for="gender">Gender:</label><br />
           <select id="gender">
             <option value="male">Male</option>
-            <option value="female">Female</option></select
-          ><br /><br />
+            <option value="female">Female</option>
+          </select><br /><br />
 
           <label for="height">Height (cm):</label><br />
           <input type="number" id="height" required /><br /><br />
@@ -38,55 +40,100 @@
 
           <button type="submit">Calculate BMR</button>
         </form>
+
         <div id="bmrResults"></div>
+
+        <!-- Cut / Bulk Section -->
+        <h2>Set Your Goal</h2>
+        <p><strong>Current Goal:</strong> <span id="goalDisplay">None</span></p>
+        <p><strong>Target Calories:</strong> <span id="targetCalories">-</span> kcal</p>
+
+        <label for="cutCalories">Cut (Deficit):</label>
+        <input type="number" id="cutCalories" placeholder="Enter deficit (e.g. 300)" />
+        <button onclick="setGoal('cut')">Set Cut Goal</button>
+        <br /><br />
+
+        <label for="bulkCalories">Bulk (Surplus):</label>
+        <input type="number" id="bulkCalories" placeholder="Enter surplus (e.g. 500)" />
+        <button onclick="setGoal('bulk')">Set Bulk Goal</button>
       </section>
     </main>
+
     <footer>
       <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
     </footer>
+
     <script>
-      document
-        .getElementById("bmrForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
+      document.getElementById("bmrForm").addEventListener("submit", function (event) {
+        event.preventDefault();
 
-          const age = parseInt(document.getElementById("age").value);
-          const gender = document.getElementById("gender").value;
-          const weight = parseFloat(document.getElementById("weight").value);
-          const height = parseFloat(document.getElementById("height").value);
+        const age = parseInt(document.getElementById("age").value);
+        const gender = document.getElementById("gender").value;
+        const weight = parseFloat(document.getElementById("weight").value);
+        const height = parseFloat(document.getElementById("height").value);
 
-          let bmr;
-          if (gender === "male") {
-            bmr = 10 * weight + 6.25 * height - 5 * age + 5;
-          } else {
-            bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+        let bmr;
+        if (gender === "male") {
+          bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+        } else {
+          bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+        }
+
+        const resultsHTML = `
+          <h2>Your Results</h2>
+          <p><strong>BMR (Used as TDEE):</strong> ${bmr.toFixed(2)} kcal/day</p>
+        `;
+
+        document.getElementById("bmrResults").innerHTML = resultsHTML;
+
+        // Save BMR to localStorage
+        localStorage.setItem("bmr", bmr);
+        updateGoalDisplay();
+      });
+
+      function setGoal(type) {
+        const bmr = parseFloat(localStorage.getItem("bmr"));
+        if (!bmr) {
+          alert("Please calculate BMR first!");
+          return;
+        }
+
+        let goal, targetCalories;
+        if (type === "cut") {
+          const deficit = parseFloat(document.getElementById("cutCalories").value);
+          if (isNaN(deficit) || deficit <= 0) {
+            alert("Please enter a valid cut value.");
+            return;
           }
+          goal = `Cut (-${deficit} kcal)`;
+          targetCalories = bmr - deficit;
+        } else if (type === "bulk") {
+          const surplus = parseFloat(document.getElementById("bulkCalories").value);
+          if (isNaN(surplus) || surplus <= 0) {
+            alert("Please enter a valid bulk value.");
+            return;
+          }
+          goal = `Bulk (+${surplus} kcal)`;
+          targetCalories = bmr + surplus;
+        }
 
-          const cutCaloriesBMR = bmr - 250;
-          const deepCutCaloriesBMR = bmr - 500;
+        // Save goal and target calories
+        localStorage.setItem("goal", goal);
+        localStorage.setItem("targetCalories", targetCalories);
 
-          const resultsHTML = `
-                <h2>Your Results</h2>
-                <p><strong>BMR (Used as TDEE):</strong> ${bmr.toFixed(
-                  2
-                )} kcal/day</p>
-                <p><strong>Maintain Calories:</strong> ${bmr.toFixed(
-                  2
-                )} kcal/day</p>
-                <p><strong>Cut Calories (-250 kcal):</strong> ${cutCaloriesBMR.toFixed(
-                  2
-                )} kcal/day</p>
-                <p><strong>Deep Cut Calories (-500 kcal):</strong> ${deepCutCaloriesBMR.toFixed(
-                  2
-                )} kcal/day</p>
-            `;
+        updateGoalDisplay();
+      }
 
-          document.getElementById("bmrResults").innerHTML = resultsHTML;
+      function updateGoalDisplay() {
+        const goal = localStorage.getItem("goal") || "None";
+        const targetCalories = localStorage.getItem("targetCalories") || "-";
 
-          localStorage.setItem("bmr", bmr);
-          localStorage.setItem("cutCaloriesBMR", cutCaloriesBMR);
-          localStorage.setItem("deepCutCaloriesBMR", deepCutCaloriesBMR);
-        });
+        document.getElementById("goalDisplay").innerText = goal;
+        document.getElementById("targetCalories").innerText = targetCalories;
+      }
+
+      // Load saved goal on page load
+      updateGoalDisplay();
     </script>
   </body>
 </html>
