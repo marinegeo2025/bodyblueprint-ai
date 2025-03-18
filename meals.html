@@ -24,7 +24,7 @@
         <form id="mealForm">
           <label for="mealInput">Describe your meal:</label><br />
           <input type="text" id="mealInput" placeholder="E.g., 2 eggs, toast, butter" required />
-          <button type="submit">Add Meal</button>
+          <button type="submit" id="addMealButton">Add Meal</button>
         </form>
 
         <h2>Today's Nutrition</h2>
@@ -54,10 +54,32 @@
     </footer>
 
     <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Load goal from localStorage
+        const storedGoal = localStorage.getItem("goal") || "None";
+        document.getElementById("goalDisplay").innerText = storedGoal;
+
+        // Load meals from localStorage
+        const savedMeals = JSON.parse(localStorage.getItem("mealHistory")) || [];
+        savedMeals.forEach(meal => updateMealList(meal.name, meal.calories, meal.protein));
+
+        // Load total calories and protein
+        const totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
+        const totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
+        document.getElementById("totalCalories").innerText = totalCalories;
+        document.getElementById("totalProtein").innerText = totalProtein;
+        updateProgress(0, 0); // Update progress bars
+      });
+
       document.getElementById("mealForm").addEventListener("submit", async function (event) {
         event.preventDefault();
         const mealInput = document.getElementById("mealInput").value;
+        const addMealButton = document.getElementById("addMealButton");
         if (!mealInput) return;
+
+        // Show loading state on button
+        addMealButton.textContent = "Processing...";
+        addMealButton.disabled = true;
 
         const storedGoal = localStorage.getItem("goal") || "None";
         const storedTargetCalories = parseInt(localStorage.getItem("targetCalories")) || 0;
@@ -80,10 +102,19 @@
             updateMealList(mealInput, result.calories, result.protein);
             updateProgress(result.calories, result.protein);
             document.getElementById("mealRecommendation").innerText = result.recommendation || "No recommendation available.";
-            document.getElementById("dailySummary").innerText = "Summary will be updated as meals are logged.";
+
+            // Save meal history to localStorage
+            const savedMeals = JSON.parse(localStorage.getItem("mealHistory")) || [];
+            savedMeals.push({ name: mealInput, calories: result.calories, protein: result.protein });
+            localStorage.setItem("mealHistory", JSON.stringify(savedMeals));
+            localStorage.setItem("totalCalories", parseInt(document.getElementById("totalCalories").innerText));
+            localStorage.setItem("totalProtein", parseInt(document.getElementById("totalProtein").innerText));
           }
         } catch (error) {
           console.error("Error processing meal:", error);
+        } finally {
+          addMealButton.textContent = "Add Meal";
+          addMealButton.disabled = false;
         }
       });
 
