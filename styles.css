@@ -1,92 +1,73 @@
-/* Minimalist Zen-Inspired CSS for Honrai No Menmoku */
-
-/* General Reset */
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter Tight', sans-serif;
-}
-
+/* General Styles */
 body {
-    background-color: #F8F8F8;
-    color: #222;
-    font-size: 16px;
-    line-height: 1.6;
-    text-rendering: optimizeLegibility;
-    padding: 20px;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  text-align: center;
 }
 
-/* Navigation Menu */
 nav ul {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    list-style: none;
-    padding: 20px 0;
+  list-style-type: none;
+  padding: 10px;
+  background: #333;
+}
+
+nav ul li {
+  display: inline;
+  margin: 0 10px;
 }
 
 nav ul li a {
-    text-decoration: none;
-    font-size: 18px;
-    color: #222;
-    padding: 5px 10px;
-    border-radius: 8px;
-    transition: background 0.3s;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
 }
 
-nav ul li a:hover {
-    background: rgba(0, 0, 0, 0.1);
-}
-
-/* Headings */
-h1, h2 {
-    font-weight: 600;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-/* Forms & Inputs */
-input, button {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 16px;
+main {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 button {
-    background-color: #222;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 button:hover {
-    background-color: #444;
+  background-color: #45a049;
 }
 
-/* Progress Bars */
+/* Progress Bar Styles */
 .progress-bar-container {
-    width: 100%;
-    height: 10px;
-    background: #ddd;
-    border-radius: 5px;
-    overflow: hidden;
-    margin: 5px 0 20px;
+  width: 100%;
+  background-color: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px 0;
 }
 
 .progress-bar {
-    height: 100%;
-    transition: width 0.5s ease-in-out;
+  height: 20px;
+  width: 0;
+  text-align: center;
+  line-height: 20px;
+  color: white;
+  transition: width 0.5s ease-in-out;
 }
 
-.green { background-color: #2ecc71; }
-.yellow { background-color: #f1c40f; }
+.green {
+  background-color: #4caf50; /* Groovy Green for Calories */
+}
 
-/* Footer */
-footer {
-    text-align: center;
-    margin-top: 40px;
-    font-size: 14px;
-    color: #666;
+.yellow {
+  background-color: #f4c542; /* Mellow Yellow for Protein */
 }
