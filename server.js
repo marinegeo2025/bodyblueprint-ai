@@ -48,7 +48,7 @@ app.post("/api/analyze-meal", async (req, res) => {
   console.log("🍽️ Meal analysis request received:", req.body);
 
   try {
-    const { meal } = req.body;
+    const { meal, goal, targetCalories, activityLevel } = req.body;
     if (!meal) {
       console.log("⚠️ No meal description provided!");
       return res.status(400).json({ error: "Meal description is required" });
@@ -63,16 +63,20 @@ app.post("/api/analyze-meal", async (req, res) => {
 
     // ✅ OpenAI API call (Updated for v3.2.1)
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o",
       messages: [
         {
           role: "system",
           content:
-            "You are a nutrition expert. Analyze the given meal and estimate calories & protein. Return ONLY a valid JSON object: {\"calories\": <num>, \"protein\": <num>}. No extra text.",
+            "You are an elite sports scientist with a Zen and positive approach. " +
+            "Analyze the given meal and estimate calories & protein. " +
+            "Additionally, provide a short recommendation on macros/micros and an encouraging statement. " +
+            "Base your recommendation on the user's goal ('Cut', 'Bulk', or 'Maintain') and their activity level ('Rarely Train', 'Train 1-2x per week', 'Train 5x per week'). " +
+            "Return ONLY a valid JSON object: {\"calories\": <num>, \"protein\": <num>, \"recommendation\": \"<text>\"}. No extra text.",
         },
         {
           role: "user",
-          content: `Meal: ${meal}. Return JSON.`,
+          content: `Meal: ${meal}\nGoal: ${goal}\nTarget Calories: ${targetCalories}\nActivity Level: ${activityLevel}\nReturn JSON.`,
         },
       ],
     });
@@ -96,7 +100,8 @@ app.post("/api/analyze-meal", async (req, res) => {
     // ✅ Validate response format
     if (
       typeof nutritionData.calories !== "number" ||
-      typeof nutritionData.protein !== "number"
+      typeof nutritionData.protein !== "number" ||
+      typeof nutritionData.recommendation !== "string"
     ) {
       console.error("⚠️ Invalid nutrition data format:", nutritionData);
       return res.status(500).json({
