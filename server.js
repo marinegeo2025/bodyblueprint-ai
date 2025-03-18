@@ -1,71 +1,130 @@
+// ✅ Load environment variables
 require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+
+// ✅ Import OpenAI (Ensure you're using a compatible version)
 const OpenAI = require("openai");
 
+// ✅ Initialize Express app
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static("./"));
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`🚀 Server running on port ${port}`);
-});
 
+// ✅ Ensure OpenAI API key is set
 if (!process.env.OPENAI_API_KEY) {
-  console.error("⚠️ OPENAI_API_KEY is missing!");
+  console.error("⚠️ OPENAI_API_KEY is missing in environment variables!");
 }
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-console.log("✅ OpenAI client initialized successfully");
+let openai;
+try {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  console.log("✅ OpenAI client initialized successfully");
+} catch (error) {
+  console.error("❌ Failed to initialize OpenAI client:", error);
+}
 
+// ✅ Debug endpoint to check server status
+app.get("/api/debug", (req, res) => {
+  console.log("🛠️ Debug endpoint called");
+  res.json({
+    status: "ok",
+    message: "Server is running correctly",
+    env: { hasOpenAiKey: !!process.env.OPENAI_API_KEY },
+  });
+});
+
+// ✅ Meal analysis endpoint
 app.post("/api/analyze-meal", async (req, res) => {
   console.log("🍽️ Meal analysis request received:", req.body);
 
-  const { meal, previousMeals, goal, targetCalories, activityLevel } = req.body;
-  if (!meal) {
-    return res.status(400).json({ error: "Meal description is required" });
-  }
-
   try {
-    const chatResponse = await openai.chat.completions.create({
+    const { meal, previousMeals, goal, targetCalories, activityLevel } = req.body;
+
+    if (!meal) {
+      console.log("⚠️ No meal description provided!");
+      return res.status(400).json({ error: "Meal description is required" });
+    }
+
+    if (!openai) {
+      console.error("❌ OpenAI client not initialized!");
+      return res.status(500).json({ error: "AI service not available" });
+    }
+
+    console.log("🔎 Analyzing meal:", meal);
+    
+    // ✅ OpenAI API call with structured prompt
+    const completion = await openai.chat.completions.create({
       model: "gpt-4-turbo",
       messages: [
         {
           role: "system",
-          content: `You are a sports nutritionist. Given the meal and daily meals, estimate the calories & protein. Return ONLY JSON: {"calories": <num>, "protein": <num>, "recommendation": "<advice>", "summary": "<daily_summary>"}`
+          content: `You are a nutrition expert helping users estimate calories and protein intake.
+          - Provide an accurate estimate of calories and protein.
+          - Give a motivational recommendation tailored to their fitness goal.
+          - Format response as JSON: {"calories": <num>, "protein": <num>, "recommendation": "<string>", "summary": "<string>"}.`,
         },
         {
           role: "user",
-          content: `Meal: ${meal}. Previous meals: ${JSON.stringify(previousMeals)}. Goal: ${goal}. Target Calories: ${targetCalories}. Activity Level: ${activityLevel}.`
+          content: `Meal: ${meal}
+          Previous Meals: ${JSON.stringify(previousMeals)}
+          Goal: ${goal}
+          Target Calories: ${targetCalories}
+          Activity Level: ${activityLevel}
+          Return JSON.`,
         },
       ],
     });
 
-    let responseText = chatResponse.choices[0].message.content.trim();
+    // ✅ Extract AI Response
+    const responseText = completion.choices[0].message.content.trim();
+    console.log("🤖 OpenAI Response:", responseText);
 
-    // Fixes issue with OpenAI returning JSON inside markdown blocks
-    responseText = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
-
+    // ✅ Ensure OpenAI Response is Valid JSON
     let nutritionData;
     try {
-      nutritionData = JSON.parse(responseText);
+      nutritionData = JSON.parse(responseText.replace(/```json|```/g, "").trim());
     } catch (parseError) {
       console.error("❌ Failed to parse OpenAI response:", parseError);
       return res.status(500).json({
-        error: "Invalid AI response format",
+        error: "Invalid response format from AI service",
         rawResponse: responseText,
       });
     }
 
+    // ✅ Validate response format
+    if (
+      typeof nutritionData.calories !== "number" ||
+      typeof nutritionData.protein !== "number" ||
+      typeof nutritionData.recommendation !== "string" ||
+      typeof nutritionData.summary !== "string"
+    ) {
+      console.error("⚠️ Invalid nutrition data format:", nutritionData);
+      return res.status(500).json({
+        error: "Invalid nutrition data format",
+        data: nutritionData,
+      });
+    }
+
+    // ✅ Send response to client
     res.json(nutritionData);
   } catch (error) {
-    console.error("❌ OpenAI API Error:", error.message);
-    res.status(500).json({ error: "AI request failed", message: error.message });
+    console.error("❌ Error analyzing meal:", error.message);
+    return res.status(500).json({
+      error: "Failed to analyze meal",
+      message: error.message,
+    });
   }
 });
 
+// ✅ Start the server
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
 });
