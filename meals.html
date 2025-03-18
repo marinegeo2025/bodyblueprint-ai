@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meal Tracker</title>
+    <title>本来の面目, Honrai No Menmoku</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -16,33 +16,33 @@
         <li><a href="chat.html">💬 AI Chat</a></li>
       </ul>
     </nav>
-
     <main>
-      <h1>Meal Tracker</h1>
-      <p>Enter your meal below and get calorie & protein estimates.</p>
+      <section id="meals" class="page">
+        <h1>Meal Tracker</h1>
+        <p>Enter your meal below and get calorie & protein estimates.</p>
 
-      <form id="mealForm">
-        <label for="mealInput">Describe your meal:</label><br />
-        <input
-          type="text"
-          id="mealInput"
-          placeholder="E.g., 2 eggs, toast, butter"
-          required
-        />
-        <button type="submit">Add Meal</button>
-      </form>
+        <form id="mealForm">
+          <label for="mealInput">Describe your meal:</label><br />
+          <input type="text" id="mealInput" placeholder="E.g., 2 eggs, toast, butter" required />
+          <button type="submit">Add Meal</button>
+        </form>
 
-      <!-- Debug button for testing connection -->
-      <button id="debugButton" type="button" style="margin-top: 10px">
-        Test Connection
-      </button>
+        <h2>Today's Nutrition</h2>
+        <p><strong>Goal:</strong> <span id="goalDisplay">None</span></p>
+        <p><strong>Calories:</strong> <span id="totalCalories">0</span> kcal</p>
+        <div class="progress-bar-container">
+          <div id="calorieProgress" class="progress-bar green"></div>
+        </div>
+        <p><strong>Protein:</strong> <span id="totalProtein">0</span> g</p>
+        <div class="progress-bar-container">
+          <div id="proteinProgress" class="progress-bar yellow"></div>
+        </div>
 
-      <h2>Today's Nutrition</h2>
-      <p><strong>Calories:</strong> <span id="totalCalories">0</span> kcal</p>
-      <p><strong>Protein:</strong> <span id="totalProtein">0</span> g</p>
-
-      <h2>Meal Records</h2>
-      <ul id="mealList"></ul>
+        <h2>Meal Records</h2>
+        <ul id="mealList"></ul>
+        <h2>Daily Summary</h2>
+        <p id="dailySummary">Awaiting meal entries...</p>
+      </section>
     </main>
 
     <footer>
@@ -50,101 +50,52 @@
     </footer>
 
     <script>
-      document
-        .getElementById("mealForm")
-        .addEventListener("submit", async function (event) {
-          event.preventDefault();
-          const mealInput = document.getElementById("mealInput").value;
-          if (!mealInput) return;
+      document.getElementById("mealForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const mealInput = document.getElementById("mealInput").value;
+        if (!mealInput) return;
 
-          // Show loading state
-          const submitButton = this.querySelector('button[type="submit"]');
-          submitButton.textContent = "Processing...";
-          submitButton.disabled = true;
+        const storedGoal = localStorage.getItem("goal") || "None";
+        const storedTargetCalories = parseInt(localStorage.getItem("targetCalories")) || 0;
 
-          try {
-            console.log("Submitting meal:", mealInput);
+        try {
+          const response = await fetch("/api/analyze-meal", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ meal: mealInput, goal: storedGoal, targetCalories: storedTargetCalories })
+          });
 
-            // Call our server endpoint
-            const response = await fetch("/api/analyze-meal", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ meal: mealInput }),
-            });
-
-            // Get the raw text first for debugging
-            const responseText = await response.text();
-            console.log("Raw server response:", responseText);
-
-            // Try to parse the response as JSON
-            let result;
-            try {
-              result = JSON.parse(responseText);
-            } catch (parseError) {
-              console.error("Failed to parse server response:", parseError);
-              throw new Error(
-                "Invalid response from server: " + responseText.substring(0, 50)
-              );
-            }
-
-            // Check for error response
-            if (!response.ok || result.error) {
-              throw new Error(result.error || "Server error");
-            }
-
-            // Validate the result has the expected structure
-            if (
-              result &&
-              typeof result.calories === "number" &&
-              typeof result.protein === "number"
-            ) {
-              updateMealList(mealInput, result.calories, result.protein);
-            } else {
-              console.error("Invalid result structure:", result);
-              throw new Error("Invalid nutrition data format");
-            }
-          } catch (error) {
-            console.error("Error processing meal:", error);
-            alert("Failed to process meal: " + error.message);
-          } finally {
-            // Reset button state
-            submitButton.textContent = "Add Meal";
-            submitButton.disabled = false;
+          const result = await response.json();
+          if (result && typeof result.calories === "number" && typeof result.protein === "number") {
+            updateMealList(mealInput, result.calories, result.protein);
+            updateProgress(result.calories, result.protein);
+            document.getElementById("dailySummary").innerText = result.recommendation;
           }
-        });
-
-      // Debug button event listener
-      document
-        .getElementById("debugButton")
-        .addEventListener("click", async function () {
-          try {
-            const response = await fetch("/api/debug");
-            const data = await response.json();
-            alert("Server status: " + JSON.stringify(data));
-          } catch (error) {
-            alert("Connection error: " + error.message);
-          }
-        });
+        } catch (error) {
+          console.error("Error processing meal:", error);
+        }
+      });
 
       function updateMealList(meal, calories, protein) {
         const mealList = document.getElementById("mealList");
         const listItem = document.createElement("li");
         listItem.innerHTML = `<strong>${meal}</strong> - ${calories} kcal, ${protein}g protein`;
         mealList.appendChild(listItem);
+      }
 
-        // Update totals
-        let totalCalories =
-          parseInt(document.getElementById("totalCalories").innerText) +
-          calories;
-        let totalProtein =
-          parseInt(document.getElementById("totalProtein").innerText) + protein;
+      function updateProgress(calories, protein) {
+        const targetCalories = parseInt(localStorage.getItem("targetCalories")) || 0;
+        const totalCalories = parseInt(document.getElementById("totalCalories").innerText) + calories;
+        const totalProtein = parseInt(document.getElementById("totalProtein").innerText) + protein;
+        
         document.getElementById("totalCalories").innerText = totalCalories;
         document.getElementById("totalProtein").innerText = totalProtein;
-
-        // Clear input field
-        document.getElementById("mealInput").value = "";
+        
+        const caloriePercent = targetCalories ? (totalCalories / targetCalories) * 100 : 0;
+        document.getElementById("calorieProgress").style.width = `${Math.min(caloriePercent, 100)}%`;
+        
+        const proteinPercent = (totalProtein / 100) * 100;
+        document.getElementById("proteinProgress").style.width = `${Math.min(proteinPercent, 100)}%`;
       }
     </script>
   </body>
