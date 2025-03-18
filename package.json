@@ -1,11 +1,13 @@
 {
-  "name": "my-project",
+  "name": "honrai-no-menmoku",
   "version": "1.0.0",
+  "description": "A minimalist nutrition and meal tracking app with AI-powered recommendations",
   "engines": {
     "node": "16.x"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "axios": "^1.8.3",
@@ -22,8 +24,10 @@
     "meal-tracker",
     "nutrition",
     "openai",
-    "express"
+    "express",
+    "BMR",
+    "fitness"
   ],
-  "author": "",
-  "license": "MIT"
+  "author": "Al",
+  "license": ""
 }
