@@ -72,7 +72,8 @@ app.post("/api/analyze-meal", async (req, res) => {
             "Analyze the given meal and estimate calories & protein. " +
             "Additionally, provide a short recommendation on macros/micros and an encouraging statement. " +
             "Base your recommendation on the user's goal ('Cut', 'Bulk', or 'Maintain') and their activity level ('Rarely Train', 'Train 1-2x per week', 'Train 5x per week'). " +
-            "Return ONLY a valid JSON object: {\"calories\": <num>, \"protein\": <num>, \"recommendation\": \"<text>\"}. No extra text.",
+            "Return ONLY a valid JSON object: {\"calories\": <num>, \"protein\": <num>, \"recommendation\": \"<text>\"}. No extra text." +
+          "If a meal has been analyzed before, return the same values as before. Base responses on known data for accuracy.",
         },
         {
           role: "user",

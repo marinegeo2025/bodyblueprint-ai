@@ -40,6 +40,10 @@
 
         <h2>Meal Records</h2>
         <ul id="mealList"></ul>
+
+        <h2>Recommendation</h2>
+        <p id="mealRecommendation">Awaiting meal entries...</p>
+
         <h2>Daily Summary</h2>
         <p id="dailySummary">Awaiting meal entries...</p>
       </section>
@@ -57,19 +61,26 @@
 
         const storedGoal = localStorage.getItem("goal") || "None";
         const storedTargetCalories = parseInt(localStorage.getItem("targetCalories")) || 0;
+        const storedActivityLevel = localStorage.getItem("activityLevel") || "Train 1-2x per week";
 
         try {
           const response = await fetch("/api/analyze-meal", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ meal: mealInput, goal: storedGoal, targetCalories: storedTargetCalories })
+            body: JSON.stringify({
+              meal: mealInput,
+              goal: storedGoal,
+              targetCalories: storedTargetCalories,
+              activityLevel: storedActivityLevel,
+            }),
           });
 
           const result = await response.json();
           if (result && typeof result.calories === "number" && typeof result.protein === "number") {
             updateMealList(mealInput, result.calories, result.protein);
             updateProgress(result.calories, result.protein);
-            document.getElementById("dailySummary").innerText = result.recommendation;
+            document.getElementById("mealRecommendation").innerText = result.recommendation || "No recommendation available.";
+            document.getElementById("dailySummary").innerText = "Summary will be updated as meals are logged.";
           }
         } catch (error) {
           console.error("Error processing meal:", error);
