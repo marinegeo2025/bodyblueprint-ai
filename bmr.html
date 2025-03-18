@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>本来の面目, Honrai No Menmoku</title>
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      .progress-bar-container {
+        width: 100%;
+        background-color: #ddd;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 10px;
+      }
+      .progress-bar {
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      .kcal-bar {
+        background-color: green;
+      }
+      .protein-bar {
+        background-color: yellow;
+      }
+    </style>
   </head>
   <body>
     <nav>
@@ -20,7 +42,7 @@
       <section id="bmr" class="page">
         <h1>BMR & Calorie Goal</h1>
         <p>Calculate your Basal Metabolic Rate and set your calorie goal.</p>
-        
+
         <!-- BMR Form -->
         <form id="bmrForm">
           <label for="age">Age:</label><br />
@@ -56,6 +78,17 @@
         <label for="bulkCalories">Bulk (Surplus):</label>
         <input type="number" id="bulkCalories" placeholder="Enter surplus (e.g. 500)" />
         <button onclick="setGoal('bulk')">Set Bulk Goal</button>
+
+        <h2>Daily Progress</h2>
+        <p><strong>Calories Consumed:</strong> <span id="currentCalories">0</span> / <span id="targetCaloriesDisplay">0</span> kcal</p>
+        <div class="progress-bar-container">
+          <div id="kcalProgress" class="progress-bar kcal-bar" style="width: 0%">0%</div>
+        </div>
+
+        <p><strong>Protein Consumed:</strong> <span id="currentProtein">0</span> g</p>
+        <div class="progress-bar-container">
+          <div id="proteinProgress" class="progress-bar protein-bar" style="width: 0%">0%</div>
+        </div>
       </section>
     </main>
 
@@ -79,14 +112,9 @@
           bmr = 10 * weight + 6.25 * height - 5 * age - 161;
         }
 
-        const resultsHTML = `
-          <h2>Your Results</h2>
-          <p><strong>BMR (Used as TDEE):</strong> ${bmr.toFixed(2)} kcal/day</p>
-        `;
+        document.getElementById("bmrResults").innerHTML = `<h2>Your Results</h2>
+          <p><strong>BMR (Used as TDEE):</strong> ${bmr.toFixed(2)} kcal/day</p>`;
 
-        document.getElementById("bmrResults").innerHTML = resultsHTML;
-
-        // Save BMR to localStorage
         localStorage.setItem("bmr", bmr);
         updateGoalDisplay();
       });
@@ -100,39 +128,24 @@
 
         let goal, targetCalories;
         if (type === "cut") {
-          const deficit = parseFloat(document.getElementById("cutCalories").value);
-          if (isNaN(deficit) || deficit <= 0) {
-            alert("Please enter a valid cut value.");
-            return;
-          }
-          goal = `Cut (-${deficit} kcal)`;
-          targetCalories = bmr - deficit;
+          targetCalories = bmr - 250;
+          goal = "Cut (-250 kcal)";
         } else if (type === "bulk") {
-          const surplus = parseFloat(document.getElementById("bulkCalories").value);
-          if (isNaN(surplus) || surplus <= 0) {
-            alert("Please enter a valid bulk value.");
-            return;
-          }
-          goal = `Bulk (+${surplus} kcal)`;
-          targetCalories = bmr + surplus;
+          targetCalories = bmr + 250;
+          goal = "Bulk (+250 kcal)";
         }
 
-        // Save goal and target calories
         localStorage.setItem("goal", goal);
         localStorage.setItem("targetCalories", targetCalories);
-
         updateGoalDisplay();
       }
 
       function updateGoalDisplay() {
-        const goal = localStorage.getItem("goal") || "None";
-        const targetCalories = localStorage.getItem("targetCalories") || "-";
-
-        document.getElementById("goalDisplay").innerText = goal;
-        document.getElementById("targetCalories").innerText = targetCalories;
+        document.getElementById("goalDisplay").innerText = localStorage.getItem("goal") || "None";
+        document.getElementById("targetCalories").innerText = localStorage.getItem("targetCalories") || "-";
+        document.getElementById("targetCaloriesDisplay").innerText = localStorage.getItem("targetCalories") || "0";
       }
 
-      // Load saved goal on page load
       updateGoalDisplay();
     </script>
   </body>
