@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>本来の面目, Honrai No Menmoku</title>
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Removes bullets from meal list */
+      #mealList {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      #mealList li {
+        margin-bottom: 5px;
+      }
+    </style>
   </head>
   <body>
     <nav>
@@ -64,8 +75,13 @@
         savedMeals.forEach(meal => updateMealList(meal.name, meal.calories, meal.protein));
 
         // Load total calories and protein
-        document.getElementById("totalCalories").innerText = localStorage.getItem("totalCalories") || 0;
-        document.getElementById("totalProtein").innerText = localStorage.getItem("totalProtein") || 0;
+        const totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
+        const totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
+        document.getElementById("totalCalories").innerText = totalCalories;
+        document.getElementById("totalProtein").innerText = totalProtein;
+
+        // Load progress bars
+        updateProgress(0, 0);
 
         // Load recommendation & summary
         document.getElementById("mealRecommendation").innerText = localStorage.getItem("mealRecommendation") || "Awaiting meal entries...";
@@ -110,8 +126,8 @@
             // Save meal history
             savedMeals.push({ name: mealInput, calories: result.calories, protein: result.protein });
             localStorage.setItem("mealHistory", JSON.stringify(savedMeals));
-            localStorage.setItem("totalCalories", document.getElementById("totalCalories").innerText);
-            localStorage.setItem("totalProtein", document.getElementById("totalProtein").innerText);
+            localStorage.setItem("totalCalories", totalCalories + result.calories);
+            localStorage.setItem("totalProtein", totalProtein + result.protein);
             localStorage.setItem("mealRecommendation", result.recommendation);
             localStorage.setItem("dailySummary", result.summary);
           }
@@ -126,14 +142,17 @@
       function updateMealList(meal, calories, protein) {
         const mealList = document.getElementById("mealList");
         const listItem = document.createElement("li");
-        listItem.innerHTML = `<strong>${meal}</strong> - ${calories} kcal, ${protein}g protein`;
+        listItem.innerHTML = `<strong>${meal}</strong>: ${calories} kcal, ${protein}g protein`;
         mealList.appendChild(listItem);
       }
 
       function updateProgress(calories, protein) {
         const targetCalories = parseInt(localStorage.getItem("targetCalories")) || 0;
-        const totalCalories = parseInt(document.getElementById("totalCalories").innerText) + calories;
-        const totalProtein = parseInt(document.getElementById("totalProtein").innerText) + protein;
+        let totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
+        let totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
+
+        if (calories > 0) totalCalories += calories;
+        if (protein > 0) totalProtein += protein;
 
         document.getElementById("totalCalories").innerText = totalCalories;
         document.getElementById("totalProtein").innerText = totalProtein;
@@ -143,6 +162,10 @@
 
         const proteinPercent = (totalProtein / 100) * 100;
         document.getElementById("proteinProgress").style.width = `${Math.min(proteinPercent, 100)}%`;
+
+        // Save progress
+        localStorage.setItem("totalCalories", totalCalories);
+        localStorage.setItem("totalProtein", totalProtein);
       }
     </script>
   </body>
