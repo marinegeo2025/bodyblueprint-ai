@@ -90,7 +90,7 @@
     document.getElementById("proteinProgress").style.width = `${Math.min(proteinPercent, 100)}%`;
   });
 
-  document.getElementById("mealForm").addEventListener("submit", async function (event) {
+  document.getElementById("mealForm").addEventListener("submit", async function (event) { 
     event.preventDefault();
     const mealInput = document.getElementById("mealInput").value;
     const addMealButton = document.getElementById("addMealButton");
@@ -127,8 +127,13 @@
         // Save meal history
         savedMeals.push({ name: mealInput, calories: result.calories, protein: result.protein });
         localStorage.setItem("mealHistory", JSON.stringify(savedMeals));
-        localStorage.setItem("totalCalories", document.getElementById("totalCalories").innerText);
-        localStorage.setItem("totalProtein", document.getElementById("totalProtein").innerText);
+
+        // ✅ Ensure totalCalories and totalProtein are stored as numbers
+        const totalCalories = parseInt(document.getElementById("totalCalories").innerText) || 0;
+        const totalProtein = parseInt(document.getElementById("totalProtein").innerText) || 0;
+
+        localStorage.setItem("totalCalories", JSON.stringify(totalCalories));
+        localStorage.setItem("totalProtein", JSON.stringify(totalProtein));
         localStorage.setItem("dailySummary", result.daily_summary);
       }
     } catch (error) {
@@ -137,7 +142,7 @@
       addMealButton.textContent = "Add Meal";
       addMealButton.disabled = false;
     }
-  });
+});
 
   function updateMealList(meal, calories, protein) {
     const mealList = document.getElementById("mealList");
