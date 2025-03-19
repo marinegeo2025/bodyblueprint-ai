@@ -28,9 +28,9 @@
     <main>
       <section id="meals" class="page">
         <h1>Meal Tracker</h1>
-       <button id="resetDataButton" class="reset-btn">Reset Data</button>
+       <button id="resetDataButton" class="reset-btn">Reset Day</button>
  
-        <p>Enter your meal below and get calorie & protein estimates.</p>
+        <p>Enter your meal below and get calorie and protein estimates.</p>
 
         <form id="mealForm">
           <label for="mealInput">Describe your meal:</label><br />
@@ -143,19 +143,31 @@
   }
 
   function updateProgress(calories, protein) {
-    const targetCalories = parseInt(localStorage.getItem("targetCalories")) || 0;
-    const totalCalories = parseInt(document.getElementById("totalCalories").innerText) + calories;
-    const totalProtein = parseInt(document.getElementById("totalProtein").innerText) + protein;
+    // Ensure localStorage values are correctly retrieved and converted to numbers
+    let totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
+    let totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
+    let targetCalories = parseInt(localStorage.getItem("targetCalories")) || 1; // Avoid division by zero
 
+    // Update totals with new meal values
+    totalCalories += calories;
+    totalProtein += protein;
+
+    // Save updated totals to localStorage
+    localStorage.setItem("totalCalories", totalCalories);
+    localStorage.setItem("totalProtein", totalProtein);
+
+    // Update UI text values
     document.getElementById("totalCalories").innerText = totalCalories;
     document.getElementById("totalProtein").innerText = totalProtein;
 
-    const caloriePercent = targetCalories ? (totalCalories / targetCalories) * 100 : 0;
-    document.getElementById("calorieProgress").style.width = `${Math.min(caloriePercent, 100)}%`;
+    // Calculate progress bar widths
+    const caloriePercent = (totalCalories / targetCalories) * 100;
+    const proteinPercent = (totalProtein / 100) * 100; // Assuming 100g is target
 
-    const proteinPercent = (totalProtein / 100) * 100;
+    // Update progress bars
+    document.getElementById("calorieProgress").style.width = `${Math.min(caloriePercent, 100)}%`;
     document.getElementById("proteinProgress").style.width = `${Math.min(proteinPercent, 100)}%`;
-  }
+}
 
   // Reset Button Functionality
   document.getElementById("resetDataButton").addEventListener("click", function () {
