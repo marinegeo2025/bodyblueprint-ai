@@ -16,6 +16,7 @@
         <li><a href="chat.html">💬 AI Chat</a></li>
       </ul>
     </nav>
+
     <main>
       <section id="bmr" class="page">
         <h1>BMR & Calorie Goal</h1>
@@ -23,33 +24,32 @@
 
         <!-- BMR Form -->
         <form id="bmrForm">
-  <label for="age">Age:</label><br />
-  <input type="number" id="age" required /><br /><br />
+          <label for="age">Age:</label><br />
+          <input type="number" id="age" required /><br /><br />
 
-  <label for="gender">Gender:</label><br />
-  <select id="gender">
-    <option value="male">Male</option>
-    <option value="female">Female</option>
-  </select><br /><br />
+          <label for="gender">Gender:</label><br />
+          <select id="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select><br /><br />
 
-  <label for="height">Height (cm):</label><br />
-  <input type="number" id="height" required /><br /><br />
+          <label for="height">Height (cm):</label><br />
+          <input type="number" id="height" required /><br /><br />
 
-  <label for="weight">Weight (kg):</label><br />
-  <input type="number" id="weight" required /><br /><br />
+          <label for="weight">Weight (kg):</label><br />
+          <input type="number" id="weight" required /><br /><br />
 
-  <label for="activity">Training Frequency:</label><br />
-  <select id="activity">
-    <option value="low">Occasional</option>
-    <option value="moderate">1-2x per week</option>
-    <option value="high">5x per week</option>
-  </select><br /><br />
+          <label for="activity">Training Frequency:</label><br />
+          <select id="activity">
+            <option value="low">Occasional</option>
+            <option value="moderate">1-2x per week</option>
+            <option value="high">5x per week</option>
+          </select><br /><br />
 
-  <button type="submit">Calculate TDEE</button>
-</form>
+          <button type="submit">Calculate TDEE</button>
+        </form>
 
-<div id="bmrResults"></div>
-
+        <div id="bmrResults"></div>
 
         <!-- Cut / Bulk / Maintain Section -->
         <h2>Set Your Goal</h2>
@@ -71,17 +71,6 @@
         <input type="number" id="maintainCalories" placeholder="Adjust maintain kcal" />
         <button onclick="setGoal('maintain')">Set Maintain Goal</button>
       </section>
-
-      <!-- Activity Level Section -->
-      <section class="activity-level">
-        <h2>Activity Level</h2>
-        <label for="activity">Select your training frequency:</label>
-        <select id="activity">
-          <option value="low">Occasional</option>
-          <option value="moderate">1-2x per week</option>
-          <option value="high">5x per week</option>
-        </select>
-      </section>
     </main>
 
     <footer>
@@ -89,91 +78,103 @@
     </footer>
 
     <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // ✅ Load stored activity level on page load
-    const storedActivity = localStorage.getItem("activity") || "moderate";
-    document.getElementById("activity").value = storedActivity;
+      document.addEventListener("DOMContentLoaded", function () {
+        // ✅ Load stored activity level on page load
+        const storedActivity = localStorage.getItem("activity") || "moderate";
+        document.getElementById("activity").value = storedActivity;
 
-    // ✅ Update activity level on change
-    document.getElementById("activity").addEventListener("change", function () {
-      localStorage.setItem("activity", this.value);
-    });
-  });
+        // ✅ Update activity level on change
+        document.getElementById("activity").addEventListener("change", function () {
+          localStorage.setItem("activity", this.value);
+        });
 
-  document.getElementById("bmrForm").addEventListener("submit", function (event) {
-    event.preventDefault();
+        updateGoalDisplay();
+      });
 
-    const age = parseInt(document.getElementById("age").value);
-    const gender = document.getElementById("gender").value;
-    const weight = parseFloat(document.getElementById("weight").value);
-    const height = parseFloat(document.getElementById("height").value);
-    const activityLevel = document.getElementById("activity").value; // ✅ Get activity level
+      document.getElementById("bmrForm").addEventListener("submit", function (event) {
+        event.preventDefault();
 
-    if (!age || !weight || !height) {
-        alert("Please enter all fields correctly.");
-        return;
-    }
+        const age = parseInt(document.getElementById("age").value);
+        const gender = document.getElementById("gender").value;
+        const weight = parseFloat(document.getElementById("weight").value);
+        const height = parseFloat(document.getElementById("height").value);
+        const activityLevel = document.getElementById("activity").value;
 
-    // ✅ Calculate BMR
-    let bmr;
-    if (gender === "male") {
-        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
-    } else {
-        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
-    }
+        if (!age || !weight || !height) {
+          alert("Please enter all fields correctly.");
+          return;
+        }
 
-    // ✅ Adjust BMR using Activity Level (TDEE Calculation)
-    let activityMultiplier;
-    switch (activityLevel) {
-        case "low":
-            activityMultiplier = 1.2; // Sedentary
-            break;
-        case "moderate":
-            activityMultiplier = 1.375; // Lightly Active (1-2x per week)
-            break;
-        case "high":
-            activityMultiplier = 1.55; // Very Active (5x per week)
-            break;
-        default:
-            activityMultiplier = 1.375; // ✅ Default to "moderate" if not selected
-    }
+        // ✅ Calculate BMR
+        let bmr;
+        if (gender === "male") {
+          bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+        } else {
+          bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+        }
 
-    const tdee = bmr * activityMultiplier; // ✅ TDEE Calculation
+        // ✅ Adjust BMR using Activity Level (TDEE Calculation)
+        let activityMultiplier = {
+          low: 1.0,
+          moderate: 1.15,
+          high: 1.25
+        }[activityLevel] || 1.0;
 
-    document.getElementById("bmrResults").innerHTML = `
-      <h2>Your Results</h2>
-      <p><strong>BMR (Base):</strong> ${bmr.toFixed(2)} kcal/day</p>
-      <p><strong>TDEE (with Activity):</strong> ${tdee.toFixed(2)} kcal/day</p>
-    `;
+        const tdee = bmr * activityMultiplier; // ✅ TDEE Calculation
 
-    // ✅ Store values in localStorage
-    localStorage.setItem("bmr", bmr.toFixed(2));
-    localStorage.setItem("tdee", tdee.toFixed(2)); // ✅ Store TDEE instead of BMR
-    localStorage.setItem("activity", activityLevel); // ✅ Store activity level
+        document.getElementById("bmrResults").innerHTML = `
+          <h2>Your Results</h2>
+          <p><strong>BMR (Base):</strong> ${bmr.toFixed(2)} kcal/day</p>
+          <p><strong>TDEE (with Activity):</strong> ${tdee.toFixed(2)} kcal/day</p>
+        `;
 
-    // ✅ Update goal display
-    updateGoalDisplay();
-});
+        // ✅ Store values in localStorage
+        localStorage.setItem("bmr", bmr.toFixed(2));
+        localStorage.setItem("tdee", tdee.toFixed(2));
+        localStorage.setItem("activity", activityLevel);
 
-function updateGoalDisplay() {
-    const goal = localStorage.getItem("goal") || "None";
-    const tdee = localStorage.getItem("tdee") || "0"; // ✅ Default to 0 if missing
-    const activityLevel = localStorage.getItem("activity") || "moderate";
+        // ✅ Default target calories to TDEE
+        localStorage.setItem("targetCalories", tdee.toFixed(2));
 
-    document.getElementById("goalDisplay").innerText = goal;
+        // ✅ Update goal display
+        updateGoalDisplay();
+      });
 
-    // ✅ If no goal is set, use TDEE as target calories
-    const targetCalories = localStorage.getItem("targetCalories") || tdee;
-    document.getElementById("targetCalories").innerText = `${targetCalories} kcal/day`;
+      function setGoal(type) {
+        const tdee = parseFloat(localStorage.getItem("tdee")) || 0;
+        let goal, targetCalories;
 
-    // ✅ Ensure dropdown reflects stored value
-    document.getElementById("activity").value = activityLevel;
-}
+        if (type === "cut") {
+          const deficit = parseFloat(document.getElementById("cutCalories").value) || 250;
+          targetCalories = tdee - deficit;
+          goal = `Cut (-${deficit} kcal)`;
+        } else if (type === "bulk") {
+          const surplus = parseFloat(document.getElementById("bulkCalories").value) || 250;
+          targetCalories = tdee + surplus;
+          goal = `Bulk (+${surplus} kcal)`;
+        } else {
+          targetCalories = tdee;
+          goal = "Maintain";
+        }
 
-// ✅ Ensure goal display updates on page load
-updateGoalDisplay();
+        // ✅ Store goal & updated target calories
+        localStorage.setItem("goal", goal);
+        localStorage.setItem("targetCalories", targetCalories.toFixed(2));
 
-</script>
+        updateGoalDisplay();
+      }
 
+      function updateGoalDisplay() {
+        const goal = localStorage.getItem("goal") || "None";
+        const targetCalories = localStorage.getItem("targetCalories") || "-";
+        const activityLevel = localStorage.getItem("activity") || "moderate";
+
+        document.getElementById("goalDisplay").innerText = goal;
+        document.getElementById("targetCalories").innerText = `${targetCalories} kcal/day`;
+        document.getElementById("activity").value = activityLevel;
+      }
+
+      updateGoalDisplay();
+    </script>
   </body>
 </html>
