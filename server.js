@@ -60,16 +60,27 @@ app.post("/api/analyze-meal", async (req, res) => {
 
     console.log("🔎 Analyzing meal:", meal);
     
-    // ✅ OpenAI API call with structured prompt
+    // ✅ OpenAI API call for analysis
     const completion = await openai.chat.completions.create({
       model: "gpt-4-turbo",
       messages: [
         {
           role: "system",
-          content: `You are a nutrition expert helping users estimate calories and protein intake.
-          - Provide an accurate estimate of calories and protein.
-          - Give a motivational recommendation tailored to their fitness goal.
-          - Format response as JSON: {"calories": <num>, "protein": <num>, "recommendation": "<string>", "summary": "<string>"}.`,
+          content: `You are a leading sports scientist.
+          - For the **meal**, return ONLY estimated calories and protein.
+          - For the **Daily Summary**, analyze **all meals so far** and provide:
+            1. **Calories, carbs, and protein intake summary.**
+            2. **Macronutrient and micronutrient insights.**
+            3. **Latest science-backed optimization tips** for the user's goal.
+            4. **Future progress prediction** based on trends.
+
+          Format response as JSON:
+          {
+            "calories": <num>,
+            "protein": <num>,
+            "recommendation": "<string>",
+            "daily_summary": "<string>"
+          }`,
         },
         {
           role: "user",
@@ -99,12 +110,12 @@ app.post("/api/analyze-meal", async (req, res) => {
       });
     }
 
-    // ✅ Validate response format
+    // ✅ Validate response format (Only Daily Summary gets enhancements)
     if (
       typeof nutritionData.calories !== "number" ||
       typeof nutritionData.protein !== "number" ||
       typeof nutritionData.recommendation !== "string" ||
-      typeof nutritionData.summary !== "string"
+      typeof nutritionData.daily_summary !== "string"
     ) {
       console.error("⚠️ Invalid nutrition data format:", nutritionData);
       return res.status(500).json({
@@ -123,6 +134,7 @@ app.post("/api/analyze-meal", async (req, res) => {
     });
   }
 });
+
 
 // ✅ Start the server
 app.listen(port, () => {
