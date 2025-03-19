@@ -92,53 +92,48 @@
       });
 
       document.getElementById("bmrForm").addEventListener("submit", function (event) {
-        event.preventDefault();
+    event.preventDefault();
 
-        const age = parseInt(document.getElementById("age").value);
-        const gender = document.getElementById("gender").value;
-        const weight = parseFloat(document.getElementById("weight").value);
-        const height = parseFloat(document.getElementById("height").value);
-        const activityLevel = document.getElementById("activity").value;
+    const age = parseInt(document.getElementById("age").value);
+    const gender = document.getElementById("gender").value;
+    const weight = parseFloat(document.getElementById("weight").value);
+    const height = parseFloat(document.getElementById("height").value);
+    const activityLevel = document.getElementById("activity").value;
 
-        if (!age || !weight || !height) {
-          alert("Please enter all fields correctly.");
-          return;
-        }
+    if (!age || !weight || !height) {
+        alert("Please enter all fields correctly.");
+        return;
+    }
 
-        // ✅ Calculate BMR
-        let bmr;
-        if (gender === "male") {
-          bmr = 10 * weight + 6.25 * height - 5 * age + 5;
-        } else {
-          bmr = 10 * weight + 6.25 * height - 5 * age - 161;
-        }
+    // ✅ Calculate BMR
+    let bmr;
+    if (gender === "male") {
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+    } else {
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+    }
 
-        // ✅ Adjust BMR using Activity Level (TDEE Calculation)
-        let activityMultiplier = {
-          low: 1.0,
-          moderate: 1.15,
-          high: 1.25
-        }[activityLevel] || 1.0;
+    // ✅ Adjust BMR using Activity Level
+    let activityMultiplier = 1.0; // Default sedentary
+    if (activityLevel === "moderate") activityMultiplier = 1.15;
+    if (activityLevel === "high") activityMultiplier = 1.25;
 
-        const tdee = bmr * activityMultiplier; // ✅ TDEE Calculation
+    const tdee = bmr * activityMultiplier;
 
-        document.getElementById("bmrResults").innerHTML = `
-          <h2>Your Results</h2>
-          <p><strong>BMR (Base):</strong> ${bmr.toFixed(2)} kcal/day</p>
-          <p><strong>TDEE (with Activity):</strong> ${tdee.toFixed(2)} kcal/day</p>
-        `;
+    document.getElementById("bmrResults").innerHTML = `
+      <h2>Your Results</h2>
+      <p><strong>BMR (Base):</strong> ${bmr.toFixed(2)} kcal/day</p>
+      <p><strong>TDEE (with Activity):</strong> ${tdee.toFixed(2)} kcal/day</p>
+    `;
 
-        // ✅ Store values in localStorage
-        localStorage.setItem("bmr", bmr.toFixed(2));
-        localStorage.setItem("tdee", tdee.toFixed(2));
-        localStorage.setItem("activity", activityLevel);
+    // ✅ Store values in localStorage
+    localStorage.setItem("bmr", bmr.toFixed(2));
+    localStorage.setItem("tdee", tdee.toFixed(2));
+    localStorage.setItem("activity", activityLevel);
+    localStorage.setItem("weight", weight.toFixed(2)); // ✅ Store Weight Locally
 
-        // ✅ Default target calories to TDEE
-        localStorage.setItem("targetCalories", tdee.toFixed(2));
-
-        // ✅ Update goal display
-        updateGoalDisplay();
-      });
+    updateGoalDisplay();
+});
 
       function setGoal(type) {
         const tdee = parseFloat(localStorage.getItem("tdee")) || 0;
