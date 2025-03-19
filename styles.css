@@ -7,10 +7,15 @@ body {
   text-align: center;
 }
 
+.small-text {
+  font-size: 0.65em; /* Adjust the size as needed */
+  color: #666666; /* Optional: Make it a softer color */
+}
+
 nav ul {
   list-style-type: none;
   padding: 10px;
-  background: #333;
+  background: #333333;
 }
 
 nav ul li {
