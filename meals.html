@@ -74,70 +74,84 @@
       }
 
       function updateDailySummary(summary) {
-          summary = summary || "No summary available."; 
-          document.getElementById("dailySummary").innerText = summary;
-          localStorage.setItem("dailySummary", summary);
-      }
+    console.log("📢 Updating daily summary:", summary);
+    
+    if (!summary || summary.trim() === "") {
+        summary = "No summary available.";
+    }
+
+    document.getElementById("dailySummary").innerText = summary;
+    localStorage.setItem("dailySummary", summary);
+}
 
       document.addEventListener("DOMContentLoaded", function () {
-          document.getElementById("goalDisplay").innerText = localStorage.getItem("goal") || "None";
+    document.getElementById("goalDisplay").innerText = localStorage.getItem("goal") || "None";
 
-          let savedMeals = JSON.parse(localStorage.getItem("mealHistory")) || [];
-          savedMeals.forEach(meal => updateMealList(meal.name, meal.calories, meal.protein));
+    let savedMeals = JSON.parse(localStorage.getItem("mealHistory")) || [];
+    savedMeals.forEach(meal => updateMealList(meal.name, meal.calories, meal.protein));
 
-          let totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
-          let totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
-          let targetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
-          let targetProtein = calculateProteinTarget();
+    let totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
+    let totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
+    let targetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
+    let targetProtein = calculateProteinTarget();
 
-          document.getElementById("totalCalories").innerText = totalCalories;
-          document.getElementById("targetCalories").innerText = targetCalories;
-          document.getElementById("totalProtein").innerText = totalProtein;
-          document.getElementById("targetProtein").innerText = targetProtein;
+    document.getElementById("totalCalories").innerText = totalCalories;
+    document.getElementById("targetCalories").innerText = targetCalories;
+    document.getElementById("totalProtein").innerText = totalProtein;
+    document.getElementById("targetProtein").innerText = targetProtein;
 
-          document.getElementById("dailySummary").innerText = localStorage.getItem("dailySummary") || "Awaiting meal entries...";
+    document.getElementById("dailySummary").innerText = localStorage.getItem("dailySummary") || "Awaiting meal entries...";
 
-          updateProgressBars();
-      });
+    // ✅ Ensure progress bars are updated when the page loads
+    updateProgressBars();
+});
 
       document.getElementById("mealForm").addEventListener("submit", async function (event) {
-          event.preventDefault();
-          const mealInput = document.getElementById("mealInput").value;
-          const addMealButton = document.getElementById("addMealButton");
-          if (!mealInput) return;
+    event.preventDefault();
+    const mealInput = document.getElementById("mealInput").value;
+    const addMealButton = document.getElementById("addMealButton");
+    if (!mealInput) return;
 
-          addMealButton.textContent = "Processing...";
-          addMealButton.disabled = true;
+    addMealButton.textContent = "Processing...";
+    addMealButton.disabled = true;
 
-          const storedGoal = localStorage.getItem("goal") || "None";
-          const storedTargetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
-          const storedActivityLevel = localStorage.getItem("activity") || "Train 1-2x per week";
-          let savedMeals = JSON.parse(localStorage.getItem("mealHistory")) || [];
+    let savedMeals = JSON.parse(localStorage.getItem("mealHistory")) || [];
+    try {
+        console.log("✅ Sending meal request:", mealInput);
 
-          try {
-              const response = await fetch("/api/analyze-meal", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ meal: mealInput, previousMeals: savedMeals, goal: storedGoal, targetCalories: storedTargetCalories, activityLevel: storedActivityLevel }),
-              });
+        const response = await fetch("/api/analyze-meal", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                meal: mealInput,
+                previousMeals: savedMeals,
+                goal: localStorage.getItem("goal") || "None",
+                targetCalories: parseInt(localStorage.getItem("targetCalories")) || 2000,
+                activityLevel: localStorage.getItem("activity") || "moderate"
+            }),
+        });
 
-              const result = await response.json();
+        const result = await response.json();
+        console.log("🤖 AI Response:", result);
 
-              if (result && typeof result.calories === "number" && typeof result.protein === "number") {
-                  updateMealList(mealInput, result.calories, result.protein);
-                  updateTotals(result.calories, result.protein);
-                  updateDailySummary(result.daily_summary);
+        if (result && typeof result.calories === "number" && typeof result.protein === "number") {
+            console.log("📊 Updating UI with new meal data...");
+            updateMealList(mealInput, result.calories, result.protein);
+            updateProgress(result.calories, result.protein);
+            updateDailySummary(result.daily_summary || "No summary available.");
 
-                  savedMeals.push({ name: mealInput, calories: result.calories, protein: result.protein });
-                  localStorage.setItem("mealHistory", JSON.stringify(savedMeals));
-              }
-          } catch (error) {
-              console.error("Error processing meal:", error);
-          } finally {
-              addMealButton.textContent = "Add Meal";
-              addMealButton.disabled = false;
-          }
-      });
+            savedMeals.push({ name: mealInput, calories: result.calories, protein: result.protein });
+            localStorage.setItem("mealHistory", JSON.stringify(savedMeals));
+        } else {
+            console.error("⚠️ API returned invalid data format:", result);
+        }
+    } catch (error) {
+        console.error("❌ Error processing meal:", error);
+    } finally {
+        addMealButton.textContent = "Add Meal";
+        addMealButton.disabled = false;
+    }
+});
 
       function updateMealList(meal, calories, protein) {
           const mealList = document.getElementById("mealList");
@@ -162,15 +176,32 @@
           updateProgressBars();
       }
 
-      function updateProgressBars() {
-          let totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
-          let totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
-          let targetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
-          let targetProtein = calculateProteinTarget();
+      function updateProgress(calories, protein) {
+    console.log("📊 Updating progress bars...");
+    
+    let totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
+    let totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
+    let targetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
+    let targetProtein = calculateProteinTarget();
 
-          document.getElementById("calorieProgress").style.width = `${(totalCalories / targetCalories) * 100}%`;
-          document.getElementById("proteinProgress").style.width = `${(totalProtein / targetProtein) * 100}%`;
-      }
+    totalCalories += calories;
+    totalProtein += protein;
+
+    localStorage.setItem("totalCalories", totalCalories);
+    localStorage.setItem("totalProtein", totalProtein);
+
+    document.getElementById("totalCalories").innerText = totalCalories;
+    document.getElementById("targetCalories").innerText = targetCalories;
+    document.getElementById("totalProtein").innerText = totalProtein;
+    document.getElementById("targetProtein").innerText = targetProtein;
+
+    document.getElementById("calorieProgress").style.width = `${Math.min((totalCalories / targetCalories) * 100, 100)}%`;
+    document.getElementById("proteinProgress").style.width = `${Math.min((totalProtein / targetProtein) * 100, 100)}%`;
+
+    console.log(`✅ Calories Updated: ${totalCalories}/${targetCalories}`);
+    console.log(`✅ Protein Updated: ${totalProtein}/${targetProtein}`);
+}
+
     </script>
   </body>
 </html>
