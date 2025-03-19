@@ -79,21 +79,16 @@ app.post("/api/analyze-meal", async (req, res) => {
      - 🔹 **FOR EVERY DEFICIENCY:**  
        - **NAME** the missing nutrient.  
        - **LIST SPECIFIC FOODS** that contain it.  
-       - **EXPLAIN WHY IT MATTERS** using real science.  
+       - **EXPLAIN WHY IT MATTERS** using the latest science.  
        - Example:  
          **"Your magnesium intake is low. This may impact muscle recovery and sleep quality. Consider eating 30g of pumpkin seeds or 1 banana."**
 
   3️⃣ **Latest Science-Backed Optimization Tips (Based on the User’s Goal)**  
-     - Provide **1-2 advanced performance tips** based on the latest sports nutrition research.
+     - Provide **1-2 relevant advanced performance tips** based on the latest sports nutrition research.
      - Explain **why** each adjustment improves **performance, recovery, energy, metabolism, or muscle growth**.
 
-  4️⃣ **Future Progress Prediction (Based on Current Intake Trends)**  
-     - Predict **weight, muscle retention, or energy changes** if the user continues their current pattern, but remember that the user has not completed their food intake for the day.
-     - Example:  
-       **"At your current calorie intake, weight loss may slow down. Reducing intake by 250 kcal per day would realign with your target of losing 0.5 kg per week."**
-
-  5️⃣ **Final Positive and Motivational Message**  
-     - End with **a short, powerful, and motivating statement** about their progress.
+  4️⃣ **Final Positive and Motivational Message**  
+     - End with **a short, powerful, and motivating statement** about their progress, a bit of zen flair here is cool.
 
 🔹 **VERY IMPORTANT RULES** 🔹
   - **DO NOT LEAVE "daily_summary" BLANK!**  

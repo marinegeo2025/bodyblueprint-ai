@@ -63,34 +63,31 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-    const storedGoal = localStorage.getItem("goal") || "None";
-    const storedActivityLevel = localStorage.getItem("activity") || "moderate";
-    const storedWeight = parseFloat(localStorage.getItem("weight")) || 70; // Default to 70kg
-    const storedTargetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
+    // ✅ Load stored goal
+    document.getElementById("goalDisplay").innerText = localStorage.getItem("goal") || "None";
 
-    document.getElementById("goalDisplay").innerText = storedGoal;
-    document.getElementById("targetCalories").innerText = storedTargetCalories;
+    // ✅ Load meal history from localStorage
+    const savedMeals = JSON.parse(localStorage.getItem("mealHistory")) || [];
+    savedMeals.forEach(meal => updateMealList(meal.name, meal.calories, meal.protein));
 
-    // ✅ Adjust protein multiplier based on goal and activity level
-    let proteinMultiplier = 1.2; // Maintenance
-    if (storedGoal.includes("Cut") || storedGoal.includes("Bulk")) {
-        proteinMultiplier = 1.6;
-    }
-    if (storedActivityLevel === "high") {
-        proteinMultiplier = 1.7; // If training 5x per week
-    }
+    // ✅ Load total calories and protein
+    document.getElementById("totalCalories").innerText = localStorage.getItem("totalCalories") || "0";
+    document.getElementById("totalProtein").innerText = localStorage.getItem("totalProtein") || "0";
 
-    const targetProtein = Math.round(storedWeight * proteinMultiplier);
-    document.getElementById("targetProtein").innerText = targetProtein;
+    // ✅ Load Daily Summary (Make sure it's not overwritten)
+    const storedSummary = localStorage.getItem("dailySummary") || "Awaiting meal entries...";
+    document.getElementById("dailySummary").innerText = storedSummary;
 
-    // ✅ Load other stored data
+    // ✅ Load progress bars
+    const targetCalories = parseInt(localStorage.getItem("targetCalories")) || 1;
     const totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
     const totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
-    document.getElementById("totalCalories").innerText = totalCalories;
-    document.getElementById("totalProtein").innerText = totalProtein;
+    const proteinTarget = calculateProteinTarget(); // Calculate the protein goal dynamically
 
-    updateProgress(totalCalories, totalProtein, storedTargetCalories, targetProtein);
+    document.getElementById("calorieProgress").style.width = `${Math.min((totalCalories / targetCalories) * 100, 100)}%`;
+    document.getElementById("proteinProgress").style.width = `${Math.min((totalProtein / proteinTarget) * 100, 100)}%`;
 });
+
 
       document.getElementById("mealForm").addEventListener("submit", async function (event) {
         event.preventDefault();
