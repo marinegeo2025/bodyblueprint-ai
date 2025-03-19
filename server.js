@@ -69,8 +69,8 @@ app.post("/api/analyze-meal", async (req, res) => {
           content: `You are a leading sports scientist.
           - For the **meal**, return ONLY estimated calories and protein.
           - For the **Daily Summary**, analyze **all meals so far** and provide:
-            1. **Calories, carbs, and protein intake summary.**
-            2. **Macronutrient and micronutrient insights.**
+            1. **Caloric and Macronutrient breakdown: summarize the total calories, protein, carbs, and and fat consumed today and compare with the users goal.**
+            2. **Deficiencies & Adjustments (Be specific, do not use vague advice!).**
             3. **Latest science-backed optimization tips** for the user's goal.
             4. **Future progress prediction** based on trends.
 
