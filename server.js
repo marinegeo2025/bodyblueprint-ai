@@ -60,24 +60,26 @@ app.post("/api/analyze-meal", async (req, res) => {
 
     console.log("🔎 Analyzing meal:", meal);
     
-    // ✅ OpenAI API call for analysis
+    // ✅ OpenAI API call with structured prompt for meal AND daily summary
     const completion = await openai.chat.completions.create({
       model: "gpt-4-turbo",
       messages: [
         {
           role: "system",
-          content: `You are a leading sports scientist.
-          - For the **meal**, return ONLY estimated calories and protein.
-          - For the **Daily Summary**, analyze **all meals so far** and provide:
-            1. **Caloric and Macronutrient breakdown: summarize the total calories, protein, carbs, and and fat consumed today and compare with the users goal.**
-            2. **Deficiencies & Adjustments (Be specific, do not use vague advice!).**
-            3. **Latest science-backed optimization tips** for the user's goal.
-            4. **Future progress prediction** based on trends.
+          content: `You are a top nutrition expert and fitness coach.
+          - Provide **accurate** estimates of calories, protein, and **macros (carbs, fats, protein)**.
+          - Include a **brief summary of key micronutrients** (vitamins, minerals).
+          - Give a **science-backed personalized recommendation** based on the user's goal.
+          - Generate a **daily summary** considering all meals consumed so far.
+          - Offer **a forecast of future progress** based on the meal trend.
 
-          Format response as JSON:
+          Format the response as JSON:
           {
             "calories": <num>,
             "protein": <num>,
+            "carbs": <num>,
+            "fats": <num>,
+            "micronutrients": "<string>",
             "recommendation": "<string>",
             "daily_summary": "<string>"
           }`,
@@ -110,10 +112,13 @@ app.post("/api/analyze-meal", async (req, res) => {
       });
     }
 
-    // ✅ Validate response format (Only Daily Summary gets enhancements)
+    // ✅ Validate response format
     if (
       typeof nutritionData.calories !== "number" ||
       typeof nutritionData.protein !== "number" ||
+      typeof nutritionData.carbs !== "number" ||
+      typeof nutritionData.fats !== "number" ||
+      typeof nutritionData.micronutrients !== "string" ||
       typeof nutritionData.recommendation !== "string" ||
       typeof nutritionData.daily_summary !== "string"
     ) {
@@ -134,7 +139,6 @@ app.post("/api/analyze-meal", async (req, res) => {
     });
   }
 });
-
 
 // ✅ Start the server
 app.listen(port, () => {
