@@ -63,51 +63,45 @@ app.post("/api/analyze-meal", async (req, res) => {
 
         // ✅ Request formatted to ensure AI returns structured JSON
         const completion = await openai.chat.completions.create({
-            model: "gpt-4-turbo",
-            messages: [
-                {
-                    role: "system",
-                    content: `You are a nutritionist and sports scientist.
-                    Your job is to estimate calories and protein for meals.
-                    Respond in strict JSON format: { "calories": <number>, "protein": <number> }`
-                },
-                {
-                    role: "user",
-                    content: `Meal: ${meal}. Return JSON response only.`
-                }
-            ]
-        });
+    model: "gpt-4-turbo",
+    messages: [
+        {
+            role: "system",
+            content: `You are a sports scientist and nutritionist. 
+            Provide structured nutritional analysis with calories, protein, and a summary.
 
-        // ✅ Ensure AI response is correctly formatted
-        const responseText = completion.choices[0].message.content.trim();
-        console.log("🤖 AI Response:", responseText);
-
-        let nutritionData;
-        try {
-            nutritionData = JSON.parse(responseText);
-
-            // ✅ Default safe values if OpenAI returns incomplete data
-            nutritionData.calories = nutritionData.calories ?? 0;
-            nutritionData.protein = nutritionData.protein ?? 0;
-
-        } catch (parseError) {
-            console.error("❌ JSON Parse Error:", parseError, "\nRaw Response:", responseText);
-            return res.status(500).json({
-                error: "Invalid response format from AI service",
-                rawResponse: responseText,
-            });
+            JSON Format:
+            {
+                "calories": <number>,
+                "protein": <number>,
+                "daily_summary": "<string>"
+            }`
+        },
+        {
+            role: "user",
+            content: `Meal: ${meal}.
+            Previous Meals: ${JSON.stringify(previousMeals)}.
+            Goal: ${goal}. Target Calories: ${targetCalories}.
+            Activity Level: ${activityLevel}.
+            Return JSON only.`
         }
+    ]
+});
 
-        // ✅ Validate response format
-        if (typeof nutritionData.calories !== "number" || typeof nutritionData.protein !== "number") {
-            console.error("⚠️ Invalid nutrition data format:", nutritionData);
-            return res.status(500).json({
-                error: "Invalid nutrition data format",
-                data: nutritionData,
-            });
-        }
+const responseText = completion.choices[0].message.content.trim();
+console.log("🤖 AI Response:", responseText);
 
-        res.json(nutritionData);
+let nutritionData;
+try {
+    nutritionData = JSON.parse(responseText);
+    nutritionData.daily_summary = nutritionData.daily_summary || "Your summary is being generated."; // ✅ Default safe value
+} catch (parseError) {
+    console.error("❌ JSON Parse Error:", parseError);
+    return res.status(500).json({ error: "Invalid response format from AI." });
+}
+
+res.json(nutritionData);
+
     } catch (error) {
         console.error("❌ Error analyzing meal:", error.message);
         return res.status(500).json({
