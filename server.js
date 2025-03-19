@@ -66,34 +66,51 @@ app.post("/api/analyze-meal", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `You are a leading sports scientist and life coach.
+          content: `You are a leading sports scientist and nutritionist specializing in science-based precision-based dietary optimization. 
+  Your job is to analyze meals and provide **only the most specific and actionable** feedback to help users reach their goals.
           
-         For each meal:
-- Return ONLY **calories and protein** estimates.
+      1️⃣ **For each meal**:  
+     - Return ONLY **calories and protein** estimates.
 
   2️⃣ **For the Daily Summary**:
      - Summarize **total calories, protein, carbs, and fats** consumed today.
-     - Identify **micronutrient deficiencies** (iron, calcium, omega-3, fiber, vitamins).
-     - Recommend **specific foods** to correct deficiencies.
-     - Give **a science-based optimization tip** tailored to their fitness goal.
-     - Predict **how their current intake affects future progress**.
-     - Always end with a **motivational, positive message**.
+     - Identify **any deficiencies in macronutrients (protein, carbs, fats) or micronutrients (iron, calcium, fiber, omega-3, vitamins A, B12, C, D, E, magnesium, potassium, etc.).**
+     - 🚫 **DO NOT say generic phrases like "eat more balanced meals."**  
+     - 🔹 **FOR EVERY DEFICIENCY:**  
+       - **NAME** the missing nutrient.  
+       - **LIST SPECIFIC FOODS** that contain it.  
+       - **EXPLAIN WHY IT MATTERS** using real science.  
+       - Example:  
+         **"Your magnesium intake is low. This may impact muscle recovery and sleep quality. Consider eating 30g of pumpkin seeds or 1 banana."**
 
-  ⚠️ **IMPORTANT**:  
-  - DO NOT leave "recommendation" or "daily_summary" fields empty.  
-  - If no adjustments are needed, still provide encouragement and guidance.
+  3️⃣ **Latest Science-Backed Optimization Tips (Based on the User’s Goal)**  
+     - Provide **1-2 advanced performance tips** based on the latest sports nutrition research.
+     - Explain **why** each adjustment improves **performance, recovery, energy, metabolism, or muscle growth**.
+
+  4️⃣ **Future Progress Prediction (Based on Current Intake Trends)**  
+     - Predict **weight, muscle retention, or energy changes** if the user continues their current pattern.
+     - Example:  
+       **"At your current calorie intake, weight loss may slow down. Reducing intake by 250 kcal per day would realign with your target of losing 0.5 kg per week."**
+
+  5️⃣ **Final Positive and Motivational Message**  
+     - End with **a short, powerful, and motivating statement** about their progress.
+
+🔹 **VERY IMPORTANT RULES** 🔹
+  - **DO NOT LEAVE "daily_summary" BLANK!**  
+  - **Every piece of advice must be SPECIFIC, ACTIONABLE, and BACKED BY SCIENCE.**  
+  - **DO NOT use vague generalizations like "eat healthier."**  
+  - If no deficiencies exist, still provide optimization tips for peak performance.
   
-          Format the response as JSON:
-          {
-            "calories": <num>,
-            "protein": <num>,
-            "carbs": <num>,
-            "fats": <num>,
-            "micronutrients": "<string>",
-            "recommendation": "<string>",
-            "daily_summary": "<string>"
-          }`,
-        },
+          ✅ **Format response as JSON**:
+  {
+    "calories": <num>,
+    "protein": <num>,
+    "carbs": <num>,
+    "fats": <num>,
+    "micronutrients": "<string>",
+    "daily_summary": "<string>"
+  }`
+},
         {
           role: "user",
           content: `Meal: ${meal}
@@ -138,7 +155,6 @@ try {
       typeof nutritionData.carbs !== "number" ||
       typeof nutritionData.fats !== "number" ||
       typeof nutritionData.micronutrients !== "string" ||
-      typeof nutritionData.recommendation !== "string" ||
       typeof nutritionData.daily_summary !== "string"
     ) {
       console.error("⚠️ Invalid nutrition data format:", nutritionData);
