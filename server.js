@@ -66,12 +66,32 @@ app.post("/api/analyze-meal", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `You are a top nutrition expert and fitness coach.
-          - Provide **accurate** estimates of calories, protein, and **macros (carbs, fats, protein)**.
-          - Include a **brief summary of key micronutrients** (vitamins, minerals).
-          - Give a **science-backed personalized recommendation** based on the user's goal.
-          - Generate a **daily summary** considering all meals consumed so far.
-          - Offer **a forecast of future progress** based on the meal trend.
+          content: `You are a leading sports scientist and life coach.
+          
+         For each meal:
+- Return ONLY the estimated **calories and protein**.
+
+For the Daily Summary, analyze **all meals so far** and provide:
+
+1. **Caloric and Macronutrient Breakdown**  
+   - Summarize the total **calories, protein, carbs, and fats** consumed today.
+   - Compare intake to the user's goal and highlight any overages or deficiencies.
+
+2. **Deficiencies & Adjustments (Be Specific, Do Not Use Vague Advice!)**  
+   - Identify missing or insufficient **macronutrients** and **micronutrients**.
+   - Suggest **exact foods** to correct deficiencies. Do NOT use vague advice like "eat more balanced meals."
+   - Example: "Your **iron intake** is low today. Add **50g of spinach or 100g of lentils** to improve iron levels. Pair with **vitamin C (like an orange)** for better absorption."
+
+3. **Latest Science-Backed Optimization Tips (Tailored to the User’s Goal)**  
+   - Explain **why** the suggested changes improve **performance, recovery, energy, metabolism, or muscle growth**.
+   - Example: "Your **magnesium intake** is low today. This may impact **muscle recovery and sleep quality**. Adding **30g of pumpkin seeds or a banana** can help correct this."
+
+4. **Future Progress Prediction (Based on Current Intake Trends)**  
+   - Predict **weight, muscle retention, or energy changes** if the user continues their current pattern.
+   - Example: "Your current calorie intake suggests a **slower weight loss pace** than your goal. Reducing intake by **250 kcal per day** would realign with your target of losing **0.5 kg per week**."
+
+5. Add one **awesomely positive** and zen statement that summarizes the user's progress toward their goal.
+Ensure all responses are **concise, actionable, and backed by nutritional science**.
 
           Format the response as JSON:
           {
@@ -100,17 +120,18 @@ app.post("/api/analyze-meal", async (req, res) => {
     const responseText = completion.choices[0].message.content.trim();
     console.log("🤖 OpenAI Response:", responseText);
 
-    // ✅ Ensure OpenAI Response is Valid JSON
-    let nutritionData;
-    try {
-      nutritionData = JSON.parse(responseText.replace(/```json|```/g, "").trim());
-    } catch (parseError) {
-      console.error("❌ Failed to parse OpenAI response:", parseError);
-      return res.status(500).json({
-        error: "Invalid response format from AI service",
-        rawResponse: responseText,
-      });
-    }
+   // ✅ Ensure OpenAI Response is Valid JSON
+let nutritionData;
+try {
+  console.log("🔎 Raw OpenAI Response:", responseText); // Debugging
+  nutritionData = JSON.parse(responseText);
+} catch (parseError) {
+  console.error("❌ JSON Parse Error:", parseError, "\nRaw Response:", responseText);
+  return res.status(500).json({
+    error: "Invalid response format from AI service",
+    rawResponse: responseText,
+  });
+}
 
     // ✅ Validate response format
     if (
