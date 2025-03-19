@@ -62,9 +62,8 @@
     </footer>
 
     <script>
-      // ✅ Calculate Protein Target Based on Weight, Goal, and Activity Level
       function calculateProteinTarget() {
-          let weight = parseFloat(localStorage.getItem("weight")) || 70; // Default to 70kg if missing
+          let weight = parseFloat(localStorage.getItem("weight")) || 70; // Default 70kg
           let goal = localStorage.getItem("goal") || "Maintain";
           let activityLevel = localStorage.getItem("activity") || "moderate";
 
@@ -75,12 +74,12 @@
       }
 
       function updateDailySummary(summary) {
+          summary = summary || "No summary available."; 
           document.getElementById("dailySummary").innerText = summary;
-          localStorage.setItem("dailySummary", summary); // ✅ Store the daily summary in localStorage
+          localStorage.setItem("dailySummary", summary);
       }
 
       document.addEventListener("DOMContentLoaded", function () {
-          // ✅ Load stored values
           document.getElementById("goalDisplay").innerText = localStorage.getItem("goal") || "None";
 
           let savedMeals = JSON.parse(localStorage.getItem("mealHistory")) || [];
@@ -91,7 +90,6 @@
           let targetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
           let targetProtein = calculateProteinTarget();
 
-          // ✅ Display values
           document.getElementById("totalCalories").innerText = totalCalories;
           document.getElementById("targetCalories").innerText = targetCalories;
           document.getElementById("totalProtein").innerText = totalProtein;
@@ -99,9 +97,7 @@
 
           document.getElementById("dailySummary").innerText = localStorage.getItem("dailySummary") || "Awaiting meal entries...";
 
-          // ✅ Update progress bars
-          document.getElementById("calorieProgress").style.width = `${Math.min((totalCalories / targetCalories) * 100, 100)}%`;
-          document.getElementById("proteinProgress").style.width = `${Math.min((totalProtein / targetProtein) * 100, 100)}%`;
+          updateProgressBars();
       });
 
       document.getElementById("mealForm").addEventListener("submit", async function (event) {
@@ -126,10 +122,11 @@
               });
 
               const result = await response.json();
+
               if (result && typeof result.calories === "number" && typeof result.protein === "number") {
                   updateMealList(mealInput, result.calories, result.protein);
-                  updateProgress(result.calories, result.protein);
-                  updateDailySummary(result.daily_summary || "No summary available.");
+                  updateTotals(result.calories, result.protein);
+                  updateDailySummary(result.daily_summary);
 
                   savedMeals.push({ name: mealInput, calories: result.calories, protein: result.protein });
                   localStorage.setItem("mealHistory", JSON.stringify(savedMeals));
@@ -149,14 +146,31 @@
           mealList.appendChild(listItem);
       }
 
-      // ✅ Reset Button
-      document.getElementById("resetDataButton").addEventListener("click", function () {
-          if (confirm("Are you sure you want to reset all meal data? This action cannot be undone.")) {
-              localStorage.clear();
-              location.reload();
-          }
-      });
+      function updateTotals(calories, protein) {
+          let totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
+          let totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
 
+          totalCalories += calories;
+          totalProtein += protein;
+
+          localStorage.setItem("totalCalories", totalCalories);
+          localStorage.setItem("totalProtein", totalProtein);
+
+          document.getElementById("totalCalories").innerText = totalCalories;
+          document.getElementById("totalProtein").innerText = totalProtein;
+
+          updateProgressBars();
+      }
+
+      function updateProgressBars() {
+          let totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
+          let totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
+          let targetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
+          let targetProtein = calculateProteinTarget();
+
+          document.getElementById("calorieProgress").style.width = `${(totalCalories / targetCalories) * 100}%`;
+          document.getElementById("proteinProgress").style.width = `${(totalProtein / targetProtein) * 100}%`;
+      }
     </script>
   </body>
 </html>
