@@ -114,9 +114,9 @@
     }
 
     // ✅ Adjust BMR using Activity Level
-    let activityMultiplier = 1.2; // Default sedentary
-    if (activityLevel === "moderate") activityMultiplier = 1.375;
-    if (activityLevel === "high") activityMultiplier = 1.55;
+    let activityMultiplier = 1.0; // Default sedentary
+    if (activityLevel === "moderate") activityMultiplier = 1.15;
+    if (activityLevel === "high") activityMultiplier = 1.25;
 
     const tdee = bmr * activityMultiplier;
 
