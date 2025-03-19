@@ -119,20 +119,19 @@ app.post("/api/analyze-meal", async (req, res) => {
     });
 
     // ✅ Extract AI Response
-    const responseText = completion.choices[0].message.content.trim();
-    console.log("🤖 OpenAI Response:", responseText);
-
-   // ✅ Ensure OpenAI Response is Valid JSON
-// ✅ Ensure OpenAI Response is Valid JSON
+const responseText = completion.choices[0].message.content.trim();
+console.log("🤖 OpenAI Response:", responseText);
 let nutritionData;
 try {
-  console.log("🔎 Raw OpenAI Response:", responseText);
   nutritionData = JSON.parse(responseText);
 
-  // Log if AI response is empty
-  if (!nutritionData.daily_summary) {
-  console.warn("⚠️ AI response missing daily summary!");
-  }
+  // ✅ Ensure missing values are replaced with safe defaults
+  nutritionData.calories = nutritionData.calories ?? 0;
+  nutritionData.protein = nutritionData.protein ?? 0;
+  nutritionData.carbs = nutritionData.carbs ?? 0;
+  nutritionData.fats = nutritionData.fats ?? 0;
+  nutritionData.micronutrients = nutritionData.micronutrients ?? "No data available.";
+  nutritionData.daily_summary = nutritionData.daily_summary ?? "No summary available.";
 
 } catch (parseError) {
   console.error("❌ JSON Parse Error:", parseError, "\nRaw Response:", responseText);
@@ -142,6 +141,16 @@ try {
   });
 }
 
+// ✅ Validate and return correct data
+if (typeof nutritionData.calories !== "number" || typeof nutritionData.protein !== "number") {
+  console.error("⚠️ Invalid nutrition data format:", nutritionData);
+  return res.status(500).json({
+    error: "Invalid nutrition data format",
+    data: nutritionData,
+  });
+}
+
+res.json(nutritionData);
 
     // ✅ Validate response format
     if (
