@@ -75,8 +75,7 @@
     document.getElementById("totalCalories").innerText = localStorage.getItem("totalCalories") || 0;
     document.getElementById("totalProtein").innerText = localStorage.getItem("totalProtein") || 0;
 
-    // Load recommendation & summary
-    document.getElementById("mealRecommendation").innerText = localStorage.getItem("mealRecommendation") || "Awaiting meal entries...";
+    // Load Daily Summary
     document.getElementById("dailySummary").innerText = localStorage.getItem("dailySummary") || "Awaiting meal entries...";
     
     // Load progress bars
@@ -119,7 +118,6 @@
       if (result && typeof result.calories === "number" && typeof result.protein === "number") {
         updateMealList(mealInput, result.calories, result.protein);
         updateProgress(result.calories, result.protein);
-        document.getElementById("mealRecommendation").innerText = result.recommendation || "No recommendation available.";
         document.getElementById("dailySummary").innerText = result.daily_summary || "No summary available.";
 
         // Save meal history
@@ -127,7 +125,6 @@
         localStorage.setItem("mealHistory", JSON.stringify(savedMeals));
         localStorage.setItem("totalCalories", document.getElementById("totalCalories").innerText);
         localStorage.setItem("totalProtein", document.getElementById("totalProtein").innerText);
-        localStorage.setItem("mealRecommendation", result.recommendation);
         localStorage.setItem("dailySummary", result.daily_summary);
       }
     } catch (error) {
@@ -168,14 +165,12 @@
       localStorage.removeItem("mealHistory");
       localStorage.removeItem("totalCalories");
       localStorage.removeItem("totalProtein");
-      localStorage.removeItem("mealRecommendation");
       localStorage.removeItem("dailySummary");
 
       // Reset UI
       document.getElementById("mealList").innerHTML = "";
       document.getElementById("totalCalories").innerText = "0";
       document.getElementById("totalProtein").innerText = "0";
-      document.getElementById("mealRecommendation").innerText = "Awaiting meal entries...";
       document.getElementById("dailySummary").innerText = "Awaiting meal entries...";
       document.getElementById("calorieProgress").style.width = "0%";
       document.getElementById("proteinProgress").style.width = "0%";

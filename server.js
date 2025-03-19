@@ -88,7 +88,7 @@ app.post("/api/analyze-meal", async (req, res) => {
      - Explain **why** each adjustment improves **performance, recovery, energy, metabolism, or muscle growth**.
 
   4️⃣ **Future Progress Prediction (Based on Current Intake Trends)**  
-     - Predict **weight, muscle retention, or energy changes** if the user continues their current pattern.
+     - Predict **weight, muscle retention, or energy changes** if the user continues their current pattern, but remember that the user has not completed their food intake for the day.
      - Example:  
        **"At your current calorie intake, weight loss may slow down. Reducing intake by 250 kcal per day would realign with your target of losing 0.5 kg per week."**
 
@@ -135,8 +135,8 @@ try {
   nutritionData = JSON.parse(responseText);
 
   // Log if AI response is empty
-  if (!nutritionData.recommendation || !nutritionData.daily_summary) {
-    console.warn("⚠️ AI response missing recommendation or daily summary!");
+  if (!nutritionData.daily_summary) {
+  console.warn("⚠️ AI response missing daily summary!");
   }
 
 } catch (parseError) {
