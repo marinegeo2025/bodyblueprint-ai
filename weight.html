@@ -306,8 +306,40 @@ document.getElementById("resetWeightButton").addEventListener("click", function(
     
     alert("Weight data has been cleared.");
   }
+  //CREATE FAKE DATA
+  window.onload = function () {
+    if (!localStorage.getItem("weightData")) {
+        let weightData = [];
+        let startWeight = 80; // Starting weight
+        let startDate = new Date();
+        startDate.setDate(startDate.getDate() - 10); // Go back 10 days
+
+        for (let i = 0; i < 10; i++) {
+            let date = new Date(startDate);
+            date.setDate(startDate.getDate() + i);
+            let formattedDate = date.toISOString().split("T")[0];
+
+            let weight = (startWeight - (i * 0.2)).toFixed(1); // Simulate weight loss
+
+            weightData.push({
+                date: formattedDate,
+                weight: parseFloat(weight),
+                notes: "Auto-generated test data"
+            });
+        }
+
+        // Save to localStorage
+        localStorage.setItem("weightData", JSON.stringify(weightData));
+        console.log("✅ Auto-loaded 10 days of weight data.");
+    }
+
+    // Ensure UI updates
+    if (typeof updateWeightTable === "function") updateWeightTable();
+    if (typeof updateChart === "function") updateChart();
+};
+  //END CREATE FAKE DATA
 });      
-      
+    
 </script>
 
   </body>
