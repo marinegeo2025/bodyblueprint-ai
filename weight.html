@@ -154,31 +154,65 @@ function updateChart() {
         dailyWeights[entry.date].count++;
     });
 
-    let dates = Object.keys(dailyWeights).sort();
-    let avgWeights = dates.map(date => (dailyWeights[date].total / dailyWeights[date].count).toFixed(1));
+    // Find the earliest and latest date in the dataset
+    let allDates = Object.keys(dailyWeights).sort();
+    let startDate = new Date(allDates[0]); // First date in the dataset
+    let endDate = new Date(allDates[allDates.length - 1]); // Last date
 
-    // Generate trendline
-    function linearRegression(x, y) {
-        const n = x.length;
-        const sumX = x.reduce((a, b) => a + b, 0);
-        const sumY = y.reduce((a, b) => a + b, 0);
-        const sumXY = x.map((xi, i) => xi * y[i]).reduce((a, b) => a + b, 0);
-        const sumX2 = x.map(xi => xi * xi).reduce((a, b) => a + b, 0);
+    // Fill in all missing dates to ensure a linear timeline
+    let filledDates = [];
+    let tempDate = new Date(startDate);
 
-        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-        const intercept = (sumY - slope * sumX) / n;
-
-        return x.map(xi => slope * xi + intercept);
+    while (tempDate <= endDate) {
+        let dateStr = tempDate.toISOString().split("T")[0];
+        filledDates.push(dateStr);
+        tempDate.setDate(tempDate.getDate() + 1); // Move to next day
     }
 
-    let xVals = dates.map((_, i) => i);
-    let trendline = linearRegression(xVals, avgWeights.map(Number));
+    // Build corresponding weight values (empty for missing days)
+    let avgWeights = filledDates.map(date => {
+        if (dailyWeights[date]) {
+            return (dailyWeights[date].total / dailyWeights[date].count).toFixed(1);
+        } else {
+            return null; // Keep missing days empty
+        }
+    });
 
-    // Convert dates to DD-MM format for the X-axis
-    let formattedDates = dates.map(date => {
+    // Convert dates to DD-MM format for X-axis labels
+    let formattedDates = filledDates.map(date => {
         let parts = date.split("-");
         return `${parts[2]}-${parts[1]}`; // Convert YYYY-MM-DD to DD-MM
     });
+
+    // Generate trendline
+    function linearRegression(x, y) {
+    let validX = [];
+    let validY = [];
+
+    // Filter out null values so only actual weight entries are used
+    y.forEach((val, index) => {
+        if (val !== null) {
+            validX.push(x[index]);
+            validY.push(parseFloat(val));
+        }
+    });
+
+    if (validX.length < 2) return y; // Not enough data for a trendline
+
+    const n = validX.length;
+    const sumX = validX.reduce((a, b) => a + b, 0);
+    const sumY = validY.reduce((a, b) => a + b, 0);
+    const sumXY = validX.map((xi, i) => xi * validY[i]).reduce((a, b) => a + b, 0);
+    const sumX2 = validX.map(xi => xi * xi).reduce((a, b) => a + b, 0);
+
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+
+    return x.map(xi => validX.includes(xi) ? slope * xi + intercept : null);
+}
+
+    let xVals = filledDates.map((_, i) => i);
+    let trendline = linearRegression(xVals, avgWeights);
 
     // Destroy previous chart instance before creating a new one
     const ctx = document.getElementById("weightChart").getContext("2d");
@@ -187,68 +221,64 @@ function updateChart() {
     }
 
     window.myChart = new Chart(ctx, {
-    type: "line",
-    data: {
-        labels: formattedDates,
-        datasets: [
-            {
-                label: "Daily Avg Weight",
-                data: avgWeights,
-                borderColor: "blue",
-                fill: false,
-                pointStyle: "circle",
-                pointRadius: 3, // Adjust marker size
-                borderWidth: 2, // Make the line more visible
-            },
-            {
-                label: "Trendline",
-                data: trendline,
-                borderColor: "red",
-                borderDash: [5, 5],
-                fill: false,
-                borderWidth: 2, // Make the trendline more visible
-            },
-        ],
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            x: {
-                ticks: {
-                    autoSkip: false, // Ensures custom filtering applies
-                    maxRotation: 30, // Slightly rotate for better visibility
-                    minRotation: 30,
-                    font: { size: 14 }, // Increase font size
-                    callback: function (value, index, values) {
-                        // Show only every 3rd or 5th label based on total size
-                        if (values.length > 30) {
-                            return index % 5 === 0 ? this.getLabelForValue(value) : "";
-                        } else {
+        type: "line",
+        data: {
+            labels: formattedDates, // Linearized daily labels
+            datasets: [
+                {
+                    label: "Daily Avg Weight",
+                    data: avgWeights,
+                    borderColor: "blue",
+                    fill: false,
+                    pointStyle: "circle",
+                    pointRadius: 3, // Adjust marker size
+                    borderWidth: 2, // Make the line more visible
+                    spanGaps: false, // Keep gaps for missing data
+                },
+                {
+                    label: "Trendline",
+                    data: trendline,
+                    borderColor: "red",
+                    borderDash: [5, 5],
+                    fill: false,
+                    borderWidth: 2,
+                    spanGaps: true, // Allow trendline to connect valid data
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    ticks: {
+                        autoSkip: false, // Ensure all days are represented
+                        maxRotation: 30, // Slightly rotate for better visibility
+                        minRotation: 30,
+                        font: { size: 14 },
+                        callback: function (value, index, values) {
                             return index % 3 === 0 ? this.getLabelForValue(value) : "";
-                        }
+                        },
+                    },
+                    grid: {
+                        display: true,
+                        color: "rgba(200, 200, 200, 0.5)", // Light grey vertical gridlines
                     },
                 },
-                grid: {
-                    display: true,
-                    color: "rgba(200, 200, 200, 0.5)",
-                },
-            },
-            y: {
-                beginAtZero: false,
-                ticks: {
-                    stepSize: 1, // Ensure gridlines at whole numbers
-                    font: { size: 14 }, // Increase Y-axis font size
-                },
-                grid: {
-                    display: true,
-                    color: "rgba(180, 180, 180, 0.7)",
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        stepSize: 1,
+                        font: { size: 14 },
+                    },
+                    grid: {
+                        display: true,
+                        color: "rgba(180, 180, 180, 0.7)", // Slightly darker grey
+                    },
                 },
             },
         },
-    },
-});
-
+    });
 }
 
 window.onload = function () {
