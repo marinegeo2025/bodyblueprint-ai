@@ -94,6 +94,28 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error(`❌ Progress bar with ID ${barId} not found.`);
         }
     }
+  
+  // ✅ Reset Button Functionality
+   document.getElementById("resetDataButton").addEventListener("click", function () {
+    console.log("🔄 Resetting daily meal data...");
+
+    // ✅ Clear only relevant localStorage data
+    localStorage.removeItem("mealHistory");
+    localStorage.removeItem("totalCalories");
+    localStorage.removeItem("totalProtein");
+    localStorage.removeItem("dailySummary");
+
+    // ✅ Reset UI elements
+    document.getElementById("mealList").innerHTML = "";
+    document.getElementById("totalCalories").innerText = "0";
+    document.getElementById("totalProtein").innerText = "0";
+    document.getElementById("calorieProgress").style.width = "0%";
+    document.getElementById("proteinProgress").style.width = "0%";
+    document.getElementById("dailySummary").innerText = "Awaiting meal entries...";
+
+    console.log("✅ Daily meal data has been reset!");
+});
+
 
     updateUIFromStorage();
 
@@ -137,12 +159,14 @@ document.addEventListener("DOMContentLoaded", function () {
             savedMeals.push({ name: mealInput, calories: result.calories, protein: result.protein });
             localStorage.setItem("mealHistory", JSON.stringify(savedMeals));
 
-            if (result.daily_summary) {
-                document.getElementById("dailySummary").innerText = result.daily_summary;
-                localStorage.setItem("dailySummary", result.daily_summary);
-            } else {
-                document.getElementById("dailySummary").innerText = "No summary available.";
-            }
+            if (result.daily_summary && result.daily_summary.trim() !== "") {
+    console.log("📌 Saving daily summary:", result.daily_summary);
+    document.getElementById("dailySummary").innerText = result.daily_summary;
+    localStorage.setItem("dailySummary", result.daily_summary);
+} else {
+    console.warn("⚠️ No daily summary received from API.");
+    document.getElementById("dailySummary").innerText = "Awaiting meal entries...";
+}
 
             updateUIFromStorage();
         } catch (error) {
