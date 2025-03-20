@@ -146,7 +146,7 @@ app.post("/api/analyze-meal", async (req, res) => {
 
                     ✅ Provide a **concise 1-2 sentence insight** about how weight changes align with meal trends.
                     ✅ Avoid generic advice, be precise.
-                    ✅ Return JSON only.
+                    ✅ Return JSON only. Do NOT include explanations, warnings, or extra text. Output must strictly follow the JSON format.
                     `
                 }
             ]
