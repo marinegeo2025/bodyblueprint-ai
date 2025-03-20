@@ -84,7 +84,10 @@
         const weight = parseFloat(document.getElementById("weightInput").value);
         const notes = document.getElementById("notes").value;
         // Use today's date in YYYY-MM-DD format
-        const date = new Date().toISOString().split("T")[0];
+        const date = new Date();
+        const localDate = date.getFullYear() + '-' +
+         String(date.getMonth() + 1).padStart(2, '0') + '-' +
+         String(date.getDate()).padStart(2, '0');
         
         let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
         // Insert the new record at the front (most recent first)
@@ -146,8 +149,29 @@
 
         // Build the 'weights' array in chronological order
         // The user data is stored "most recent first", so we reverse to get earliest -> latest
-        const chronologicalData = [...weightData].reverse(); 
-        const weights = chronologicalData.map(entry => entry.weight);
+        // ✅ Step 1: Store all data points per day for transparency
+const dailyEntries = {};  // { "YYYY-MM-DD": [weights] }
+weightData.forEach(entry => {
+    const dateOnly = entry.date.split("T")[0]; // Extract YYYY-MM-DD
+    if (!dailyEntries[dateOnly]) {
+        dailyEntries[dateOnly] = [];
+    }
+    dailyEntries[dateOnly].push(entry.weight);
+});
+
+// ✅ Step 2: Generate Data Arrays
+const dates = Object.keys(dailyEntries); // Unique sorted dates
+
+// ✅ Step 3: Prepare two datasets
+const allWeights = [];      // Every weight point per entry
+const trendlineWeights = []; // Mean average per day
+
+dates.forEach(date => {
+    const weightsForDay = dailyEntries[date];
+    allWeights.push(...weightsForDay); // ✅ Plot all individual data points
+    const avgWeight = (weightsForDay.reduce((a, b) => a + b, 0) / weightsForDay.length).toFixed(1);
+    trendlineWeights.push(avgWeight);  // ✅ Plot only the daily mean for the trendline
+});
 
         // Compute a 7-day average array in the same order
         // For i < 6, we won't have enough data for a full 7-day average, so set null
@@ -242,26 +266,25 @@
           data: {
             labels: dates, // Our daily date labels, earliest -> (latest+30 days)
             datasets: [
-              {
-                label: "Daily Weight",
-                data: weights,  // length = # of actual data points
-                borderColor: "blue",
-                fill: false,
-              },
-              {
-                label: "Weekly Avg",
-                data: weeklyAverages, // length = # of actual data points
-                borderColor: "orange",
-                fill: false,
-              },
-              {
-                label: "Trendline",
-                data: trendline, // length = # of actual data + 30 future points
-                borderColor: "red",
-                borderDash: [5, 5],
-                fill: false,
-              },
-            ],
+  {
+    label: "Daily Weight (All Entries)",
+    data: allWeights,  // ✅ Shows every weight entered
+    borderColor: "blue",
+    fill: false,
+    pointStyle: "circle",
+    radius: 5, // ✅ Keep individual points visible
+  },
+  {
+    label: "Trendline (Daily Mean)",
+    data: trendlineWeights, // ✅ Uses mean for trendline
+    borderColor: "red",
+    borderDash: [5, 5],
+    fill: false,
+    pointStyle: "rectRot",
+    radius: 6, // ✅ Distinguish trendline points
+  }
+],
+
           },
           options: {
             responsive: true,
