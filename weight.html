@@ -105,12 +105,12 @@
     // Group entries by date and calculate daily averages
     let dailyWeights = {};
     weightData.forEach(entry => {
-      if (!dailyWeights[entry.date]) {
-        dailyWeights[entry.date] = { total: 0, count: 0, notes: [] };
-      }
-      dailyWeights[entry.date].total += entry.weight;
-      dailyWeights[entry.date].count++;
-      if (entry.notes) dailyWeights[entry.date].notes.push(entry.notes);
+        if (!dailyWeights[entry.date]) {
+            dailyWeights[entry.date] = { total: 0, count: 0, notes: [] };
+        }
+        dailyWeights[entry.date].total += entry.weight;
+        dailyWeights[entry.date].count++;
+        if (entry.notes) dailyWeights[entry.date].notes.push(entry.notes);
     });
 
     // Compute weekly rolling average
@@ -118,37 +118,40 @@
     let rollingWeights = [];
 
     datesSorted.forEach((date, index) => {
-      let avgWeight = (dailyWeights[date].total / dailyWeights[date].count).toFixed(1);
-      rollingWeights.push(parseFloat(avgWeight));
+        let avgWeight = (dailyWeights[date].total / dailyWeights[date].count).toFixed(1);
+        rollingWeights.push(parseFloat(avgWeight));
 
-      let weeklyAvg = "-";
-      if (index >= 6) {
-        let weekSlice = rollingWeights.slice(index - 6, index + 1);
-        weeklyAvg = (weekSlice.reduce((a, b) => a + b, 0) / 7).toFixed(1);
-      }
+        let weeklyAvg = "-";
+        if (index >= 6) {
+            let weekSlice = rollingWeights.slice(index - 6, index + 1);
+            weeklyAvg = (weekSlice.reduce((a, b) => a + b, 0) / 7).toFixed(1);
+        }
 
-      tbody.innerHTML += `
-        <tr>
-          <td>${date}</td>
-          <td>${avgWeight}</td>
-          <td>${weeklyAvg}</td>
-          <td>${dailyWeights[date].notes.join(", ")}</td>
-        </tr>
-      `;
+        // Convert date to DD-MM-YYYY format
+        let formattedDate = date.split("-").reverse().join("-");
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${formattedDate}</td>
+                <td>${avgWeight}</td>
+                <td>${weeklyAvg}</td>
+                <td>${dailyWeights[date].notes.join(", ")}</td>
+            </tr>
+        `;
     });
-  }
+}
 
-  function updateChart() {
+function updateChart() {
     let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
     if (weightData.length === 0) return;
 
     let dailyWeights = {};
     weightData.forEach(entry => {
-      if (!dailyWeights[entry.date]) {
-        dailyWeights[entry.date] = { total: 0, count: 0 };
-      }
-      dailyWeights[entry.date].total += entry.weight;
-      dailyWeights[entry.date].count++;
+        if (!dailyWeights[entry.date]) {
+            dailyWeights[entry.date] = { total: 0, count: 0 };
+        }
+        dailyWeights[entry.date].total += entry.weight;
+        dailyWeights[entry.date].count++;
     });
 
     let dates = Object.keys(dailyWeights).sort();
@@ -156,62 +159,103 @@
 
     // Generate trendline
     function linearRegression(x, y) {
-      const n = x.length;
-      const sumX = x.reduce((a, b) => a + b, 0);
-      const sumY = y.reduce((a, b) => a + b, 0);
-      const sumXY = x.map((xi, i) => xi * y[i]).reduce((a, b) => a + b, 0);
-      const sumX2 = x.map(xi => xi * xi).reduce((a, b) => a + b, 0);
+        const n = x.length;
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = y.reduce((a, b) => a + b, 0);
+        const sumXY = x.map((xi, i) => xi * y[i]).reduce((a, b) => a + b, 0);
+        const sumX2 = x.map(xi => xi * xi).reduce((a, b) => a + b, 0);
 
-      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-      const intercept = (sumY - slope * sumX) / n;
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
 
-      return x.map(xi => slope * xi + intercept);
+        return x.map(xi => slope * xi + intercept);
     }
 
     let xVals = dates.map((_, i) => i);
     let trendline = linearRegression(xVals, avgWeights.map(Number));
 
+    // Convert dates to DD-MM format for the X-axis
+    let formattedDates = dates.map(date => {
+        let parts = date.split("-");
+        return `${parts[2]}-${parts[1]}`; // Convert YYYY-MM-DD to DD-MM
+    });
+
     // Destroy previous chart instance before creating a new one
     const ctx = document.getElementById("weightChart").getContext("2d");
     if (window.myChart) {
-      window.myChart.destroy();
+        window.myChart.destroy();
     }
 
     window.myChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: dates,
+    type: "line",
+    data: {
+        labels: formattedDates,
         datasets: [
-          {
-            label: "Daily Avg Weight",
-            data: avgWeights,
-            borderColor: "blue",
-            fill: false,
-          },
-          {
-            label: "Trendline",
-            data: trendline,
-            borderColor: "red",
-            borderDash: [5, 5],
-            fill: false,
-          },
+            {
+                label: "Daily Avg Weight",
+                data: avgWeights,
+                borderColor: "blue",
+                fill: false,
+                pointStyle: "circle",
+                pointRadius: 3, // Adjust marker size
+                borderWidth: 2, // Make the line more visible
+            },
+            {
+                label: "Trendline",
+                data: trendline,
+                borderColor: "red",
+                borderDash: [5, 5],
+                fill: false,
+                borderWidth: 2, // Make the trendline more visible
+            },
         ],
-      },
-      options: {
+    },
+    options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: { ticks: { autoSkip: true, maxRotation: 0, minRotation: 0 } },
-          y: { beginAtZero: false },
+            x: {
+                ticks: {
+                    autoSkip: false, // Ensures custom filtering applies
+                    maxRotation: 30, // Slightly rotate for better visibility
+                    minRotation: 30,
+                    font: { size: 14 }, // Increase font size
+                    callback: function (value, index, values) {
+                        // Show only every 3rd or 5th label based on total size
+                        if (values.length > 30) {
+                            return index % 5 === 0 ? this.getLabelForValue(value) : "";
+                        } else {
+                            return index % 3 === 0 ? this.getLabelForValue(value) : "";
+                        }
+                    },
+                },
+                grid: {
+                    display: true,
+                    color: "rgba(200, 200, 200, 0.5)",
+                },
+            },
+            y: {
+                beginAtZero: false,
+                ticks: {
+                    stepSize: 1, // Ensure gridlines at whole numbers
+                    font: { size: 14 }, // Increase Y-axis font size
+                },
+                grid: {
+                    display: true,
+                    color: "rgba(180, 180, 180, 0.7)",
+                },
+            },
         },
-      },
-    });
-  }
+    },
+});
 
-  window.onload = function () {
+}
+
+window.onload = function () {
     updateWeightTable();
     updateChart();
-  };
+};
+
 </script>
 
   </body>
