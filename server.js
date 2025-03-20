@@ -101,6 +101,7 @@ app.post("/api/analyze-meal", async (req, res) => {
             {
                 "calories": <number>,
                 "protein": <number>,
+                "micronutrients": <number>,
                 "daily_summary": "<string>"
             }`
         },
