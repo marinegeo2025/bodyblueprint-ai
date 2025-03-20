@@ -110,14 +110,14 @@
           // Only show a 7-day average if we have 7 or more entries
           let weeklyAvg = (weeklyCount >= 7) ? (weeklySum / 7).toFixed(1) : "-";
           
-          tbody.innerHTML += 
+          tbody.innerHTML += `
             <tr>
               <td>${entry.date}</td>
               <td>${entry.weight}</td>
               <td>${weeklyAvg}</td>
               <td>${entry.notes}</td>
             </tr>
-          ;
+          `;
         });
       }
 
