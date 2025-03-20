@@ -160,7 +160,7 @@ weightData.forEach(entry => {
 });
 
 // ✅ Step 2: Generate Data Arrays
-const dates = Object.keys(dailyEntries); // Unique sorted dates
+const sortedDates = Object.keys(dailyEntries).sort(); // Unique sorted dates
 
 // ✅ Step 3: Prepare two datasets
 const allWeights = [];      // Every weight point per entry
@@ -256,73 +256,91 @@ dates.forEach(date => {
         };
 
         // Destroy any existing chart instance before creating a new one
-        const ctx = document.getElementById("weightChart").getContext("2d");
-        if (window.myChart) {
-          window.myChart.destroy();
-        }
+const ctx = document.getElementById("weightChart").getContext("2d");
+if (window.myChart) {
+  window.myChart.destroy();
+}
 
-        window.myChart = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: dates, // Our daily date labels, earliest -> (latest+30 days)
-            datasets: [
-  {
-    label: "Daily Weight (All Entries)",
-    data: allWeights,  // ✅ Shows every weight entered
-    borderColor: "blue",
-    fill: false,
-    pointStyle: "circle",
-    radius: 5, // ✅ Keep individual points visible
-  },
-  {
-    label: "Trendline (Daily Mean)",
-    data: trendlineWeights, // ✅ Uses mean for trendline
-    borderColor: "red",
-    borderDash: [5, 5],
-    fill: false,
-    pointStyle: "rectRot",
-    radius: 6, // ✅ Distinguish trendline points
-  }
-],
+// ✅ Step 1: Store all data points per day for transparency
+let dailyEntries = {};  // { "YYYY-MM-DD": [weights] }
+weightData.forEach(entry => {
+    const dateOnly = entry.date.split("T")[0]; // Extract YYYY-MM-DD
+    if (!dailyEntries[dateOnly]) {
+        dailyEntries[dateOnly] = [];
+    }
+    dailyEntries[dateOnly].push(entry.weight);
+});
 
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            // Add extra bottom padding so month labels aren’t cut off
-            layout: {
-              padding: {
-                bottom: 60
-              }
-            },
-            scales: {
-              x: {
-                ticks: {
-                  // Only display the day number in the normal x-axis ticks
-                  callback: function (value, index) {
-                    const dateStr = this.getLabelForValue(value);
-                    const dateObj = new Date(dateStr);
-                    return dateObj.getDate(); // Just the day-of-month
-                  },
-                  maxRotation: 0,
-                  minRotation: 0
-                }
-              },
-              y: {
-                beginAtZero: false
-              },
-            },
-          },
-          // Add our custom plugin for month labels
-          plugins: [ monthLabelPlugin ]
-        });
+// ✅ Step 2: Generate Data Arrays
+const sortedDates = Object.keys(dailyEntries).sort(); // Unique sorted dates
+
+// ✅ Step 3: Prepare datasets
+const allWeights = [];      // Every weight point per entry (transparency)
+const trendlineWeights = []; // Mean average per day (for the trendline)
+
+sortedDates.forEach(date => {
+    const weightsForDay = dailyEntries[date];
+    allWeights.push(...weightsForDay); // ✅ Plot all individual data points
+    const avgWeight = (weightsForDay.reduce((a, b) => a + b, 0) / weightsForDay.length).toFixed(1);
+    trendlineWeights.push(avgWeight);  // ✅ Use only the daily mean for trendline
+});
+
+// ✅ Now Plot Chart
+window.myChart = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: sortedDates, // ✅ Sorted daily date labels
+    datasets: [
+      {
+        label: "Daily Weight (All Entries)",
+        data: allWeights,  // ✅ Shows every weight entered
+        borderColor: "blue",
+        fill: false,
+        pointStyle: "circle",
+        radius: 5, // ✅ Keep individual points visible
+      },
+      {
+        label: "Trendline (Daily Mean)",
+        data: trendlineWeights, // ✅ Uses mean for trendline
+        borderColor: "red",
+        borderDash: [5, 5],
+        fill: false,
+        pointStyle: "rectRot",
+        radius: 6, // ✅ Distinguish trendline points
       }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: { bottom: 60 } // Ensure space for labels
+    },
+    scales: {
+      x: {
+        type: "linear",  // ✅ Ensures dates align properly
+        ticks: {
+          callback: function (value, index) {
+            return dates[index]; // ✅ Show full date instead of index
+          },
+          maxRotation: 0,
+          minRotation: 0
+        }
+      },
+      y: {
+        beginAtZero: false
+      },
+    },
+  },
+  plugins: [ monthLabelPlugin ]
+});
 
-      // On load, update table & chart right away
-      window.onload = function () {
-        updateWeightTable();
-        updateChart();
-      };
+// ✅ Update table & chart immediately on page load
+window.onload = function () {
+  updateWeightTable();
+  updateChart();
+};
+
     </script>
   </body>
 </html>
