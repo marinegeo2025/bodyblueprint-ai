@@ -98,49 +98,56 @@
     updateChart();
   });
 
-  function updateWeightTable() {
-    const tbody = document.querySelector("#weightTable tbody");
-    tbody.innerHTML = "";
+  window.updateWeightTable = function() {
+  const tbody = document.querySelector("#weightTable tbody");
+  tbody.innerHTML = "";
 
-    let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
+  let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
+  console.log("🔎 [updateWeightTable] weightData:", weightData);
 
-    // Group entries by date and calculate daily averages
-    let dailyWeights = {};
-    weightData.forEach(entry => {
-        if (!dailyWeights[entry.date]) {
-            dailyWeights[entry.date] = { total: 0, count: 0, notes: [] };
-        }
-        dailyWeights[entry.date].total += entry.weight;
-        dailyWeights[entry.date].count++;
-        if (entry.notes) dailyWeights[entry.date].notes.push(entry.notes);
-    });
+  // Group entries by date
+  let dailyWeights = {};
+  weightData.forEach(entry => {
+    if (!dailyWeights[entry.date]) {
+      dailyWeights[entry.date] = { total: 0, count: 0, notes: [] };
+    }
+    dailyWeights[entry.date].total += entry.weight;
+    dailyWeights[entry.date].count++;
+    if (entry.notes) dailyWeights[entry.date].notes.push(entry.notes);
+  });
 
-    // Compute weekly rolling average
-    let datesSorted = Object.keys(dailyWeights).sort();
-    let rollingWeights = [];
+  console.log("🔎 [updateWeightTable] dailyWeights:", dailyWeights);
 
-    datesSorted.forEach((date, index) => {
-        let avgWeight = (dailyWeights[date].total / dailyWeights[date].count).toFixed(1);
-        rollingWeights.push(parseFloat(avgWeight));
+  // Sort
+  let datesSorted = Object.keys(dailyWeights).sort();
+  console.log("🔎 [updateWeightTable] datesSorted:", datesSorted);
 
-        let weeklyAvg = "-";
-        if (index >= 6) {
-            let weekSlice = rollingWeights.slice(index - 6, index + 1);
-            weeklyAvg = (weekSlice.reduce((a, b) => a + b, 0) / 7).toFixed(1);
-        }
+  let rollingWeights = [];
 
-        // Convert date to DD-MM-YYYY format
-        let formattedDate = date.split("-").reverse().join("-");
+  datesSorted.forEach((date, index) => {
+    let avgWeight = (dailyWeights[date].total / dailyWeights[date].count).toFixed(1);
+    rollingWeights.push(parseFloat(avgWeight));
 
-        tbody.innerHTML += `
-            <tr>
-                <td>${formattedDate}</td>
-                <td>${avgWeight}</td>
-                <td>${weeklyAvg}</td>
-                <td>${dailyWeights[date].notes.join(", ")}</td>
-            </tr>
-        `;
-    });
+    // Weekly avg
+    let weeklyAvg = "-";
+    if (index >= 6) {
+      let weekSlice = rollingWeights.slice(index - 6, index + 1);
+      weeklyAvg = (weekSlice.reduce((a, b) => a + b, 0) / 7).toFixed(1);
+    }
+
+    // Convert date to DD-MM-YYYY
+    let formattedDate = date.split("-").reverse().join("-");
+
+    // Append row
+    tbody.innerHTML += `
+      <tr>
+        <td>${formattedDate}</td>
+        <td>${avgWeight}</td>
+        <td>${weeklyAvg}</td>
+        <td>${dailyWeights[date].notes.join(", ")}</td>
+      </tr>
+    `;
+  });
 }
 
 function updateChart() {
