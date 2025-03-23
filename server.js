@@ -102,11 +102,8 @@ app.post("/api/analyze-meal", async (req, res) => {
           IMPORTANT: If a meal description is non-empty, DO NOT return 0 for calories or protein.
           
           1️⃣ **For each meal**:  
-          - Return ONLY **calories and protein** estimates.
-          For example:
-          If a user says “2 eggs and bread”:
-          - Approx ~230 kcal, ~14g protein
-
+          - Return ONLY **calories and protein** values.
+          
           2️⃣ **For the Daily Summary**:
           - Summarize **total calories, protein, carbs, and fats** consumed today.
           - Identify **any deficiencies** in macros or micronutrients. 
@@ -123,14 +120,20 @@ app.post("/api/analyze-meal", async (req, res) => {
 
           5️⃣ **Motivational Ending**
           - End with a short, powerful statement.
+          
+          IMPORTANT:
+  1) For the **new meal** macros (calories, protein), estimate them ONLY based on the meal text itself. 
+     - DO NOT reuse or blend macros from previous meals.
+  2) For the **daily summary**, consider both the new meal and any previous meals, 
+     but keep them separate when estimating the new meal's macros.
 
           🔹 **Rules** 🔹
           - No “daily_summary” left blank.
           - Must follow JSON format strictly:
 
           {
-            "calories": <num>,
-            "protein": <num>,
+            "calories": <num>,  // macros for the NEW meal only
+            "protein": <num>,   // macros for the NEW meal only
             "micronutrients": "<string>",
             "daily_summary": "<string>"
           }
