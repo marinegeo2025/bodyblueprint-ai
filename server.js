@@ -128,7 +128,7 @@ app.post("/api/analyze-meal", async (req, res) => {
      - DO NOT reuse or blend macros from previous meals.
   2) For the **daily summary**, consider both the new meal and any previous meals, 
      but keep them separate when estimating the new meal's macros.
-
+  3) Do NOT reuse old macros for a new meal if the meal is different. Estimate new macros carefully.
           🔹 **Rules** 🔹
           - No “daily_summary” left blank.
           - Must follow JSON format strictly:
