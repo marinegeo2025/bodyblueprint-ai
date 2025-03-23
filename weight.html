@@ -1,320 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>本来の面目, Honrai No Menmoku - Weight Tracking</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-      /* Make sure the chart container scales nicely */
-      #weightChart {
-        width: 100%;
-        /* You can set a max-height if you like, e.g. 600px */
-        max-height: 600px;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>本来の面目, Honrai No Menmoku - Weight Tracking</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Make sure the chart container scales nicely */
+    #weightChart {
+      width: 100%;
+      max-height: 600px;
+    }
+    /* Simple responsive helper for the canvas container */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px; /* Adjust as desired */
+      margin: 0 auto;   /* Center it */
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="index.html">🏠 Home</a></li>
+      <li><a href="bmr.html">🏋️ BMR</a></li>
+      <li><a href="weight.html">📉 Weight</a></li>
+      <li><a href="meals.html">🍽️ Meals</a></li>
+      <li><a href="chat.html">💬 AI Chat</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section id="weight" class="page">
+      <h1>Weight Tracking</h1>
+      <button id="resetWeightButton" class="reset-btn">Reset Weight Data</button>
+
+      <!-- Responsive Chart Container -->
+      <div class="chart-container">
+        <canvas id="weightChart"></canvas>
+      </div>
+
+      <br><br>
+
+      <!-- Updated form: includes a date picker -->
+      <form id="weightForm">
+        <label for="weightInput">Enter Weight (kg):</label><br>
+        <input type="number" id="weightInput" step="0.1" required /><br><br>
+
+        <label for="dateInput">Date:</label><br>
+        <input type="date" id="dateInput" required /><br><br>
+
+        <label for="notes">Notes:</label><br>
+        <input type="text" id="notes" placeholder="E.g., morning weigh-in" /><br><br>
+
+        <button type="submit">Add Weight</button>
+      </form>
+
+      <h2>Weight Records</h2>
+      <table id="weightTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Weight (kg)</th>
+            <th>Weekly Avg</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rows added dynamically -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
+  </footer>
+
+  <script>
+    // Handle form submission
+    document.getElementById("weightForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const weight = parseFloat(document.getElementById("weightInput").value);
+      const notes = document.getElementById("notes").value;
+      let dateVal = document.getElementById("dateInput").value;
+      // If user didn't pick a date for some reason, default to today:
+      if (!dateVal) {
+        dateVal = new Date().toISOString().split("T")[0];
       }
-      
-      /* Simple responsive helper for the canvas container */
-      .chart-container {
-        position: relative;
-        width: 100%;
-        max-width: 800px; /* Adjust as desired */
-        margin: 0 auto;   /* Center it */
+
+      let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
+      // Create a new entry
+      weightData.push({ date: dateVal, weight, notes });
+      // Save to localStorage
+      localStorage.setItem("weightData", JSON.stringify(weightData));
+
+      // Reset form fields
+      document.getElementById("weightInput").value = "";
+      document.getElementById("notes").value = "";
+      document.getElementById("dateInput").value = "";
+
+      // Update UI
+      updateWeightTable();
+      updateChart();
+    });
+
+    // Render the table with each weight entry in its own row
+    function updateWeightTable() {
+      const tbody = document.querySelector("#weightTable tbody");
+      tbody.innerHTML = "";
+
+      let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
+      // Sort entries by date
+      weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // Calculate rolling "weekly average" for each entry
+      for (let i = 0; i < weightData.length; i++) {
+        // Weekly avg over the last 7 entries (including this one)
+        let weeklyAvg = "-";
+        if (i >= 6) {
+          let slice = weightData.slice(i - 6, i + 1);
+          let sum = 0;
+          slice.forEach(item => sum += item.weight);
+          weeklyAvg = (sum / slice.length).toFixed(1);
+        }
+
+        // Build a table row
+        const row = document.createElement("tr");
+
+        // Date cell with editable <input type="date">
+        const dateCell = document.createElement("td");
+        const dateInput = document.createElement("input");
+        dateInput.type = "date";
+        dateInput.value = weightData[i].date;
+        dateInput.addEventListener("change", () => {
+          weightData[i].date = dateInput.value;
+          localStorage.setItem("weightData", JSON.stringify(weightData));
+          updateWeightTable();
+          updateChart();
+        });
+        dateCell.appendChild(dateInput);
+        row.appendChild(dateCell);
+
+        // Weight cell (read-only, or you could make it editable similarly)
+        const weightCell = document.createElement("td");
+        weightCell.textContent = weightData[i].weight;
+        row.appendChild(weightCell);
+
+        // Weekly average cell
+        const weeklyAvgCell = document.createElement("td");
+        weeklyAvgCell.textContent = weeklyAvg;
+        row.appendChild(weeklyAvgCell);
+
+        // Notes cell (read-only; again, you can make it editable if you prefer)
+        const notesCell = document.createElement("td");
+        notesCell.textContent = weightData[i].notes || "";
+        row.appendChild(notesCell);
+
+        tbody.appendChild(row);
       }
-    </style>
-  </head>
-
-  <body>
-    <nav>
-      <ul>
-        <li><a href="index.html">🏠 Home</a></li>
-        <li><a href="bmr.html">🏋️ BMR</a></li>
-        <li><a href="weight.html">📉 Weight</a></li>
-        <li><a href="meals.html">🍽️ Meals</a></li>
-        <li><a href="chat.html">💬 AI Chat</a></li>
-      </ul>
-    </nav>
-
-    <main>
-      <section id="weight" class="page">
-        <h1>Weight Tracking</h1>
-        <button id="resetWeightButton" class="reset-btn">Reset Weight Data</button>    
-        
-        
-        <!-- Responsive Chart Container -->
-        <div class="chart-container">
-          <canvas id="weightChart"></canvas>
-        </div>
-
-        <!-- Additional line breaks before the form -->
-        <br><br>
-
-        <form id="weightForm">
-          <label for="weightInput">Enter Weight (kg):</label><br>
-          <input type="number" id="weightInput" step="0.1" required /><br><br>
-          
-          <label for="notes">Notes:</label><br>
-          <input type="text" id="notes" placeholder="E.g., morning post-poo" /><br><br>
-          
-          <button type="submit">Add Weight</button>
-        </form>
-
-        <h2>Weight Records</h2>
-        <table id="weightTable">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Weight (kg)</th>
-              <th>Weekly Avg</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </section>
-    </main>
-
-    <footer>
-      <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
-    </footer>
-
-    <script>
-  document.getElementById("weightForm").addEventListener("submit", function (event) {
-    event.preventDefault();
-    
-    const weight = parseFloat(document.getElementById("weightInput").value);
-    const notes = document.getElementById("notes").value;
-    const date = new Date().toISOString().split("T")[0];
-
-    let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
-
-    // Append new weight entry
-    weightData.push({ date, weight, notes });
-
-    localStorage.setItem("weightData", JSON.stringify(weightData));
-
-    updateWeightTable();
-    updateChart();
-  });
-
-  window.updateWeightTable = function() {
-  const tbody = document.querySelector("#weightTable tbody");
-  tbody.innerHTML = "";
-
-  let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
-  console.log("🔎 [updateWeightTable] weightData:", weightData);
-
-  // Group entries by date
-  let dailyWeights = {};
-  weightData.forEach(entry => {
-    if (!dailyWeights[entry.date]) {
-      dailyWeights[entry.date] = { total: 0, count: 0, notes: [] };
-    }
-    dailyWeights[entry.date].total += entry.weight;
-    dailyWeights[entry.date].count++;
-    if (entry.notes) dailyWeights[entry.date].notes.push(entry.notes);
-  });
-
-  console.log("🔎 [updateWeightTable] dailyWeights:", dailyWeights);
-
-  // Sort
-  let datesSorted = Object.keys(dailyWeights).sort();
-  console.log("🔎 [updateWeightTable] datesSorted:", datesSorted);
-
-  let rollingWeights = [];
-
-  datesSorted.forEach((date, index) => {
-    let avgWeight = (dailyWeights[date].total / dailyWeights[date].count).toFixed(1);
-    rollingWeights.push(parseFloat(avgWeight));
-
-    // Weekly avg
-    let weeklyAvg = "-";
-    if (index >= 6) {
-      let weekSlice = rollingWeights.slice(index - 6, index + 1);
-      weeklyAvg = (weekSlice.reduce((a, b) => a + b, 0) / 7).toFixed(1);
     }
 
-    // Convert date to DD-MM-YYYY
-    let formattedDate = date.split("-").reverse().join("-");
+    // Build/update the chart using Chart.js
+    function updateChart() {
+      let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
+      if (weightData.length === 0) return;
 
-    // Append row
-    tbody.innerHTML += `
-      <tr>
-        <td>${formattedDate}</td>
-        <td>${avgWeight}</td>
-        <td>${weeklyAvg}</td>
-        <td>${dailyWeights[date].notes.join(", ")}</td>
-      </tr>
-    `;
-  });
-}
+      // 1) Sort by date
+      weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-function updateChart() {
-    let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
-    if (weightData.length === 0) return;
+      // 2) Collect all dates in sequence, fill gaps if needed
+      const dailyMap = {};
+      weightData.forEach(entry => {
+        if (!dailyMap[entry.date]) dailyMap[entry.date] = [];
+        dailyMap[entry.date].push(entry.weight);
+      });
 
-    let dailyWeights = {};
-    weightData.forEach(entry => {
-        if (!dailyWeights[entry.date]) {
-            dailyWeights[entry.date] = { total: 0, count: 0 };
+      // If you want a daily average for each date
+      const allDates = Object.keys(dailyMap).sort();
+      const startDate = new Date(allDates[0]);
+      const endDate = new Date(allDates[allDates.length - 1]);
+
+      const filledDates = [];
+      let temp = new Date(startDate);
+      while (temp <= endDate) {
+        filledDates.push(temp.toISOString().split("T")[0]);
+        temp.setDate(temp.getDate() + 1);
+      }
+
+      // Compute daily averages (or just the single entry if you prefer)
+      const avgWeights = filledDates.map(d => {
+        if (!dailyMap[d]) {
+          return null;
         }
-        dailyWeights[entry.date].total += entry.weight;
-        dailyWeights[entry.date].count++;
-    });
+        const sum = dailyMap[d].reduce((a, b) => a + b, 0);
+        return (sum / dailyMap[d].length).toFixed(1);
+      });
 
-    // Find the earliest and latest date in the dataset
-    let allDates = Object.keys(dailyWeights).sort();
-    let startDate = new Date(allDates[0]); // First date in the dataset
-    let endDate = new Date(allDates[allDates.length - 1]); // Last date
+      // x-axis labels: convert YYYY-MM-DD => DD-MM
+      const formattedDates = filledDates.map(dateStr => {
+        const [yyyy, mm, dd] = dateStr.split("-");
+        return `${dd}-${mm}`;
+      });
 
-    // Fill in all missing dates to ensure a linear timeline
-    let filledDates = [];
-    let tempDate = new Date(startDate);
-
-    while (tempDate <= endDate) {
-        let dateStr = tempDate.toISOString().split("T")[0];
-        filledDates.push(dateStr);
-        tempDate.setDate(tempDate.getDate() + 1); // Move to next day
-    }
-
-    // Build corresponding weight values (empty for missing days)
-    let avgWeights = filledDates.map(date => {
-        if (dailyWeights[date]) {
-            return (dailyWeights[date].total / dailyWeights[date].count).toFixed(1);
-        } else {
-            return null; // Keep missing days empty
-        }
-    });
-
-    // Convert dates to DD-MM format for X-axis labels
-    let formattedDates = filledDates.map(date => {
-        let parts = date.split("-");
-        return `${parts[2]}-${parts[1]}`; // Convert YYYY-MM-DD to DD-MM
-    });
-
-    // Generate trendline
-    function linearRegression(x, y) {
-    let validX = [];
-    let validY = [];
-
-    // Filter out null values so only actual weight entries are used
-    y.forEach((val, index) => {
-        if (val !== null) {
-            validX.push(x[index]);
+      // Create a “trendline”
+      function linearRegression(x, y) {
+        let validX = [], validY = [];
+        y.forEach((val, idx) => {
+          if (val !== null) {
+            validX.push(x[idx]);
             validY.push(parseFloat(val));
-        }
-    });
+          }
+        });
+        if (validX.length < 2) return y; // Not enough data
 
-    if (validX.length < 2) return y; // Not enough data for a trendline
+        const n = validX.length;
+        const sumX = validX.reduce((a, b) => a + b, 0);
+        const sumY = validY.reduce((a, b) => a + b, 0);
+        const sumXY = validX.map((xx, i) => xx * validY[i]).reduce((a, b) => a + b, 0);
+        const sumX2 = validX.map(xx => xx * xx).reduce((a, b) => a + b, 0);
 
-    const n = validX.length;
-    const sumX = validX.reduce((a, b) => a + b, 0);
-    const sumY = validY.reduce((a, b) => a + b, 0);
-    const sumXY = validX.map((xi, i) => xi * validY[i]).reduce((a, b) => a + b, 0);
-    const sumX2 = validX.map(xi => xi * xi).reduce((a, b) => a + b, 0);
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
 
-    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-    const intercept = (sumY - slope * sumX) / n;
+        return x.map(xx => slope * xx + intercept);
+      }
 
-    return x.map(xi => validX.includes(xi) ? slope * xi + intercept : null);
-}
+      const xVals = filledDates.map((_, i) => i);
+      const trendline = linearRegression(xVals, avgWeights);
 
-    let xVals = filledDates.map((_, i) => i);
-    let trendline = linearRegression(xVals, avgWeights);
-
-    // Destroy previous chart instance before creating a new one
-    const ctx = document.getElementById("weightChart").getContext("2d");
-    if (window.myChart) {
+      // Destroy old chart if it exists
+      const ctx = document.getElementById("weightChart").getContext("2d");
+      if (window.myChart) {
         window.myChart.destroy();
-    }
+      }
 
-    window.myChart = new Chart(ctx, {
+      // Create new chart
+      window.myChart = new Chart(ctx, {
         type: "line",
         data: {
-            labels: formattedDates, // Linearized daily labels
-            datasets: [
-                {
-                    label: "Daily Avg Weight",
-                    data: avgWeights,
-                    borderColor: "blue",
-                    fill: false,
-                    pointStyle: "circle",
-                    pointRadius: 3, // Adjust marker size
-                    borderWidth: 2, // Make the line more visible
-                    spanGaps: false, // Keep gaps for missing data
-                },
-                {
-                    label: "Trendline",
-                    data: trendline,
-                    borderColor: "red",
-                    borderDash: [5, 5],
-                    fill: false,
-                    borderWidth: 2,
-                    spanGaps: true, // Allow trendline to connect valid data
-                },
-            ],
+          labels: formattedDates,
+          datasets: [
+            {
+              label: "Daily Avg Weight",
+              data: avgWeights,
+              borderColor: "blue",
+              fill: false,
+              pointStyle: "circle",
+              pointRadius: 3,
+              borderWidth: 2,
+              spanGaps: false // missing data => gaps
+            },
+            {
+              label: "Trendline",
+              data: trendline,
+              borderColor: "red",
+              borderDash: [5, 5],
+              fill: false,
+              borderWidth: 2,
+              spanGaps: true
+            }
+          ]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    ticks: {
-                        autoSkip: false, // Ensure all days are represented
-                        maxRotation: 30, // Slightly rotate for better visibility
-                        minRotation: 30,
-                        font: { size: 14 },
-                        callback: function (value, index, values) {
-                            return index % 3 === 0 ? this.getLabelForValue(value) : "";
-                        },
-                    },
-                    grid: {
-                        display: true,
-                        color: "rgba(200, 200, 200, 0.5)", // Light grey vertical gridlines
-                    },
-                },
-                y: {
-                    beginAtZero: false,
-                    ticks: {
-                        stepSize: 1,
-                        font: { size: 14 },
-                    },
-                    grid: {
-                        display: true,
-                        color: "rgba(180, 180, 180, 0.7)", // Slightly darker grey
-                    },
-                },
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              ticks: {
+                autoSkip: false,
+                maxRotation: 30,
+                minRotation: 30,
+                callback: function (value, idx) {
+                  // Show every 3rd label for readability
+                  return idx % 3 === 0 ? this.getLabelForValue(value) : "";
+                }
+              },
+              grid: {
+                display: true,
+                color: "rgba(200, 200, 200, 0.5)"
+              }
             },
-        },
-    });
-}
-
-window.onload = function () {
-    updateWeightTable();
-    updateChart();
-};
-
-document.getElementById("resetWeightButton").addEventListener("click", function() {
-  if (confirm("Are you sure you want to delete all weight data? This cannot be undone.")) {
-    // Remove weight data from localStorage
-    localStorage.removeItem("weightData");
-    
-    // Clear the table and chart
-    document.querySelector("#weightTable tbody").innerHTML = "";
-    
-    // Reset the chart
-    if (window.myChart) {
-      window.myChart.data.labels = [];
-      window.myChart.data.datasets[0].data = [];
-      window.myChart.data.datasets[1].data = [];
-      window.myChart.update();
+            y: {
+              beginAtZero: false,
+              ticks: {
+                stepSize: 1
+              },
+              grid: {
+                display: true,
+                color: "rgba(180, 180, 180, 0.7)"
+              }
+            }
+          }
+        }
+      });
     }
-    
-    alert("Weight data has been cleared.");
-  }
-     });      
 
-</script>
+    // On load, populate the table and chart
+    window.onload = function () {
+      updateWeightTable();
+      updateChart();
+    };
+
+    // Reset all weight data
+    document.getElementById("resetWeightButton").addEventListener("click", function() {
+      if (confirm("Are you sure you want to delete all weight data? This cannot be undone.")) {
+        localStorage.removeItem("weightData");
+        document.querySelector("#weightTable tbody").innerHTML = "";
+        if (window.myChart) {
+          window.myChart.destroy();
+        }
+        alert("Weight data has been cleared.");
+      }
+    });
+  </script>
 </body>
 </html>
