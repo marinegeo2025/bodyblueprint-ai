@@ -2,23 +2,30 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>AI Chat - 本来の面目 Honrai no Menmoku</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
-      /* Minimal extra styling for the chat area */
+      /* Minimal styling for the chat page */
+
       .chat-container {
         max-width: 600px;
         margin: 20px auto;
         text-align: left;
+        font-family: Arial, sans-serif;
       }
 
       .intro-section {
         margin-bottom: 30px;
       }
 
+      .intro-section h1 {
+        margin-bottom: 10px;
+      }
+
       .intro-section p {
         margin-bottom: 10px;
+        text-align: justify;
       }
 
       .input-area {
@@ -33,11 +40,20 @@
         min-height: 80px;
         font-family: inherit;
         padding: 10px;
+        resize: vertical;
       }
 
       .input-area button {
         align-self: flex-end;
         padding: 8px 16px;
+        cursor: pointer;
+        background-color: #444;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+      }
+      .input-area button:hover {
+        background-color: #333;
       }
 
       .response-area {
@@ -45,7 +61,8 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         padding: 10px;
-        min-height: 60px;
+        min-height: 80px;
+        background-color: #f9f9f9;
       }
 
       .copy-button {
@@ -56,7 +73,35 @@
         border: 1px solid #ccc;
         border-radius: 4px;
         padding: 4px 8px;
+        font-size: 0.85em;
         cursor: pointer;
+      }
+      .copy-button:hover {
+        background-color: #ddd;
+      }
+
+      /* Basic nav styling */
+      nav ul {
+        list-style-type: none;
+        padding: 10px;
+        background: #333333;
+        text-align: center;
+      }
+      nav ul li {
+        display: inline-block;
+        margin: 0 10px;
+      }
+      nav ul li a {
+        color: white;
+        text-decoration: none;
+        font-size: 18px;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 0.9em;
+        color: #555;
       }
     </style>
   </head>
@@ -71,30 +116,42 @@
       </ul>
     </nav>
 
-    <main>
-      <section class="chat-container">
-        <!-- Intro about Alex -->
-        <div class="intro-section">
-          <h1>Meet Alex, Your Elite Fitness Trainer</h1>
-          <p><strong>Hi, I’m Alex—your personal, elite fitness trainer built on evidence-based, science-backed AI.</strong> My goal is to help you achieve your aesthetic and performance targets by combining advanced training strategies, data-driven meal prep, and intelligent supplementation tips that actually work. Whether you’re looking for new ways to boost muscle definition, streamline your nutrition, or fine-tune recovery, I’m here to provide specific, science-based guidance—no fluff or quick fixes.</p>
+    <main class="chat-container">
+      <!-- Introduction -->
+      <div class="intro-section">
+        <h1>Meet Alex, Your Elite Fitness Trainer</h1>
+        <p>
+        <p style="text-align: center;">
+  <strong>Hello, I’m Alex, your personal, elite fitness trainer built on evidence-based, science-backed AI.</strong>
+</p>
+My goal is to help you achieve your aesthetic and performance targets by combining advanced training strategies,
+          data-driven meal prep, and intelligent supplementation tips that actually work. Whether you’re looking for new
+          ways to boost muscle definition, streamline your nutrition, or fine-tune recovery, I’m here to provide specific,
+          science-based guidance—no fluff or quick fixes.
+        </p>
+        <p>
+          From crafting a personalized weekly workout plan to outlining precise macros for different fitness phases, I’ll
+          make sure each recommendation is both realistic and aligned with your goals. Feel free to ask about any aspect of
+          training, dietary planning, or supplementation. I’ll translate the latest research into practical steps and strategies
+          that fit your lifestyle, ensuring you stay motivated and consistently see progress.
+        </p>
+        <p>
+          Go ahead—type your questions below. Once I respond, you can easily copy my answer using the small selection icon in
+          the corner of the text box. Let’s start your journey together and maximize your results!
+        </p>
+      </div>
 
-          <p>From crafting a personalized weekly workout plan to outlining precise macros for different fitness phases, I’ll make sure each recommendation is both realistic and aligned with your goals. Feel free to ask about any aspect of training, dietary planning, or supplementation. I’ll translate the latest research into practical steps and strategies that fit your lifestyle, ensuring you stay motivated and consistently see progress.</p>
+      <!-- User input area -->
+      <div class="input-area">
+        <textarea id="userQuestion" placeholder="Ask me about meal prep, training, supplementation..."></textarea>
+        <button id="askButton">Ask Alex</button>
+      </div>
 
-          <p>Go ahead—type your questions below. Once I respond, you can easily copy and paste the conversation using the small selection icon in the corner of the text box. That way, you can keep detailed notes on your meal plans, workout schedules, or any other advice you find helpful. Let’s start your journey together and maximize your results!</p>
-        </div>
-
-        <!-- User input area -->
-        <div class="input-area">
-          <textarea id="userQuestion" placeholder="Ask me about meal prep, training, nutrition..."></textarea>
-          <button id="askButton">Ask Alex</button>
-        </div>
-
-        <!-- AI response area with copy button -->
-        <div class="response-area" id="responseContainer">
-          <button class="copy-button" id="copyButton">Copy</button>
-          <div id="aiResponse"></div>
-        </div>
-      </section>
+      <!-- AI response area with copy button -->
+      <div class="response-area" id="responseContainer">
+        <button class="copy-button" id="copyButton">Copy</button>
+        <div id="aiResponse">Awaiting your question...</div>
+      </div>
     </main>
 
     <footer>
@@ -102,30 +159,45 @@
     </footer>
 
     <script>
-      // Placeholder: In a real setup, you'd fetch from your AI endpoint
-      // Here we just show how to handle the user's input, display a response, and copy it.
-
       const askButton = document.getElementById("askButton");
       const userQuestion = document.getElementById("userQuestion");
       const aiResponse = document.getElementById("aiResponse");
       const copyButton = document.getElementById("copyButton");
 
+      // On "Ask Alex," send the question to /api/chat
       askButton.addEventListener("click", async () => {
         const question = userQuestion.value.trim();
-        if (!question) return;
+        if (!question) return; // ignore empty
 
-        // Clear the UI or show a "processing" message
-        aiResponse.textContent = "Processing...";
+        aiResponse.textContent = "Processing your request...";
+        
+        try {
+          // Make a POST request to /api/chat
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question })
+          });
 
-        // Example: You'd do fetch("/api/analyze-meal", { ... }) or a direct AI call here
-        // We'll simulate a response for demonstration:
-        setTimeout(() => {
-          aiResponse.textContent = "Your personalized, science-based answer will appear here. (Simulated)";
-        }, 1000);
+          if (!response.ok) {
+            aiResponse.textContent = "Server error. Please try again.";
+            return;
+          }
+          const data = await response.json();
+          if (data.answer) {
+            aiResponse.textContent = data.answer;
+          } else {
+            aiResponse.textContent = data.error || "No answer received.";
+          }
+
+        } catch (err) {
+          console.error("❌ Chat request failed:", err);
+          aiResponse.textContent = "Network or server error. Please try again.";
+        }
       });
 
+      // Copy the AI response text
       copyButton.addEventListener("click", () => {
-        // Copies the text from the #aiResponse div
         const range = document.createRange();
         range.selectNodeContents(aiResponse);
         const selection = window.getSelection();
@@ -134,11 +206,10 @@
 
         try {
           document.execCommand("copy");
-          alert("Response copied to clipboard!");
+          alert("AI's response copied to clipboard!");
         } catch (err) {
-          console.error("Failed to copy", err);
+          console.error("Failed to copy text:", err);
         }
-
         selection.removeAllRanges();
       });
     </script>

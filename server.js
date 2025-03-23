@@ -41,8 +41,12 @@ app.get("/api/debug", (req, res) => {
   });
 });
 
-// ✅ Meal analysis endpoint
-// ✅ Single-call approach: parse the new meal, generate daily summary
+/* 
+========================================================================================
+   1) Meal Analysis Endpoint 
+      - Single-call approach: parse the new meal, generate daily summary
+========================================================================================
+*/
 app.post("/api/analyze-meal", async (req, res) => {
   console.log("🍽️ Meal analysis request received:", JSON.stringify(req.body, null, 2));
 
@@ -98,44 +102,36 @@ app.post("/api/analyze-meal", async (req, res) => {
           - Return ONLY **calories and protein** estimates.
           For example:
           If user says “2 eggs and bread”:
-          - Search for and return the approximate values ~ 230 kcal, 14 g protein
+          - Approx ~230 kcal, ~14g protein
 
           2️⃣ **For the Daily Summary**:
           - Summarize **total calories, protein, carbs, and fats** consumed today.
-          - Identify **any deficiencies in macronutrients (protein, carbs, fats) or micronutrients (iron, calcium, fiber, omega-3, vitamins A, B12, C, D, E, magnesium, potassium, etc.).**
-          - 🚫 **DO NOT say generic phrases like "eat more balanced meals."**  
-          - 🔹 **FOR EVERY DEFICIENCY:**  
-              - **NAME** the missing nutrient.  
-              - **LIST SPECIFIC FOODS** that contain it.  
-              - **EXPLAIN WHY IT MATTERS** using the latest science.  
-              - Example:  
-              **"Your magnesium intake is low. This may impact muscle recovery and sleep quality. Consider eating 30g of pumpkin seeds or 1 banana."**
+          - Identify **any deficiencies** in macros or micronutrients. 
+          - 🚫 **No vague “eat balanced.”** 
+          - For each deficiency: name it, suggest foods, explain scientifically.
 
-          3️⃣ **Latest Science-Backed Optimization Tips (Based on the User’s Goal)**  
-          - Provide **1-2 relevant advanced performance tips** based on the latest sports nutrition research.
-          - Explain **why** each adjustment improves **performance, recovery, energy, metabolism, or muscle growth**.
+          3️⃣ **Latest Science-Backed Optimization Tips**  
+          - Provide 1-2 advanced performance tips. 
+          - Explain why each helps performance, recovery, metabolism, or muscle growth.
 
           4️⃣ **Weight Trend Analysis** (NEW ADDITION)  
-          - If weight trends are available, analyze **actual vs expected weight change** based on calories consumed.
-          - If weight loss is slower than expected in a cut, **suggest improvements**.
-          - If weight gain is lower than expected in a bulk, **suggest dietary adjustments**.
-          - **Only 1-2 sentences MAX. Keep it clear & precise.**
+          - If weight trends are available, analyze actual vs. expected weight change.
+          - If cut is too slow, suggest improvements; if bulk is too slow, adjust. 
+          - Keep it short & precise.
 
-          5️⃣ **Final Positive and Motivational Message**  
-          - End with **a short, powerful, and motivating statement** about their progress, a bit of zen flair here is cool.
+          5️⃣ **Motivational Ending**
+          - End with a short, powerful statement.
 
-          🔹 **VERY IMPORTANT RULES** 🔹
-          - **DO NOT LEAVE "daily_summary" BLANK**  
-          - **Every piece of advice must be SPECIFIC, ACTIONABLE, and BACKED BY SCIENCE.**  
-          - **DO NOT use vague generalizations like "eat healthier."**  
-          - If no deficiencies exist, still provide optimization tips for peak performance.
+          🔹 **Rules** 🔹
+          - No “daily_summary” left blank.
+          - Don’t say “eat healthier” generically.
+          - Must follow JSON format strictly:
 
-          ✅ **Format response as JSON**:
           {
-              "calories": <number>,
-              "protein": <number>,
-              "micronutrients": "<string>",
-              "daily_summary": "<string>"
+            "calories": <num>,
+            "protein": <num>,
+            "micronutrients": "<string>",
+            "daily_summary": "<string>"
           }
           `
         },
@@ -151,9 +147,8 @@ app.post("/api/analyze-meal", async (req, res) => {
           **WEIGHT TRENDS**:
           ${weightSummary}
 
-          ✅ Provide a **concise 1-2 sentence insight** about how weight changes align with meal trends.
-          ✅ Avoid generic advice, be precise.
-          ✅ Return JSON only. Do NOT include explanations, warnings, or extra text. Output must strictly follow the JSON format.
+          ✅ Provide a concise insight about weight changes, 
+             and return valid JSON only, no triple backticks.
           `
         }
       ]
@@ -163,7 +158,7 @@ app.post("/api/analyze-meal", async (req, res) => {
     const responseText = completion.choices[0].message.content.trim();
     console.log("🤖 AI Response:", responseText);
 
-    // ✅ If GPT adds triple backticks, remove them before parse
+    // ✅ If GPT encloses the JSON in triple backticks, remove them
     const cleanedResponse = responseText
       .replace(/^```(\w+)?\n?/, "")  // strip opening fences
       .replace(/```$/, "");         // strip closing fences
@@ -184,6 +179,66 @@ app.post("/api/analyze-meal", async (req, res) => {
     console.error("❌ Error analyzing meal:", error.message);
     return res.status(500).json({
       error: "Failed to analyze meal",
+      message: error.message,
+    });
+  }
+});
+
+/* 
+========================================================================================
+   2) Chat Endpoint
+      - Let users ask general fitness/nutrition questions to "Alex"
+========================================================================================
+*/
+app.post("/api/chat", async (req, res) => {
+  console.log("💬 Chat request received:", JSON.stringify(req.body, null, 2));
+
+  try {
+    const { question } = req.body;
+
+    // Basic validation
+    if (!question) {
+      return res.status(400).json({ error: "No question provided." });
+    }
+
+    if (!openai) {
+      console.error("❌ OpenAI client not initialized!");
+      return res.status(500).json({ error: "AI service not available" });
+    }
+
+    // Build your chat prompt. For example:
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4-turbo",
+      messages: [
+        {
+          role: "system",
+          content: `
+          You are Alex, an elite fitness trainer built on evidence-based, science-backed AI.
+          Provide clear, concise, practical and actionable advice for training, meal prep, and supplementation.
+          Speak in a friendly, motivational tone. Include one super positive and zen sentence at the end. 
+          `
+        },
+        {
+          role: "user",
+          content: question
+        }
+      ]
+    });
+
+    let responseText = completion.choices[0].message.content.trim();
+    console.log("🤖 Chat response:", responseText);
+
+    // If GPT encloses in triple backticks, remove them
+    responseText = responseText
+      .replace(/^```[a-zA-Z]*\s*/, "")
+      .replace(/```$/, "");
+
+    // Send the final text back to the client
+    res.json({ answer: responseText });
+  } catch (error) {
+    console.error("❌ Error in /api/chat endpoint:", error.message);
+    return res.status(500).json({
+      error: "Failed to process chat",
       message: error.message,
     });
   }
