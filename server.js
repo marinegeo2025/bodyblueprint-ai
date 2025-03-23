@@ -96,6 +96,9 @@ app.post("/api/analyze-meal", async (req, res) => {
 
           1️⃣ **For each meal**:  
           - Return ONLY **calories and protein** estimates.
+          For example:
+          If user says “2 eggs and bread”:
+          - Search for and return the approximate values ~ 230 kcal, 14 g protein
 
           2️⃣ **For the Daily Summary**:
           - Summarize **total calories, protein, carbs, and fats** consumed today.
