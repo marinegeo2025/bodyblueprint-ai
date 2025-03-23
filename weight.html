@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>本来の面目, Honrai No Menmoku - Weight Tracking</title>
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Luxon & Chart.js time adapter -->
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
+
   <style>
     /* Make sure the chart container scales nicely */
     #weightChart {
@@ -24,11 +30,11 @@
 <body>
   <nav>
     <ul>
-      <li><a href="index.html">🏠 Home</a></li>
-      <li><a href="bmr.html">🏋️ BMR</a></li>
-      <li><a href="weight.html">📉 Weight</a></li>
-      <li><a href="meals.html">🍽️ Meals</a></li>
-      <li><a href="chat.html">💬 AI Chat</a></li>
+      <li><a href="index.html">家 Home</a></li>
+        <li><a href="bmr.html">強 BMR</a></li>
+        <li><a href="weight.html">落 Weight</a></li>
+        <li><a href="meals.html">食 Meals</a></li>
+        <li><a href="chat.html">話 AI Chat</a></li>
     </ul>
   </nav>
 
@@ -44,7 +50,7 @@
 
       <br><br>
 
-      <!-- Updated form: includes a date picker -->
+      <!-- Weight input form -->
       <form id="weightForm">
         <label for="weightInput">Enter Weight (kg):</label><br>
         <input type="number" id="weightInput" step="0.1" required /><br><br>
@@ -87,7 +93,7 @@
       const weight = parseFloat(document.getElementById("weightInput").value);
       const notes = document.getElementById("notes").value;
       let dateVal = document.getElementById("dateInput").value;
-      // If user didn't pick a date for some reason, default to today:
+      // If user didn't pick a date, default to today's date
       if (!dateVal) {
         dateVal = new Date().toISOString().split("T")[0];
       }
@@ -114,17 +120,16 @@
       tbody.innerHTML = "";
 
       let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
-      // Sort entries by date
+      // Sort entries by date (ascending)
       weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
       // Calculate rolling "weekly average" for each entry
       for (let i = 0; i < weightData.length; i++) {
-        // Weekly avg over the last 7 entries (including this one)
         let weeklyAvg = "-";
+        // For the last 7 entries (including current)
         if (i >= 6) {
           let slice = weightData.slice(i - 6, i + 1);
-          let sum = 0;
-          slice.forEach(item => sum += item.weight);
+          let sum = slice.reduce((acc, item) => acc + item.weight, 0);
           weeklyAvg = (sum / slice.length).toFixed(1);
         }
 
@@ -145,7 +150,7 @@
         dateCell.appendChild(dateInput);
         row.appendChild(dateCell);
 
-        // Weight cell (read-only, or you could make it editable similarly)
+        // Weight cell
         const weightCell = document.createElement("td");
         weightCell.textContent = weightData[i].weight;
         row.appendChild(weightCell);
@@ -155,7 +160,7 @@
         weeklyAvgCell.textContent = weeklyAvg;
         row.appendChild(weeklyAvgCell);
 
-        // Notes cell (read-only; again, you can make it editable if you prefer)
+        // Notes cell
         const notesCell = document.createElement("td");
         notesCell.textContent = weightData[i].notes || "";
         row.appendChild(notesCell);
@@ -164,99 +169,110 @@
       }
     }
 
-    // Build/update the chart using Chart.js
+    // Build/update the chart with a time-based x-axis
     function updateChart() {
       let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
       if (weightData.length === 0) return;
 
-      // 1) Sort by date
+      // 1) Sort by date ascending
       weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      // 2) Collect all dates in sequence, fill gaps if needed
+      // 2) Identify earliest & latest dates in the dataset
+      const earliestDate = new Date(weightData[0].date);
+      const latestDate   = new Date(weightData[weightData.length - 1].date);
+
+      // 3) Extend the x-axis by 1 month after the latest date
+      const xAxisMax = new Date(latestDate);
+      xAxisMax.setMonth(xAxisMax.getMonth() + 1);
+
+      // 4) Build a daily map of weights for the actual data
       const dailyMap = {};
-      weightData.forEach(entry => {
-        if (!dailyMap[entry.date]) dailyMap[entry.date] = [];
-        dailyMap[entry.date].push(entry.weight);
-      });
-
-      // If you want a daily average for each date
-      const allDates = Object.keys(dailyMap).sort();
-      const startDate = new Date(allDates[0]);
-      const endDate = new Date(allDates[allDates.length - 1]);
-
-      const filledDates = [];
-      let temp = new Date(startDate);
-      while (temp <= endDate) {
-        filledDates.push(temp.toISOString().split("T")[0]);
-        temp.setDate(temp.getDate() + 1);
-      }
-
-      // Compute daily averages (or just the single entry if you prefer)
-      const avgWeights = filledDates.map(d => {
-        if (!dailyMap[d]) {
-          return null;
+      weightData.forEach(item => {
+        if (!dailyMap[item.date]) {
+          dailyMap[item.date] = [];
         }
-        const sum = dailyMap[d].reduce((a, b) => a + b, 0);
-        return (sum / dailyMap[d].length).toFixed(1);
+        dailyMap[item.date].push(item.weight);
       });
 
-      // x-axis labels: convert YYYY-MM-DD => DD-MM
-      const formattedDates = filledDates.map(dateStr => {
-        const [yyyy, mm, dd] = dateStr.split("-");
-        return `${dd}-${mm}`;
-      });
-
-      // Create a “trendline”
-      function linearRegression(x, y) {
-        let validX = [], validY = [];
-        y.forEach((val, idx) => {
-          if (val !== null) {
-            validX.push(x[idx]);
-            validY.push(parseFloat(val));
-          }
+      // 5) Create array of daily data from earliestDate to xAxisMax
+      let currentDay = new Date(earliestDate);
+      const dailyData = [];
+      while (currentDay <= xAxisMax) {
+        const isoStr = currentDay.toISOString().split("T")[0];
+        let avg = null;
+        if (dailyMap[isoStr]) {
+          const sum = dailyMap[isoStr].reduce((a, b) => a + b, 0);
+          avg = sum / dailyMap[isoStr].length;
+        }
+        dailyData.push({
+          x: new Date(currentDay), // Date object for Chart.js time scale
+          y: avg
         });
-        if (validX.length < 2) return y; // Not enough data
-
-        const n = validX.length;
-        const sumX = validX.reduce((a, b) => a + b, 0);
-        const sumY = validY.reduce((a, b) => a + b, 0);
-        const sumXY = validX.map((xx, i) => xx * validY[i]).reduce((a, b) => a + b, 0);
-        const sumX2 = validX.map(xx => xx * xx).reduce((a, b) => a + b, 0);
-
-        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-        const intercept = (sumY - slope * sumX) / n;
-
-        return x.map(xx => slope * xx + intercept);
+        currentDay.setDate(currentDay.getDate() + 1);
       }
 
-      const xVals = filledDates.map((_, i) => i);
-      const trendline = linearRegression(xVals, avgWeights);
+      // 6) Compute linear regression for valid (non-null) points
+      const validPoints = [];
+      dailyData.forEach((pt, i) => {
+        if (pt.y !== null) {
+          validPoints.push({ xIndex: i, y: pt.y });
+        }
+      });
 
-      // Destroy old chart if it exists
+      // Basic linear regression function
+      function linearRegression(points) {
+        if (points.length < 2) {
+          // Not enough data for slope; just return a constant line
+          return { slope: 0, intercept: points[0]?.y || 0 };
+        }
+        const n = points.length;
+        const sumX = points.reduce((acc, p) => acc + p.xIndex, 0);
+        const sumY = points.reduce((acc, p) => acc + p.y, 0);
+        const sumXY = points.reduce((acc, p) => acc + p.xIndex * p.y, 0);
+        const sumX2 = points.reduce((acc, p) => acc + p.xIndex**2, 0);
+
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX**2);
+        const intercept = (sumY - slope * sumX) / n;
+        return { slope, intercept };
+      }
+
+      const { slope, intercept } = linearRegression(validPoints);
+
+      // 7) Build trendline array for the entire daily range
+      const trendlineData = dailyData.map((pt, i) => {
+        const predictedY = slope * i + intercept;
+        return { x: pt.x, y: predictedY };
+      });
+
+      // 8) Destroy old chart if it exists
       const ctx = document.getElementById("weightChart").getContext("2d");
       if (window.myChart) {
         window.myChart.destroy();
       }
 
-      // Create new chart
+      // (Optional) Y-axis range around the last weight
+      // let lastWeight = weightData[weightData.length - 1].weight;
+      // let yMin = lastWeight - 5;
+      // let yMax = lastWeight + 5;
+
+      // 9) Create new Chart.js line chart with time-based x-axis
       window.myChart = new Chart(ctx, {
         type: "line",
         data: {
-          labels: formattedDates,
           datasets: [
             {
               label: "Daily Avg Weight",
-              data: avgWeights,
+              data: dailyData, // array of { x: Date, y: number|null }
               borderColor: "blue",
               fill: false,
               pointStyle: "circle",
               pointRadius: 3,
               borderWidth: 2,
-              spanGaps: false // missing data => gaps
+              spanGaps: false // missing data => breaks in the line
             },
             {
               label: "Trendline",
-              data: trendline,
+              data: trendlineData,
               borderColor: "red",
               borderDash: [5, 5],
               fill: false,
@@ -270,14 +286,20 @@
           maintainAspectRatio: false,
           scales: {
             x: {
-              ticks: {
-                autoSkip: false,
-                maxRotation: 30,
-                minRotation: 30,
-                callback: function (value, idx) {
-                  // Show every 3rd label for readability
-                  return idx % 3 === 0 ? this.getLabelForValue(value) : "";
+              type: "time",
+              time: {
+                unit: "day",
+                displayFormats: {
+                  day: "dd-LL"
+                  // or "DD-MM", "dd LLL", etc.
                 }
+              },
+              min: earliestDate,
+              max: xAxisMax,
+              ticks: {
+                autoSkip: true,
+                maxRotation: 30,
+                minRotation: 30
               },
               grid: {
                 display: true,
@@ -285,10 +307,10 @@
               }
             },
             y: {
-              beginAtZero: false,
-              ticks: {
-                stepSize: 1
-              },
+              // beginAtZero: false,
+              // OPTIONAL fixed range:
+              // min: yMin,
+              // max: yMax,
               grid: {
                 display: true,
                 color: "rgba(180, 180, 180, 0.7)"
@@ -299,7 +321,7 @@
       });
     }
 
-    // On load, populate the table and chart
+    // On load, populate table and chart
     window.onload = function () {
       updateWeightTable();
       updateChart();
