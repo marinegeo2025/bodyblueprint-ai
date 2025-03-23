@@ -92,5 +92,10 @@ button:hover {
   padding: 8px;
   font-size: 16px;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid #cccccc;
+  
+}
+.intro-section p,
+#aiResponse p {
+  text-align: justify;
 }
