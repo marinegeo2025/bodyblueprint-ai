@@ -92,8 +92,8 @@ app.post("/api/analyze-meal", async (req, res) => {
     // ✅ Call OpenAI with the assembled prompt
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
-      temperature: 0.7,
-      top_p: 1,
+      temperature: 0.3,
+      top_p: 0.9,
       messages: [
         {
           role: "system",

@@ -193,12 +193,43 @@
         });
 
         // ---- HELPER: SHOW NEWLY ADDED MEAL IN "MEAL RECORDS" ----
-        function updateMealList(meal, calories, protein) {
-          const mealList = document.getElementById("mealList");
-          const listItem = document.createElement("li");
-          listItem.innerHTML = `<strong>${meal}</strong>: ${calories} kcal, ${protein}g protein`;
-          mealList.appendChild(listItem);
-        }
+        function updateMealList(meal, calories, protein, index) {
+  const mealList = document.getElementById("mealList");
+  const listItem = document.createElement("li");
+
+  listItem.innerHTML = `
+    <strong>${meal}</strong>: ${calories} kcal, ${protein}g protein
+    <button class="delete-btn" data-index="${index}">x</button>
+  `;
+
+  mealList.appendChild(listItem);
+
+  // Add event listener to delete button
+  listItem.querySelector(".delete-btn").addEventListener("click", function () {
+    deleteMeal(index);
+  });
+}
+function deleteMeal(index) {
+  let meals = JSON.parse(localStorage.getItem("mealHistory")) || [];
+  if (index >= 0 && index < meals.length) {
+    meals.splice(index, 1);
+    localStorage.setItem("mealHistory", JSON.stringify(meals));
+
+    // Reset totals and recalculate
+    let totalCalories = 0;
+    let totalProtein = 0;
+    meals.forEach(m => {
+      totalCalories += m.calories;
+      totalProtein += m.protein;
+    });
+
+    localStorage.setItem("totalCalories", totalCalories);
+    localStorage.setItem("totalProtein", totalProtein);
+
+    // Clear & restore UI
+    updateUIFromStorage();
+  }
+}
 
         // ---- HELPER: UPDATE PROGRESS BARS ----
         function updateProgress(calories, protein, targetCalories, targetProtein) {
@@ -231,7 +262,7 @@
           document.getElementById("mealList").innerHTML = "";
 
           const meals = JSON.parse(localStorage.getItem("mealHistory")) || [];
-          meals.forEach(m => updateMealList(m.name, m.calories, m.protein));
+          meals.forEach((m, i) => updateMealList(m.name, m.calories, m.protein, i));
 
           const totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
           const totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
