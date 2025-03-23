@@ -99,3 +99,17 @@ button:hover {
 #aiResponse p {
   text-align: justify;
 }
+.delete-btn {
+  font-size: 0.8rem;
+  padding: 1px 5px;
+  margin-left: 8px;
+  background-color: transparent;
+  border: 1px solid #888888;
+  border-radius: 3px;
+  color: #888888;
+  cursor: pointer;
+}
+.delete-btn:hover {
+  color: red;
+  border-color: red;
+}
