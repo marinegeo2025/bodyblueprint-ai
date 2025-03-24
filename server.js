@@ -92,8 +92,8 @@ app.post("/api/analyze-meal", async (req, res) => {
     // ✅ Call OpenAI with the assembled prompt
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
-      temperature: 0.3,
-      top_p: 0.9,
+      temperature: 0.4,
+      top_p: 0.8,
       messages: [
         {
           role: "system",
@@ -103,24 +103,24 @@ app.post("/api/analyze-meal", async (req, res) => {
           
           IMPORTANT: If a meal description is non-empty, DO NOT return 0 for calories or protein.
           
-          1️⃣ **For each meal**:  
+          1) **For each meal**:  
           - Return ONLY **calories and protein** values.
           
-          2️⃣ **For the Daily Summary**:
+          2) **For the Daily Summary**:
           - Summarize **total calories, protein, carbs, and fats** consumed today.
           - Identify **any deficiencies** in macros or micronutrients. 
-          - 🚫 **No vague “eat balanced.”** 
+          - **No vague “eat balanced.”** 
           - For each deficiency: name it, suggest foods, and explain scientifically.
 
-          3️⃣ **Latest Science-Backed Optimization Tips**  
+          3) **Latest Science-Backed Optimization Tips**  
           - Provide 1-2 advanced performance tips, explaining why they help performance, recovery, metabolism, or muscle growth.
 
-          4️⃣ **Weight Trend Analysis**  
+          4) **Weight Trend Analysis**  
           - If weight trends are available, analyze actual vs. expected weight change.
           - If the cut is too slow, suggest improvements; if the bulk is too slow, adjust accordingly. 
           - Keep it short & precise.
 
-          5️⃣ **Motivational Ending**
+          5) **Motivational Ending**
           - End with a short, powerful statement.
           
           IMPORTANT:
