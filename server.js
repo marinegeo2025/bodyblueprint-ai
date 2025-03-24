@@ -92,48 +92,50 @@ app.post("/api/analyze-meal", async (req, res) => {
     // ✅ Call OpenAI with the assembled prompt
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-2024-08-06",
-      temperature: 0.2,
-      top_p: 0.8,
+      temperature: 0.3,
+      top_p: 0.7,
       messages: [
         {
           role: "system",
-          content: "
-          You are a leading sports scientist and nutritionist specializing in science-based precision-based dietary optimization. 
+          content: `
+          You are a leading sports scientist and nutritionist specializing in science-based, precision dietary optimization. 
           Your job is to analyze meals and provide **only the most specific and actionable** feedback to help users reach their goals.
-
-          1️⃣ **For each meal**:  
-          - Return ONLY **calories and protein** estimates.
-          For example:
-          If user says “2 eggs and bread”:
-          - Approx ~230 kcal, ~14g protein
-
-          2️⃣ **For the Daily Summary**:
+          
+          IMPORTANT: If a meal description is non-empty, DO NOT return 0 for calories or protein.
+          
+          1) **For each meal**:  
+          - Return ONLY **calories and protein** values.
+          
+          2) **For the Daily Summary**:
           - Summarize **total calories, protein, carbs, and fats** consumed today.
           - Identify **any deficiencies** in macros or micronutrients. 
-          - 🚫 **No vague “eat balanced.”** 
-          - For each deficiency: name it, suggest foods, explain scientifically.
+          - **No vague “eat balanced.”** 
+          - For each deficiency: name it, suggest foods, and explain scientifically.
 
-          3️⃣ **Latest Science-Backed Optimization Tips**  
-          - Provide 1-2 advanced performance tips. 
-          - Explain why each helps performance, recovery, metabolism, or muscle growth.
+          3) **Latest Science-Backed Optimization Tips**  
+          - Provide 1-2 advanced performance tips, explaining why they help performance, recovery, metabolism, or muscle growth.
 
-          4️⃣ **Weight Trend Analysis**  
+          4) **Weight Trend Analysis**  
           - If weight trends are available, analyze actual vs. expected weight change.
-          - If cut is too slow, suggest improvements; if bulk is too slow, adjust. 
+          - If the cut is too slow, suggest improvements; if the bulk is too slow, adjust accordingly. 
           - Keep it short & precise.
 
-          5️⃣ **Motivational Ending**
+          5) **Motivational Ending**
           - End with a short, powerful statement.
-
+          
+          IMPORTANT:
+  1) For the **new meal** macros (calories, protein), estimate them ONLY based on the meal text itself. 
+     - DO NOT reuse or blend macros from previous meals.
+  2) For the **daily summary**, consider both the new meal and any previous meals, 
+     but keep them separate when estimating the new meal's macros.
+  3) Do NOT reuse old macros for a new meal if the meal is different. Estimate new macros carefully.
           🔹 **Rules** 🔹
           - No “daily_summary” left blank.
-          - Don’t say “eat healthier” generically.
-          - Must follow JSON format strictly:
-          "
+          `
         },
         {
           role: "user",
-          content: "
+          content: `
           **MEAL DATA**:
           - Goal: ${goal}
           - Target Calories: ${targetCalories} kcal
@@ -144,7 +146,7 @@ app.post("/api/analyze-meal", async (req, res) => {
           ${weightSummary}
 
           ✅ Provide a concise insight about weight changes, and return valid JSON only, no triple backticks.
-          "
+          `
         }
       ]
     });
