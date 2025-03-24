@@ -97,7 +97,7 @@ app.post("/api/analyze-meal", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `
+          content: "
           You are a leading sports scientist and nutritionist specializing in science-based precision-based dietary optimization. 
           Your job is to analyze meals and provide **only the most specific and actionable** feedback to help users reach their goals.
 
@@ -117,7 +117,7 @@ app.post("/api/analyze-meal", async (req, res) => {
           - Provide 1-2 advanced performance tips. 
           - Explain why each helps performance, recovery, metabolism, or muscle growth.
 
-          4️⃣ **Weight Trend Analysis** (NEW ADDITION)  
+          4️⃣ **Weight Trend Analysis**  
           - If weight trends are available, analyze actual vs. expected weight change.
           - If cut is too slow, suggest improvements; if bulk is too slow, adjust. 
           - Keep it short & precise.
@@ -129,11 +129,11 @@ app.post("/api/analyze-meal", async (req, res) => {
           - No “daily_summary” left blank.
           - Don’t say “eat healthier” generically.
           - Must follow JSON format strictly:
-          `
+          "
         },
         {
           role: "user",
-          content: `
+          content: "
           **MEAL DATA**:
           - Goal: ${goal}
           - Target Calories: ${targetCalories} kcal
@@ -144,7 +144,7 @@ app.post("/api/analyze-meal", async (req, res) => {
           ${weightSummary}
 
           ✅ Provide a concise insight about weight changes, and return valid JSON only, no triple backticks.
-          `
+          "
         }
       ]
     });
