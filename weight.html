@@ -1,4 +1,91 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>本来の面目, Honrai No Menmoku - Weight Tracking</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Luxon & Chart.js time adapter -->
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
+
+  <style>
+    /* Make sure the chart container scales nicely */
+    #weightChart {
+      width: 100%;
+      max-height: 600px;
+    }
+    /* Simple responsive helper for the canvas container */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px; /* Adjust as desired */
+      margin: 0 auto;   /* Center it */
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="index.html">家 Home</a></li>
+        <li><a href="bmr.html">強 BMR</a></li>
+        <li><a href="weight.html">落 Weight</a></li>
+        <li><a href="meals.html">食 Meals</a></li>
+        <li><a href="chat.html">話 AI Chat</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section id="weight" class="page">
+      <h1>Weight Tracking</h1>
+      <button id="resetWeightButton" class="reset-btn">Reset Weight Data</button>
+
+      <!-- Responsive Chart Container -->
+      <div class="chart-container">
+        <canvas id="weightChart"></canvas>
+      </div>
+
+      <br><br>
+
+      <!-- Weight input form -->
+      <form id="weightForm">
+        <label for="weightInput">Enter Weight (kg):</label><br>
+        <input type="number" id="weightInput" step="0.1" required /><br><br>
+
+        <label for="dateInput">Date:</label><br>
+        <input type="date" id="dateInput" required /><br><br>
+
+        <label for="notes">Notes:</label><br>
+        <input type="text" id="notes" placeholder="E.g., morning weigh-in" /><br><br>
+
+        <button type="submit">Add Weight</button>
+      </form>
+
+      <h2>Weight Records</h2>
+      <table id="weightTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Weight (kg)</th>
+            <th>Weekly Avg</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rows added dynamically -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
+  </footer>
+
+  <script>
   // Handle form submission
   document.getElementById("weightForm").addEventListener("submit", function (event) {
     event.preventDefault();
@@ -72,8 +159,8 @@
       // Delete button cell
       const deleteCell = document.createElement("td");
       const deleteButton = document.createElement("button");
-      deleteButton.textContent = "X";
-      deleteButton.style.color = "red";
+      deleteButton.textContent = "x";
+      deleteButton.style.color = "ffffff";
       deleteButton.style.cursor = "pointer";
       deleteButton.title = "Delete this entry";
       deleteButton.addEventListener("click", () => {
@@ -93,146 +180,136 @@
 
   // Build/update the chart with a time-based x-axis
   function updateChart() {
-    let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
-    if (weightData.length === 0) return;
+  let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
+  if (weightData.length === 0) return;
 
-    // Sort by date ascending
-    weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
+  // Sort entries by date ascending
+  weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Identify earliest & latest dates
-    const earliestDate = new Date(weightData[0].date);
-    const latestDate   = new Date(weightData[weightData.length - 1].date);
+  // Earliest and latest date in the data
+  const earliestDate = new Date(weightData[0].date);
+  const latestDate = new Date(weightData[weightData.length - 1].date);
 
-    // Extend x-axis 1 month beyond the latest date
-    const xAxisMax = new Date(latestDate);
-    xAxisMax.setMonth(xAxisMax.getMonth() + 1);
+  // Extend x-axis by ~1 month beyond the latest data point
+  const endDate = new Date(latestDate);
+  endDate.setMonth(endDate.getMonth() + 1);
 
-    // Create a daily map of weights for the actual data
-    const dailyMap = {};
-    weightData.forEach(item => {
-      if (!dailyMap[item.date]) {
-        dailyMap[item.date] = [];
+  // Build a daily map of weights
+  const dailyMap = {};
+  weightData.forEach(item => {
+    if (!dailyMap[item.date]) {
+      dailyMap[item.date] = [];
+    }
+    dailyMap[item.date].push(item.weight);
+  });
+
+  // Generate a chronological list of dates from earliestDate to endDate
+  const dates = [];
+  let tempDate = new Date(earliestDate);
+  while (tempDate <= endDate) {
+    dates.push(tempDate.toISOString().split("T")[0]);
+    tempDate.setDate(tempDate.getDate() + 1);
+  }
+
+  // For each date, compute the average weight or null if no data
+  const avgWeights = dates.map(dateStr => {
+    if (dailyMap[dateStr]) {
+      const sum = dailyMap[dateStr].reduce((a, b) => a + b, 0);
+      return (sum / dailyMap[dateStr].length).toFixed(1);
+    }
+    return null;
+  });
+
+  // Create a linear regression trendline
+  function linearRegression(xVals, yVals) {
+    const validPoints = [];
+    yVals.forEach((val, i) => {
+      if (val !== null) {
+        validPoints.push({ x: i, y: parseFloat(val) });
       }
-      dailyMap[item.date].push(item.weight);
     });
+    if (validPoints.length < 2) return yVals; // Not enough data to compute slope
 
-    // Build an array of dates (from earliestDate to xAxisMax)
-    let currentDay = new Date(earliestDate);
-    const filledDates = [];
-    while (currentDay <= xAxisMax) {
-      filledDates.push(currentDay.toISOString().split("T")[0]);
-      currentDay.setDate(currentDay.getDate() + 1);
-    }
+    const n = validPoints.length;
+    const sumX = validPoints.reduce((acc, p) => acc + p.x, 0);
+    const sumY = validPoints.reduce((acc, p) => acc + p.y, 0);
+    const sumXY = validPoints.reduce((acc, p) => acc + p.x * p.y, 0);
+    const sumX2 = validPoints.reduce((acc, p) => acc + p.x * p.x, 0);
 
-    // Build corresponding daily average weights (or null if no entry)
-    let avgWeights = filledDates.map(date => {
-      if (dailyMap[date]) {
-        const sum = dailyMap[date].reduce((a, b) => a + b, 0);
-        return (sum / dailyMap[date].length).toFixed(1);
-      } else {
-        return null;
-      }
-    });
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
 
-    // Convert dates to DD-MM format for x-axis labels
-    let formattedDates = filledDates.map(date => {
-      let parts = date.split("-");
-      return `${parts[2]}-${parts[1]}`;
-    });
+    // Build predicted array for each day
+    return yVals.map((val, i) => slope * i + intercept);
+  }
 
-    // Generate a basic linear regression trendline for valid points
-    function linearRegression(x, y) {
-      let validX = [];
-      let validY = [];
-      y.forEach((val, i) => {
-        if (val !== null) {
-          validX.push(i);
-          validY.push(parseFloat(val));
-        }
-      });
-      if (validX.length < 2) return y;
-      const n = validX.length;
-      const sumX = validX.reduce((acc, v) => acc + v, 0);
-      const sumY = validY.reduce((acc, v) => acc + v, 0);
-      const sumXY = validX.reduce((acc, v, i) => acc + v * validY[i], 0);
-      const sumX2 = validX.reduce((acc, v) => acc + v * v, 0);
-      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-      const intercept = (sumY - slope * sumX) / n;
-      return filledDates.map((_, i) => slope * i + intercept);
-    }
+  const trendline = linearRegression(dates, avgWeights);
 
-    const trendline = linearRegression(filledDates, avgWeights);
+  // Build x-axis labels in DD-MM format
+  const formattedDates = dates.map(dateStr => {
+    const parts = dateStr.split("-");
+    return `${parts[2]}-${parts[1]}`; // e.g., "DD-MM"
+  });
 
-    // Destroy previous chart instance if exists
-    const ctx = document.getElementById("weightChart").getContext("2d");
-    if (window.myChart) {
-      window.myChart.destroy();
-    }
+  // Destroy any existing chart
+  const ctx = document.getElementById("weightChart").getContext("2d");
+  if (window.myChart) {
+    window.myChart.destroy();
+  }
 
-    window.myChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: formattedDates,
-        datasets: [
-          {
-            label: "Daily Avg Weight",
-            data: avgWeights,
-            borderColor: "blue",
-            fill: false,
-            pointStyle: "circle",
-            pointRadius: 3,
-            borderWidth: 2,
-            spanGaps: false,
+  // Create new line chart
+  window.myChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: formattedDates,
+      datasets: [
+        {
+          label: "Daily Avg Weight",
+          data: avgWeights,
+          borderColor: "blue",
+          fill: false,
+          pointStyle: "circle",
+          pointRadius: 3,
+          borderWidth: 2,
+          spanGaps: false,
+        },
+        {
+          label: "Trendline",
+          data: trendline,
+          borderColor: "red",
+          borderDash: [5, 5],
+          fill: false,
+          borderWidth: 2,
+          spanGaps: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          ticks: {
+            autoSkip: true,
+            maxRotation: 30,
+            minRotation: 30,
           },
-          {
-            label: "Trendline",
-            data: trendline,
-            borderColor: "red",
-            borderDash: [5, 5],
-            fill: false,
-            borderWidth: 2,
-            spanGaps: true,
+          grid: {
+            display: true,
+            color: "rgba(200, 200, 200, 0.5)",
           },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: "time",
-            time: {
-              unit: "day",
-              displayFormats: {
-                day: "dd-LL",
-              },
-            },
-            min: earliestDate,
-            max: xAxisMax,
-            ticks: {
-              autoSkip: true,
-              maxRotation: 30,
-              minRotation: 30,
-            },
-            grid: {
-              display: true,
-              color: "rgba(200, 200, 200, 0.5)",
-            },
-          },
-          y: {
-            ticks: {
-              stepSize: 1,
-              font: { size: 14 },
-            },
-            grid: {
-              display: true,
-              color: "rgba(180, 180, 180, 0.7)",
-            },
+        },
+        y: {
+          beginAtZero: false,
+          grid: {
+            display: true,
+            color: "rgba(180, 180, 180, 0.7)",
           },
         },
       },
-    });
-  }
+    },
+  });
+}
 
   // On page load, restore the table and chart
   window.onload = function () {
@@ -252,3 +329,5 @@
     }
   });
 </script>
+</body>
+</html>
