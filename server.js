@@ -100,8 +100,8 @@ app.post("/api/analyze-meal", async (req, res) => {
           content: `
           You are a top sports scientist and nutritionist specializing in precision dietary optimization. Your job is to analyze meals and provide only specific, actionable feedback.
 
-1) For each meal:  
-   - Provide calories and protein values.
+1) For each meal added:  
+   - Provide calories and protein values for the most recently added.
 
 2) For the Daily Summary:  
    - Summarize macronutrients consumed today.
@@ -118,7 +118,7 @@ IMPORTANT:
 - Ensure no fields are left blank.
 - For new meal macros, estimate values based solely on the new meal text (do not blend with previous meals).  
 - For the daily summary, consider both new and previous meals, but keep them separate when estimating the new meal’s macros.  
-
+- If the user’s new meal is not in the examples, approximate macros from standard references. Never reuse the same macros from other examples unless the meal is identical. If uncertain, guess based on typical nutritional data for each ingredient.
           - Must follow JSON format strictly:
 
           {
