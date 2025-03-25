@@ -232,24 +232,25 @@ function deleteMeal(index) {
 }
 
         // ---- HELPER: UPDATE PROGRESS BARS ----
-        function updateProgress(newCalories, newProtein, targetCalories, targetProtein) {
-  const oldCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
-  const oldProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
+        function updateProgress(calories, protein, targetCalories, targetProtein) {
+  const oldCals = parseInt(localStorage.getItem("totalCalories")) || 0;
+  const oldProt = parseInt(localStorage.getItem("totalProtein")) || 0;
 
-  const totalCalories = oldCalories + newCalories;
-  const totalProtein = oldProtein + newProtein;
-
-  const caloriePercent = Math.min(Math.floor((totalCalories / targetCalories) * 100), 100);
-  const proteinPercent = Math.min(Math.floor((totalProtein / targetProtein) * 100), 100);
+  const totalCalories = oldCals + calories;
+  const totalProtein = oldProt + protein;
 
   document.getElementById("totalCalories").innerText = totalCalories;
   document.getElementById("totalProtein").innerText = totalProtein;
 
+  const caloriePercent = Math.min(Math.floor((totalCalories / targetCalories) * 100), 100);
+  const proteinPercent = Math.min(Math.floor((parseFloat(totalProtein) / parseFloat(targetProtein)) * 100), 100);
+
   document.getElementById("calorieProgress").style.width = `${caloriePercent}%`;
   document.getElementById("proteinProgress").style.width = `${proteinPercent}%`;
 
+  // Directly setting colors
   document.getElementById("calorieProgress").style.backgroundColor = "#FF9F40";  // Orange
-  document.getElementById("proteinProgress").style.backgroundColor = "#9966FF";  // Purple
+  document.getElementById("proteinProgress").style.backgroundColor = "#FFCD56";  // Yellow
 
   localStorage.setItem("totalCalories", totalCalories);
   localStorage.setItem("totalProtein", totalProtein);
@@ -270,11 +271,8 @@ function deleteMeal(index) {
   document.getElementById("totalCalories").innerText = totalCalories;
   document.getElementById("totalProtein").innerText = totalProtein;
 
-  const caloriePercent = Math.min(Math.floor((totalCalories / targetCalories) * 100), 100);
-  const proteinPercent = Math.min(Math.floor((totalProtein / tProtein) * 100), 100);
-
-  document.getElementById("calorieProgress").style.width = `${caloriePercent}%`;
-  document.getElementById("proteinProgress").style.width = `${proteinPercent}%`;
+  document.getElementById("calorieProgress").style.width = `${Math.min((totalCalories / targetCalories) * 100, 100)}%`;
+  document.getElementById("proteinProgress").style.width = `${Math.min(Math.floor((parseFloat(totalProtein) / parseFloat(tProtein)) * 100), 100)}%`;
 
   // Directly setting colors again when restoring
   document.getElementById("calorieProgress").style.backgroundColor = "#FF9F40";  // Orange
