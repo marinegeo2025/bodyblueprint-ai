@@ -242,11 +242,12 @@ function deleteMeal(index) {
           document.getElementById("totalCalories").innerText = totalCalories;
           document.getElementById("totalProtein").innerText = totalProtein;
 
-          const caloriePercent = Math.min((totalCalories / targetCalories) * 100, 100);
-          const proteinPercent = Math.min((totalProtein / targetProtein) * 100, 100);
+          const caloriePercent = Math.min(Math.floor((totalCalories / targetCalories) * 100), 100);
+          const proteinPercent = Math.min(Math.floor((totalProtein / targetProtein) * 100), 100);
 
           document.getElementById("calorieProgress").style.width = `${caloriePercent}%`;
           document.getElementById("proteinProgress").style.width = `${proteinPercent}%`;
+
 
           // If you have custom color classes, set them
           setProgressBarColor("calorieProgress", "green");
