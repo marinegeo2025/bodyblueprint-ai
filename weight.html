@@ -259,75 +259,65 @@
 
   // Create new line chart
   window.myChart = new Chart(ctx, {
-  type: "line",
-  data: {
-    datasets: [
-      {
-        label: "Daily Avg Weight",
-        data: dates.map((dateStr, i) => ({
-          x: new Date(dateStr),
-          y: avgWeights[i] ? parseFloat(avgWeights[i]) : null
-        })),
-        borderColor: "blue",
-        fill: false,
-        pointStyle: "circle",
-        pointRadius: 3,
-        borderWidth: 2,
-        spanGaps: true,
-      },
-      {
-        label: "Trendline",
-        data: dates.map((dateStr, i) => ({
-          x: new Date(dateStr),
-          y: trendline[i]
-        })),
-        borderColor: "red",
-        borderDash: [5, 5],
-        fill: false,
-        borderWidth: 2,
-        pointRadius: 0, // no markers
-        spanGaps: true,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-  x: {
-    type: 'time',
-    time: {
-      unit: 'day',
-      tooltipFormat: 'dd-MM-yyyy',
-      displayFormats: {
-        day: 'dd-MM'
-      }
+    type: "line",
+    data: {
+      labels: formattedDates,
+      datasets: [
+        {
+          label: "Daily Avg Weight",
+          data: avgWeights,
+          borderColor: "blue",
+          fill: false,
+          pointStyle: "circle",
+          pointRadius: 3,
+          borderWidth: 2,
+          spanGaps: true, // Connect data points across missing days
+        },
+        {
+          label: "Trendline",
+          data: trendline,
+          borderColor: "red",
+          borderDash: [5, 5],
+          fill: false,
+          borderWidth: 2,
+          spanGaps: true,
+          pointRadius: 0, // Remove circles from points
+          pointHoverRadius: 0 // Remove hover circles from points
+        },
+      ],
     },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
     grid: {
       display: true,
-      color: (context) => {
-        // Draw daily grid lines lighter
-        return 'rgba(200,200,200,0.3)';
-      },
+      drawOnChartArea: true,
+      drawTicks: true,
+      tickLength: 5,
+      color: "rgba(200,200,200,0.5)",
     },
     ticks: {
       autoSkip: true,
-      maxTicksLimit: 8, // Fewer labels to avoid crowding
+      maxTicksLimit: 8,
       maxRotation: 0,
       minRotation: 0,
     }
   },
-  y: {
-    beginAtZero: false,
-    grid: {
-      display: true,
-      color: "rgba(180,180,180,0.7)",
+  // existing y scale options...
+        y: {
+          beginAtZero: false,
+          grid: {
+            display: true,
+            color: "rgba(180, 180, 180, 0.7)",
+          },
+        },
+      },
     },
-  }
+  });
 }
-  }
-});
-  }
+
   // On page load, restore the table and chart
   window.onload = function () {
     updateWeightTable();
