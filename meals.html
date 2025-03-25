@@ -79,7 +79,9 @@
 
         const targetProtein = Math.round(storedWeight * proteinMultiplier);
         document.getElementById("targetProtein").innerText = targetProtein;
-        localStorage.setItem("weight", weight.toFixed(2));
+        
+        // ✅ Save to localStorage so the meals page can use it
+        localStorage.setItem("targetProtein", targetProtein);
         
                 // ---- RESET DAY BUTTON ----
         document.getElementById("resetDataButton").addEventListener("click", function () {
