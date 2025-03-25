@@ -291,16 +291,21 @@
       maintainAspectRatio: false,
       scales: {
         x: {
-          ticks: {
-            autoSkip: true,
-            maxRotation: 30,
-            minRotation: 30,
-          },
-          grid: {
-            display: true,
-            color: "rgba(200, 200, 200, 0.5)",
-          },
-        },
+    grid: {
+      display: true,
+      drawOnChartArea: true,
+      drawTicks: true,
+      tickLength: 5,
+      color: "rgba(200,200,200,0.5)",
+    },
+    ticks: {
+      autoSkip: true,
+      maxTicksLimit: 8,
+      maxRotation: 0,
+      minRotation: 0,
+    }
+  },
+  // existing y scale options...
         y: {
           beginAtZero: false,
           grid: {
