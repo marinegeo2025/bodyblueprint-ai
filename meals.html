@@ -243,15 +243,16 @@ function deleteMeal(index) {
           document.getElementById("totalProtein").innerText = totalProtein;
 
           const caloriePercent = Math.min(Math.floor((totalCalories / targetCalories) * 100), 100);
-          const proteinPercent = Math.min(Math.floor((totalProtein / targetProtein) * 100), 100);
+          const proteinPercent = Math.min(((totalProtein / targetProtein) * 100), 100);
 
           document.getElementById("calorieProgress").style.width = `${caloriePercent}%`;
           document.getElementById("proteinProgress").style.width = `${proteinPercent}%`;
 
 
           // If you have custom color classes, set them
-          setProgressBarColor("calorieProgress", "green");
-          setProgressBarColor("proteinProgress", "yellow");
+          setProgressBarColor("calorieProgress", "#FF9F40");  // Orange
+          setProgressBarColor("proteinProgress", "#FFCD56");  // Yellow
+
 
           localStorage.setItem("totalCalories", totalCalories);
           localStorage.setItem("totalProtein", totalProtein);
@@ -293,13 +294,14 @@ function deleteMeal(index) {
           const color = localStorage.getItem(`${barId}-color`) || defaultColor;
           document.getElementById(barId).classList.add(color);
         }
-        function setProgressBarColor(barId, color) {
-          const progBar = document.getElementById(barId);
-          if (progBar) {
-            progBar.classList.add(color);
-            localStorage.setItem(`${barId}-color`, color);
-          }
-        }
+        function setProgressBarColor(barId, hexColor) {
+  const progBar = document.getElementById(barId);
+  if (progBar) {
+    progBar.style.backgroundColor = hexColor; 
+    localStorage.setItem(`${barId}-color`, hexColor);
+  }
+}
+
       });
     </script>
   </body>
