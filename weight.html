@@ -271,7 +271,7 @@
           pointStyle: "circle",
           pointRadius: 3,
           borderWidth: 2,
-          spanGaps: false,
+          spanGaps: true, // Connect data points across missing days
         },
         {
           label: "Trendline",
@@ -281,6 +281,8 @@
           fill: false,
           borderWidth: 2,
           spanGaps: true,
+          pointRadius: 0, // Remove circles from points
+          pointHoverRadius: 0 // Remove hover circles from points
         },
       ],
     },
