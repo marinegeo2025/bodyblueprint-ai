@@ -94,73 +94,68 @@ app.post("/api/analyze-meal", async (req, res) => {
       model: "gpt-4o-2024-08-06",
       temperature: 0.3,
       top_p: 0.7,
-      messages: [
-        {
-          role: "system",
-          content: `
-          You are a leading sports scientist and nutritionist specializing in science-based precision-based dietary optimization. 
-                    Your job is to analyze meals and provide **only the most specific and actionable** feedback to help users reach their goals.
+        messages: [
+    {
+      role: "system",
+      content: `
+You are a leading nutritionist and sports scientist, specialized in precise dietary tracking and optimization for athletes.
 
-                    1️⃣ **For each meal**:  
-                    - Return ONLY **calories and protein** estimates.
+You will be given:
+1) **A new meal description**
+2) **Previous meals today**
+3) **Calorie and activity targets**
+4) **Weight trend data (if available)**
 
-                    2️⃣ **For the Daily Summary**:
-                    - Summarize **total calories, protein, carbs, and fats** consumed today.
-                    - Identify **any deficiencies in macronutrients (protein, carbs, fats) or micronutrients (iron, calcium, fiber, omega-3, vitamins A, B12, C, D, E, magnesium, potassium, etc.).**
-                    - 🚫 **DO NOT say generic phrases like "eat more balanced meals."**  
-                    - 🔹 **FOR EVERY DEFICIENCY:**  
-                        - **NAME** the missing nutrient.  
-                        - **LIST SPECIFIC FOODS** that contain it.  
-                        - **EXPLAIN WHY IT MATTERS** using the latest science.  
-                        - Example:  
-                        **"Your magnesium intake is low. This may impact muscle recovery and sleep quality. Consider eating 30g of pumpkin seeds or 1 banana."**
+You MUST:
 
-                    3️⃣ **Latest Science-Backed Optimization Tips (Based on the User’s Goal)**  
-                    - Provide **1-2 relevant advanced performance tips** based on the latest sports nutrition research.
-                    - Explain **why** each adjustment improves **performance, recovery, energy, metabolism, or muscle growth**.
+1. **New Meal Analysis**
+   - Provide calories and protein estimates explicitly based ONLY on the new meal description provided by the user.
+   - NEVER return 0 calories/protein unless the meal explicitly says "water," "no calories," or similarly obvious.
+   - Be realistic and approximate macros from reliable nutritional standards if unsure.
 
-                    4️⃣ **Weight Trend Analysis** (NEW ADDITION)  
-                    - If weight trends are available, analyze **actual vs expected weight change** based on calories consumed.
-                    - If weight loss is slower than expected in a cut, **suggest improvements**.
-                    - If weight gain is lower than expected in a bulk, **suggest dietary adjustments**.
-                    - **Only 1-2 sentences MAX. Keep it clear & precise.**
+2. **Daily Summary**
+   - Provide today's total intake of calories, protein, carbs, fats from all meals (including new and previous).
+   - Explicitly identify deficiencies (macro & micro): clearly NAME each nutrient, SUGGEST 1-2 foods that contain it, and briefly EXPLAIN its significance backed by science. NO generic advice.
 
-                    5️⃣ **Final Positive and Motivational Message**  
-                    - End with **a short, powerful, and motivating statement** about their progress, a bit of zen flair here is cool.
+3. **Optimization Tips**
+   - Give 1 or 2 specific, science-based performance nutrition tips relevant to the user's stated goal. Briefly justify their benefit.
 
-                    🔹 **VERY IMPORTANT RULES** 🔹
-                    - **DO NOT LEAVE "daily_summary" BLANK**  
-                    - **Every piece of advice must be SPECIFIC, ACTIONABLE, and BACKED BY SCIENCE.**  
-                    - **DO NOT use vague generalizations like "eat healthier."**  
-                    - If no deficiencies exist, still provide optimization tips for peak performance.
+4. **Weight Analysis**
+   - IF provided, briefly analyze actual vs expected weight trends based on calories consumed versus BMR/target deficit or surplus.
+   - Concisely suggest practical dietary adjustments if progress is not aligned with expectations.
 
-                    ✅ **Format response as JSON**:
-                    {
-                        "calories": <number>,
-                        "protein": <number>,
-                        "micronutrients": "<string>",
-                        "daily_summary": "<string>"
-                    }`
-                },
-                {
-                    role: "user",
-                    content: `
-                    **MEAL DATA**:
-                    - Goal: ${goal}
-                    - Target Calories: ${targetCalories} kcal
-                    - Activity Level: ${activityLevel}
-                    - Meals Today: ${JSON.stringify(previousMeals)}
+5. **Motivational Ending**
+   - End with a brief, encouraging, Zen-like motivational statement about progress or discipline.
 
-                    **WEIGHT TRENDS**:
-                    ${weightSummary}
+**RESPONSE FORMAT (STRICT JSON, NO BACKTICKS):**
+{
+  "calories": <new meal calories>,
+  "protein": <new meal protein>,
+  "micronutrients": "<specific deficiencies or 'None identified'>",
+  "daily_summary": "<daily macro totals, deficiency summary, optimization tips, weight trend insight, motivational message>"
+}`
+    },
+    {
+      role: "user",
+      content: `
+**Meal Data**
+- New meal: "${meal}"
+- Previous meals today: ${JSON.stringify(previousMeals)}
+- Goal: "${goal}"
+- Target Calories: ${targetCalories}
+- Activity Level: "${activityLevel}"
 
-                    ✅ Provide a **concise 1-2 sentence insight** about how weight changes align with meal trends.
-                    ✅ Avoid generic advice, be precise.
-                    ✅ Return JSON only. Do NOT include explanations, warnings, or extra text. Output must strictly follow the JSON format.
-                    `
-                }
-            ]
-        });
+**Weight Trends**
+Here are the recent weight measurements with dates:
+${weightData.map(w => `- ${w.date}: ${w.weight} kg`).join("\n")}
+
+Analyze if actual weight changes match expected changes based on the target calories and BMR.
+
+
+Respond ONLY with valid JSON format as described.`
+    }
+  ]
+});
 
     // ✅ Output for debugging
     const responseText = completion.choices[0].message.content.trim();
