@@ -49,6 +49,7 @@ button {
 
 button:hover {
   background-color: #333; /* Slightly Darker Zen Grey on Hover */
+  opacity: 0.8;
 }
 
 /* Progress Bar Styles */
@@ -113,3 +114,56 @@ button:hover {
   color: red;
   border-color: red;
 }
+#weightForm button[type="submit"] {
+  background-color: #9966FF;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#weightForm button[type="submit"]:hover {
+  background-color: #7f4cd4;
+}
+/* Button 1 - Pink */
+#button1 {
+  background-color: #FF6384;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Button 2 - Orange */
+#button2 {
+  background-color: #FF9F40;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Button 3 - Yellow */
+#button3 {
+  background-color: #FFCD56;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Button 4 - Teal */
+#button4 {
+  background-color: #4BC0C0;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+

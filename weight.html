@@ -70,7 +70,6 @@
           <tr>
             <th>Date</th>
             <th>Weight (kg)</th>
-            <th>Weekly Avg</th>
             <th>Notes</th>
           </tr>
         </thead>
@@ -143,14 +142,11 @@
       weightCell.textContent = entry.weight;
       row.appendChild(weightCell);
 
-      // Weekly average cell
-      const weeklyAvgCell = document.createElement("td");
+     
       // Calculate average for entries on the same date
       const sameDateEntries = weightData.filter(e => e.date === entry.date);
       let avgForDate = sameDateEntries.reduce((acc, e) => acc + e.weight, 0) / sameDateEntries.length;
-      weeklyAvgCell.textContent = avgForDate.toFixed(1);
-      row.appendChild(weeklyAvgCell);
-
+      
       // Notes cell
       const notesCell = document.createElement("td");
       notesCell.textContent = entry.notes || "";
@@ -266,7 +262,7 @@
         {
           label: "Daily Avg Weight",
           data: avgWeights,
-          borderColor: "blue",
+          borderColor: "#36A2EB",
           fill: false,
           pointStyle: "circle",
           pointRadius: 3,
@@ -276,7 +272,7 @@
         {
           label: "Trendline",
           data: trendline,
-          borderColor: "red",
+          borderColor: "#FF6384",
           borderDash: [5, 5],
           fill: false,
           borderWidth: 2,
