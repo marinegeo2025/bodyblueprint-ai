@@ -242,8 +242,8 @@ function deleteMeal(index) {
   document.getElementById("totalCalories").innerText = totalCalories;
   document.getElementById("totalProtein").innerText = totalProtein;
 
-  const caloriePercent = Math.min(Math.floor((totalCalories / targetCalories) * 100), 100);
-  const proteinPercent = Math.min(Math.floor((totalProtein / targetProtein) * 100), 100);
+  const caloriePercent = Math.min(Math.floor((totalCalories / parseFloat(targetCalories) * 100), 100);
+  const proteinPercent = Math.min(Math.floor((parseFloat(totalProtein) / parseFloat(targetProtein)) * 100), 100);
 
   document.getElementById("calorieProgress").style.width = `${caloriePercent}%`;
   document.getElementById("proteinProgress").style.width = `${proteinPercent}%`;
@@ -273,7 +273,7 @@ function deleteMeal(index) {
   document.getElementById("totalProtein").innerText = totalProtein;
 
   document.getElementById("calorieProgress").style.width = `${Math.min((totalCalories / targetCalories) * 100, 100)}%`;
-  document.getElementById("proteinProgress").style.width = `${Math.min((totalProtein / tProtein) * 100, 100)}%`;
+  document.getElementById("proteinProgress").style.width = `${Math.min(Math.floor((parseFloat(totalProtein) / parseFloat(tProtein)) * 100), 100)}%`;
 
   // Directly setting colors again when restoring
   document.getElementById("calorieProgress").style.backgroundColor = "#FF9F40";  // Orange
