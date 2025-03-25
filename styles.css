@@ -176,4 +176,16 @@ button:hover {
 .input-area button#askButton:hover {
   background-color: #3da5a5; /* Slightly darker teal for hover effect */
 }
+.button5 {
+  background-color: #4BC0C0;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
+.button5:hover {
+  background-color: #3da5a5; /* Slightly Darker Zen Grey on Hover */
+  opacity: 0.8;
+}
