@@ -233,58 +233,55 @@ function deleteMeal(index) {
 
         // ---- HELPER: UPDATE PROGRESS BARS ----
         function updateProgress(calories, protein, targetCalories, targetProtein) {
-          const oldCals = parseInt(localStorage.getItem("totalCalories")) || 0;
-          const oldProt = parseInt(localStorage.getItem("totalProtein")) || 0;
+  const oldCals = parseInt(localStorage.getItem("totalCalories")) || 0;
+  const oldProt = parseInt(localStorage.getItem("totalProtein")) || 0;
 
-          const totalCalories = oldCals + calories;
-          const totalProtein = oldProt + protein;
+  const totalCalories = oldCals + calories;
+  const totalProtein = oldProt + protein;
 
-          document.getElementById("totalCalories").innerText = totalCalories;
-          document.getElementById("totalProtein").innerText = totalProtein;
+  document.getElementById("totalCalories").innerText = totalCalories;
+  document.getElementById("totalProtein").innerText = totalProtein;
 
-          const caloriePercent = Math.min(Math.floor((totalCalories / targetCalories) * 100), 100);
-          const proteinPercent = Math.min(((totalProtein / targetProtein) * 100), 100);
+  const caloriePercent = Math.min(Math.floor((totalCalories / targetCalories) * 100), 100);
+  const proteinPercent = Math.min(Math.floor((totalProtein / targetProtein) * 100), 100);
 
-          document.getElementById("calorieProgress").style.width = `${caloriePercent}%`;
-          document.getElementById("proteinProgress").style.width = `${proteinPercent}%`;
+  document.getElementById("calorieProgress").style.width = `${caloriePercent}%`;
+  document.getElementById("proteinProgress").style.width = `${proteinPercent}%`;
 
+  // Directly setting colors
+  document.getElementById("calorieProgress").style.backgroundColor = "#FF9F40";  // Orange
+  document.getElementById("proteinProgress").style.backgroundColor = "#FFCD56";  // Yellow
 
-          // If you have custom color classes, set them
-          setProgressBarColor("calorieProgress", "#FF9F40");  // Orange
-          setProgressBarColor("proteinProgress", "#FFCD56");  // Yellow
+  localStorage.setItem("totalCalories", totalCalories);
+  localStorage.setItem("totalProtein", totalProtein);
+}
 
-
-          localStorage.setItem("totalCalories", totalCalories);
-          localStorage.setItem("totalProtein", totalProtein);
-        }
 
         // ---- HELPER: RESTORE UI FROM LOCALSTORAGE ON PAGE LOAD ----
         function updateUIFromStorage() {
-          console.log("🔄 Restoring UI from localStorage...");
-          document.getElementById("mealList").innerHTML = "";
+  document.getElementById("mealList").innerHTML = "";
 
-          const meals = JSON.parse(localStorage.getItem("mealHistory")) || [];
-          meals.forEach((m, i) => updateMealList(m.name, m.calories, m.protein, i));
+  const meals = JSON.parse(localStorage.getItem("mealHistory")) || [];
+  meals.forEach((m, i) => updateMealList(m.name, m.calories, m.protein, i));
 
-          const totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
-          const totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
-          const targetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
-          const tProtein = parseInt(localStorage.getItem("targetProtein")) || 100;
+  const totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
+  const totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
+  const targetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
+  const tProtein = parseInt(localStorage.getItem("targetProtein")) || 100;
 
-          document.getElementById("totalCalories").innerText = totalCalories;
-          document.getElementById("totalProtein").innerText = totalProtein;
+  document.getElementById("totalCalories").innerText = totalCalories;
+  document.getElementById("totalProtein").innerText = totalProtein;
 
-          document.getElementById("calorieProgress").style.width = `${Math.min((totalCalories / targetCalories) * 100, 100)}%`;
-          document.getElementById("proteinProgress").style.width = `${Math.min((totalProtein / tProtein) * 100, 100)}%`;
+  document.getElementById("calorieProgress").style.width = `${Math.min((totalCalories / targetCalories) * 100, 100)}%`;
+  document.getElementById("proteinProgress").style.width = `${Math.min((totalProtein / tProtein) * 100, 100)}%`;
 
-          restoreProgressBarColor("calorieProgress", "green");
-          restoreProgressBarColor("proteinProgress", "yellow");
+  // Directly setting colors again when restoring
+  document.getElementById("calorieProgress").style.backgroundColor = "#FF9F40";  // Orange
+  document.getElementById("proteinProgress").style.backgroundColor = "#9966FF";  // Purple
 
-          const dailySummary = localStorage.getItem("dailySummary") || "Awaiting meal entries...";
-          document.getElementById("dailySummary").innerText = dailySummary;
-
-          console.log("✅ UI restored from localStorage!");
-        }
+  const dailySummary = localStorage.getItem("dailySummary") || "Awaiting meal entries...";
+  document.getElementById("dailySummary").innerText = dailySummary;
+}
 
         // Call once on load
         updateUIFromStorage();
@@ -294,14 +291,13 @@ function deleteMeal(index) {
           const color = localStorage.getItem(`${barId}-color`) || defaultColor;
           document.getElementById(barId).classList.add(color);
         }
-        function setProgressBarColor(barId, hexColor) {
-  const progBar = document.getElementById(barId);
-  if (progBar) {
-    progBar.style.backgroundColor = hexColor; 
-    localStorage.setItem(`${barId}-color`, hexColor);
-  }
-}
-
+        function setProgressBarColor(barId, color) {
+          const progBar = document.getElementById(barId);
+          if (progBar) {
+            progBar.classList.add(color);
+            localStorage.setItem(`${barId}-color`, color);
+          }
+        }
       });
     </script>
   </body>
