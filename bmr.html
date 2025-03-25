@@ -46,7 +46,7 @@
             <option value="high">5x per week</option>
           </select><br /><br />
 
-          <button type="submit">Calculate TDEE</button>
+          <button id="button4" type="submit">Calculate TDEE</button>
         </form>
 
         <div id="bmrResults"></div>
@@ -59,17 +59,17 @@
 
         <label for="cutCalories">Cut:</label>
         <input type="number" id="cutCalories" placeholder="Enter deficit (e.g. 250)" />
-        <button onclick="setGoal('cut')">Set Cut Goal</button>
+        <button id="button3" onclick="setGoal('cut')">Set Cut Goal</button>
         <br /><br />
 
         <label for="bulkCalories">Bulk:</label>
         <input type="number" id="bulkCalories" placeholder="Enter surplus (e.g. 250)" />
-        <button onclick="setGoal('bulk')">Set Bulk Goal</button>
+        <button id="button2" onclick="setGoal('bulk')">Set Bulk Goal</button>
         <br /><br />
 
         <label for="maintainCalories">Maintain:</label>
         <input type="number" id="maintainCalories" placeholder="Adjust maintain kcal" />
-        <button onclick="setGoal('maintain')">Set Maintain Goal</button>
+        <button id="button1" onclick="setGoal('maintain')">Set Maintain Goal</button>
       </section>
     </main>
 

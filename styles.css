@@ -115,7 +115,7 @@ button:hover {
   border-color: red;
 }
 #weightForm button[type="submit"] {
-  background-color: #9966FF;
+  background-color: #4BC0C0;
   color: #ffffff;
   border: none;
   padding: 10px 15px;
@@ -165,5 +165,15 @@ button:hover {
   padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
+}
+.input-area button#askButton {
+  background-color: #4BC0C0; /* Teal (same as button4) */
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+}
+
+.input-area button#askButton:hover {
+  background-color: #3da5a5; /* Slightly darker teal for hover effect */
 }
 
