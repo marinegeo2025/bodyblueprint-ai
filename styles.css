@@ -58,11 +58,11 @@ main {
 /* --------------- Hero Section (Optional) --------------- */
 .hero {
   background: linear-gradient(120deg, #262626, #333333);
-  color: #fff;
+  color: #ffffff;
   padding: 4em 1em;
   text-align: center;
   margin-bottom: 2em;
-  border-radius: 0 0 20px 20px;
+  border-radius: 0;
 }
 .hero h1 {
   font-size: 2.5rem;
@@ -77,8 +77,8 @@ main {
 }
 .hero .cta-button {
   display: inline-block;
-  background-color: #5E9FD4;
-  color: #fff;
+  background-color: #3B9EFF;
+  color: #ffffff;
   padding: 0.75em 1.5em;
   border-radius: 5px;
   font-weight: 600;
@@ -87,14 +87,93 @@ main {
   margin-top: 1em;
 }
 .hero .cta-button:hover {
-  background-color: #4A8ABB;
+  background-color: #318ae0;
 }
 
+/* Enhanced card styling */
+.feature, .testimonial, .privacy {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 1.5em;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* -------- Features Section (Cards) -------- */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5em;
+  margin: 3em 0;
+}
+
+.feature {
+  background: #fff;
+  border-radius: 6px;
+  padding: 1.5em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.feature h3 {
+  margin-bottom: 0.5em;
+  font-size: 1.2rem;
+   white-space: nowrap;       /* Prevents title from wrapping */
+  overflow: hidden;          /* Hides overflowing text if too long */
+  text-overflow: ellipsis;   /* Adds ellipsis (...) if text overflows */
+}
+
+.feature p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.feature i {
+  color: #3B9EFF; /* Updated to your sky-blue accent */
+  margin-right: 0.3em;
+}
+
+/* -------- Testimonial Card (optional) -------- */
+.testimonial {
+  background: #fff;
+  padding: 2em;
+  margin-bottom: 2em;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial p {
+  font-style: italic;
+  margin-bottom: 1em;
+}
+
+.testimonial .author {
+  font-weight: 600;
+}
+
+/* -------- Privacy Section (card style) -------- */
+.privacy {
+  background: #fff;
+  padding: 1.5em;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.privacy h4 {
+  margin-bottom: 0.5em;
+}
+
+.privacy p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
 
 
 /* ----------------- Button Styles ----------------- */
 button {
-  background-color: #444;
+  background-color: #444444;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -104,7 +183,7 @@ button {
 }
 
 button:hover {
-  background-color: #333;
+  background-color: #333333;
   opacity: 0.8;
 }
 
@@ -159,7 +238,7 @@ button:hover {
 /* --------------- Progress Bar Styles --------------- */
 .progress-bar-container {
   width: 100%;
-  background-color: #ddd;
+  background-color: #dddddd;
   border-radius: 5px;
   overflow: hidden;
   margin: 10px 0;
@@ -235,7 +314,7 @@ button:hover {
 /* --------------- Footer Note --------------- */
 .footer-note {
   font-size: 0.8rem;
-  color: #777;
+  color: #777777;
   margin-top: 2em;
 }
 
