@@ -1,21 +1,33 @@
-/* General Styles */
-body {
-  font-family: Arial, sans-serif;
+/* ---------------------------------------------------
+   Modern Biohacker / BodyBlueprint AI Updated Styles
+   ---------------------------------------------------*/
+
+/* ----------------- Basic Global Styling ----------------- */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
   background-color: #f4f4f4;
   text-align: center;
 }
 
 .small-text {
   font-size: 0.65em; /* Adjust the size as needed */
-  color: #666666; /* Optional: Make it a softer color */
+  color: #666666; /* Softer color */
 }
 
+/* ----------------- Navigation Styles ----------------- */
 nav ul {
   list-style-type: none;
   padding: 10px;
   background: #333333;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
 }
 
 nav ul li {
@@ -29,15 +41,57 @@ nav ul li a {
   font-size: 18px;
 }
 
+nav ul li a:hover {
+  text-decoration: underline;
+}
+
+/* --------------- Main Container / Card --------------- */
 main {
   max-width: 600px;
   margin: 20px auto;
   padding: 20px;
-  background: white;
+  background: #ffffff;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* --------------- Hero Section (Optional) --------------- */
+/* Use this if you have a separate hero banner on your index page */
+.hero {
+  background: linear-gradient(120deg, #262626, #333333);
+  color: #fff;
+  padding: 4em 1em;
+  text-align: center;
+  margin-bottom: 2em;
+  border-radius: 0 0 20px 20px; /* Soft corner at bottom if desired */
+}
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5em;
+  font-weight: 700;
+}
+.hero p {
+  max-width: 600px;
+  margin: 0.5em auto;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+.hero .cta-button {
+  display: inline-block;
+  background-color: #4BC0C0; /* Teal */
+  color: #fff;
+  padding: 0.75em 1.5em;
+  border-radius: 5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease;
+  margin-top: 1em;
+}
+.hero .cta-button:hover {
+  background-color: #3da5a5;
+}
+
+/* ----------------- Button Styles ----------------- */
 button {
   background-color: #444; /* Zen Dark Grey */
   color: white;
@@ -45,14 +99,65 @@ button {
   padding: 10px 15px;
   cursor: pointer;
   border-radius: 5px;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
 }
 
 button:hover {
-  background-color: #333; /* Slightly Darker Zen Grey on Hover */
+  background-color: #333; /* Slightly Darker on Hover */
   opacity: 0.8;
 }
 
-/* Progress Bar Styles */
+/* If you prefer distinct colored buttons, see below: */
+
+/* Pink */
+#button1 {
+  background-color: #FF6384;
+}
+#button1:hover {
+  opacity: 0.85;
+}
+
+/* Orange */
+#button2 {
+  background-color: #FF9F40;
+}
+#button2:hover {
+  opacity: 0.85;
+}
+
+/* Yellow */
+#button3 {
+  background-color: #FFCD56;
+}
+#button3:hover {
+  opacity: 0.85;
+}
+
+/* Teal */
+#button4 {
+  background-color: #4BC0C0;
+}
+#button4:hover {
+  opacity: 0.85;
+}
+
+/* Generic button with teal color */
+.button5,
+.input-area button#askButton {
+  background-color: #4BC0C0;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.button5:hover,
+.input-area button#askButton:hover {
+  background-color: #3da5a5;
+}
+
+/* --------------- Progress Bar Styles --------------- */
 .progress-bar-container {
   width: 100%;
   background-color: #ddd;
@@ -78,7 +183,7 @@ button:hover {
   background-color: #f4c542; /* Mellow Yellow for Protein */
 }
 
-/* Activity Level Section */
+/* --------------- Activity Level Section --------------- */
 .activity-level {
   margin-top: 20px;
 }
@@ -94,12 +199,14 @@ button:hover {
   font-size: 16px;
   border-radius: 5px;
   border: 1px solid #cccccc;
-  
 }
+
 .intro-section p,
 #aiResponse p {
   text-align: justify;
 }
+
+/* --------------- Delete Button --------------- */
 .delete-btn {
   font-size: 0.8rem;
   padding: 1px 5px;
@@ -110,10 +217,13 @@ button:hover {
   color: #888888;
   cursor: pointer;
 }
+
 .delete-btn:hover {
   color: red;
   border-color: red;
 }
+
+/* --------------- Weight Form Submit --------------- */
 #weightForm button[type="submit"] {
   background-color: #4BC0C0;
   color: #ffffff;
@@ -127,65 +237,19 @@ button:hover {
 #weightForm button[type="submit"]:hover {
   background-color: #3da5a5;
 }
-/* Button 1 - Pink */
-#button1 {
-  background-color: #FF6384;
-  color: #ffffff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
+
+/* --------------- Footer Note --------------- */
+.footer-note {
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 2em;
 }
 
-/* Button 2 - Orange */
-#button2 {
-  background-color: #FF9F40;
-  color: #ffffff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
+.footer-note a {
+  color: inherit;
+  text-decoration: none;
 }
 
-/* Button 3 - Yellow */
-#button3 {
-  background-color: #FFCD56;
-  color: #ffffff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Button 4 - Teal */
-#button4 {
-  background-color: #4BC0C0;
-  color: #ffffff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.input-area button#askButton {
-  background-color: #4BC0C0; /* Teal (same as button4) */
-  color: #ffffff;
-  border: none;
-  border-radius: 5px;
-}
-
-.input-area button#askButton:hover {
-  background-color: #3da5a5; /* Slightly darker teal for hover effect */
-}
-.button5 {
-  background-color: #4BC0C0;
-  color: #ffffff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.button5:hover {
-  background-color: #3da5a5; /* Slightly Darker Zen Grey on Hover */
-  opacity: 0.8;
+.footer-note a:hover {
+  text-decoration: underline;
 }

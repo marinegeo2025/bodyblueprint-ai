@@ -4,63 +4,241 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BodyBlueprint AI</title>
-    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <!-- Inline CSS for demo (move to styles.css as desired) -->
+    <style>
+      /* Basic resets & fonts */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background: #f6f6f6;
+        color: #333;
+      }
+      nav {
+        background: #222;
+        padding: 1em;
+      }
+      nav ul {
+        list-style: none;
+        display: flex;
+        justify-content: flex-start;
+      }
+      nav ul li {
+        margin-right: 1.5em;
+      }
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      nav ul li a:hover {
+        text-decoration: underline;
+      }
+
+      /* HERO SECTION */
+      .hero {
+        position: relative;
+        background: linear-gradient(120deg, #262626, #333333);
+        color: #fff;
+        padding: 5em 1em;
+        text-align: center;
+      }
+      .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 0.5em;
+        font-weight: 700;
+      }
+      .hero p {
+        max-width: 600px;
+        margin: 0.5em auto 1.5em auto;
+        font-size: 1.1rem;
+        line-height: 1.5;
+      }
+      .hero .cta-button {
+        display: inline-block;
+        background-color: #42f59e; /* neon green accent */
+        color: #000;
+        padding: 0.75em 1.5em;
+        border-radius: 4px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.3s ease;
+      }
+      .hero .cta-button:hover {
+        background-color: #23da80;
+      }
+
+      /* Main Content Area */
+      main {
+        margin: 0 auto;
+        max-width: 900px;
+        padding: 1em;
+      }
+
+      /* Features Section */
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5em;
+        margin: 3em 0;
+      }
+      .feature {
+        background: #fff;
+        border-radius: 6px;
+        padding: 1.5em;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .feature h3 {
+        margin-bottom: 0.5em;
+        font-size: 1.2rem;
+      }
+      .feature p {
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+      .feature i {
+        color: #42f59e; /* match CTA accent */
+        margin-right: 0.3em;
+      }
+
+      /* Optional Testimonial Section */
+      .testimonial {
+        background: #fff;
+        padding: 2em;
+        margin-bottom: 2em;
+        border-radius: 6px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .testimonial p {
+        font-style: italic;
+        margin-bottom: 1em;
+      }
+      .testimonial .author {
+        font-weight: 600;
+      }
+
+      /* Privacy / Footer Info */
+      .privacy {
+        background: #fff;
+        padding: 1.5em;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .privacy h4 {
+        margin-bottom: 0.5em;
+      }
+      .privacy p {
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+      .footer-note {
+        font-size: 0.8rem;
+        color: #777;
+        margin-top: 2em;
+        text-align: center;
+      }
+      .footer-note a {
+        color: inherit;
+      }
+    </style>
   </head>
+
   <body>
+    <!-- NAVIGATION -->
     <nav>
       <ul>
         <li><a href="index.html">Home</a></li>
-        <li><a href="bmr.html">BMR</a></li>
-        <li><a href="weight.html">Weight</a></li>
-        <li><a href="meals.html">Meals</a></li>
-        <li><a href="chat.html">AI Chat</a></li>
+        <li><a href="bmr.html">Blueprint</a></li>
+        <li><a href="weight.html">Metrics</a></li>
+        <li><a href="meals.html">Fuel</a></li>
+        <li><a href="chat.html">AI Trainer</a></li>
       </ul>
     </nav>
 
-    <main class="landing">
+    <!-- HERO SECTION -->
+    <section class="hero">
       <h1>BodyBlueprint AI</h1>
-      <p class="tagline">
-        Unlock Your Body's Full Potential. Guided by AI.
+      <p>Unlock Your Body's Full Potential. Guided by AI.</p>
+      <p>
+        BodyBlueprint AI analyzes your weight, meals, and habits to build the
+        lean, powerful version of yourself — smarter, faster, and fully private.
       </p>
+      <a href="bmr.html" class="cta-button">Start Your Transformation</a>
+    </section>
 
-      <p class="subtext">
-        BodyBlueprint AI analyzes your weight, meals, and habits to build the lean, powerful version of yourself — smarter, faster, and fully private.
-      </p>
-
+    <!-- MAIN CONTENT -->
+    <main>
+      <!-- FEATURES -->
       <section class="features">
         <div class="feature">
-          <h3>🔋 Smart BMR & Goal Setting</h3>
-          <p>Calculate your true daily needs and target precise fitness goals.</p>
+          <h3><i class="fas fa-bolt"></i>Smart BMR & Goal Setting</h3>
+          <p>
+            Calculate your true daily needs and set precise fitness targets.
+          </p>
         </div>
         <div class="feature">
-          <h3>🧠 AI Meal Analysis & Suggestions</h3>
-          <p>Log your meals and get immediate calorie, protein, and optimization feedback.</p>
+          <h3><i class="fas fa-utensils"></i>AI Meal Analysis</h3>
+          <p>
+            Log your meals for immediate calorie, protein, and optimization
+            feedback.
+          </p>
         </div>
         <div class="feature">
-          <h3>📈 Weight Trend Prediction</h3>
-          <p>Track, visualize, and predict your weight trajectory with science-backed AI insights.</p>
+          <h3><i class="fas fa-chart-line"></i>Weight Trend Prediction</h3>
+          <p>
+            Track, visualize, and forecast your weight trajectory with science-backed insights.
+          </p>
         </div>
         <div class="feature">
-          <h3>🔐 100% Private</h3>
+          <h3><i class="fas fa-lock"></i>100% Private</h3>
           <p>Your data stays on your device. No accounts. No ads. No tracking.</p>
         </div>
       </section>
 
-      <section class="cta">
-        <a href="bmr.html" class="cta-button">Start Your Transformation</a>
+      <!-- OPTIONAL TESTIMONIAL / SOCIAL PROOF -->
+      <!-- Remove or uncomment once you have user quotes -->
+      <!--
+      <section class="testimonial">
+        <p>"I lost 10 lbs in 6 weeks using BodyBlueprint AI's meal planner. It's like having a personal coach 24/7!"</p>
+        <p class="author">— Jordan, Early Beta User</p>
       </section>
+      -->
 
+      <!-- PRIVACY SECTION -->
       <section class="privacy">
         <h4>Data Security & Privacy</h4>
         <p>
-          BodyBlueprint AI is designed with your privacy in mind. All data is stored locally on your device. Some information you input (such as meal descriptions) is sent securely to OpenAI's API for processing. Learn more about their policies <a href="https://openai.com/security-and-privacy/" target="_blank">here</a>.
+          BodyBlueprint AI is designed with your privacy in mind. All data is
+          stored locally on your device. Some information you input (such as meal
+          descriptions) is sent securely to
+          <a
+            href="https://openai.com/security-and-privacy/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >OpenAI's API</a
+          >
+          for processing.
         </p>
       </section>
 
       <p class="footer-note">
-        &copy; 2025 BodyBlueprint AI. Built on <a href="https://glitch.com/" target="_blank">Glitch</a>.
+        &copy; 2025 BodyBlueprint AI. Built on
+        <a href="https://glitch.com/" target="_blank" rel="noopener noreferrer"
+          >Glitch</a
+        >.
       </p>
     </main>
-    <footer></footer>
   </body>
 </html>
