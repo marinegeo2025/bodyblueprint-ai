@@ -47,69 +47,58 @@
     </section>
 
     <main style="margin-top: -2em;">
-      <section id="meals" class="page">
-        <!-- Reset Day Button -->
-        <button id="resetDataButton" class="reset-btn">
-          Reset Day
-        </button>
+  <section id="meals" class="page">
 
-        <!-- Meal Input Form -->
-        <form id="mealForm" style="text-align: left;">
-          <h2>Add a Meal</h2>
-          <p>Enter your meal below for AI-powered nutrition analysis.</p>
+    <!-- Main Title -->
+    <h2>Meal Tracker</h2>
+    <p>Log your meals and instantly get calorie &amp; protein estimates to power your results.</p>
 
-          <label for="mealInput">Describe your meal:</label><br />
-          <input
-            type="text"
-            id="mealInput"
-            placeholder="E.g., 2 eggs and bread"
-            required
-            style="width: 70%;"
-          />
-          <button type="submit" id="addMealButton" class="button5">
-            Add Meal
-          </button>
-        </form>
+     <!-- Reset Button properly left aligned -->
+    <!-- Reset Button: put inside a block-level div -->
+<div class="reset-wrapper">
+  <button id="resetDataButton" class="reset-btn">Reset Day</button>
+</div>
 
-        <hr style="margin: 2em 0;" />
 
-        <!-- Goals / Progress Section -->
-        <h2>Today's Nutrition</h2>
-        <p>
-          <strong>Goal:</strong>
-          <span id="goalDisplay">None</span>
-        </p>
-        <p>
-          <strong>Calories:</strong>
-          <span id="totalCalories">0</span> /
-          <span id="targetCalories">0</span> kcal
-        </p>
-        <div class="progress-bar-container">
-          <div id="calorieProgress" class="progress-bar green"></div>
-        </div>
+    <!-- Add Meal Form -->
+    <form id="mealForm" style="text-align: left;">
+      <h3>Add a Meal</h3>
+      <p>Describe your meal below:</p>
 
-        <p>
-          <strong>Protein:</strong>
-          <span id="totalProtein">0</span>g /
-          <span id="targetProtein">0</span>g
-        </p>
-        <div class="progress-bar-container">
-          <div id="proteinProgress" class="progress-bar yellow"></div>
-        </div>
+      <label for="mealInput">Meal:</label><br />
+      <input type="text" id="mealInput" placeholder="E.g., 2 eggs and toast" required style="width: 70%;" />
+      <button type="submit" id="addMealButton" class="button5">Add Meal</button>
+    </form>
 
-        <hr style="margin: 2em 0;" />
+    <hr style="margin: 2em 0;" />
 
-        <!-- Meal Records -->
-        <h2>Meal Records</h2>
-        <ul id="mealList"></ul>
+    <!-- Today's Nutrition Section -->
+    <h3>Today's Nutrition</h3>
+    <p><strong>Goal:</strong> <span id="goalDisplay">None</span></p>
+    <p><strong>Calories:</strong> <span id="totalCalories">0</span> / <span id="targetCalories">0</span> kcal</p>
+    <div class="progress-bar-container">
+      <div id="calorieProgress" class="progress-bar" style="width: 0%; background-color: #42F59E;"></div>
+    </div>
 
-        <hr style="margin: 2em 0;" />
+    <p><strong>Protein:</strong> <span id="totalProtein">0</span>g / <span id="targetProtein">0</span>g</p>
+    <div class="progress-bar-container">
+      <div id="proteinProgress" class="progress-bar" style="width: 0%; background-color: #9966FF;"></div>
+    </div>
 
-        <!-- Daily Summary from AI -->
-        <h2>Daily Summary</h2>
-        <p id="dailySummary">Awaiting meal entries...</p>
-      </section>
-    </main>
+    <hr style="margin: 2em 0;" />
+
+    <!-- Meal Records -->
+    <h3>Meal Records</h3>
+    <ul id="mealList"></ul>
+
+    <hr style="margin: 2em 0;" />
+
+    <!-- Daily Summary -->
+    <h3>Daily Summary</h3>
+    <p id="dailySummary">Awaiting meal entries...</p>
+
+  </section>
+</main>
 
     <footer class="footer-note">
       <p>&copy; 2025 BodyBlueprint AI</p>

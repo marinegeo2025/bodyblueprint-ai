@@ -3,10 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>AI Chat - 本来の面目 Honrai no Menmoku</title>
+    <title>AI Trainer | BodyBlueprint AI</title>
+
+    <!-- Use your updated Modern Biohacker stylesheet here -->
     <link rel="stylesheet" href="styles.css" />
+
+    <!-- Optional inline chat page styling -->
     <style>
-      /* Minimal styling for the chat page */
+      /* Minimal styling for the chat page that complements 'styles.css' */
 
       .chat-container {
         max-width: 600px;
@@ -43,19 +47,6 @@
         resize: vertical;
       }
 
-      .input-area button {
-        align-self: flex-end;
-        padding: 8px 16px;
-        cursor: pointer;
-        background-color: #444;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-      }
-      .input-area button:hover {
-        background-color: #333;
-      }
-
       .response-area {
         position: relative;
         border: 1px solid #ccc;
@@ -79,72 +70,53 @@
       .copy-button:hover {
         background-color: #ddd;
       }
-
-      /* Basic nav styling */
-      nav ul {
-        list-style-type: none;
-        padding: 10px;
-        background: #333333;
-        text-align: center;
-      }
-      nav ul li {
-        display: inline-block;
-        margin: 0 10px;
-      }
-      nav ul li a {
-        color: white;
-        text-decoration: none;
-        font-size: 18px;
-      }
-
-      footer {
-        text-align: center;
-        margin-top: 40px;
-        font-size: 0.9em;
-        color: #555;
-      }
     </style>
   </head>
+
   <body>
+    <!-- NAVIGATION -->
     <nav>
       <ul>
-        <li><a href="index.html">家 Home</a></li>
-        <li><a href="bmr.html">強 BMR</a></li>
-        <li><a href="weight.html">落 Weight</a></li>
-        <li><a href="meals.html">食 Meals</a></li>
-        <li><a href="chat.html">話 AI Chat</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="bmr.html">Blueprint</a></li>
+        <li><a href="weight.html">Metrics</a></li>
+        <li><a href="meals.html">Fuel</a></li>
+        <li><a href="chat.html">AI Trainer</a></li>
       </ul>
     </nav>
 
+    <!-- MAIN CHAT CONTAINER -->
     <main class="chat-container">
       <!-- Introduction -->
       <div class="intro-section">
-        <h1>Meet Al, Your Elite Fitness Trainer</h1>
-        <p>
-        <p style="text-align: center;">
-  <strong>Hello, I’m Al, your personal, elite fitness trainer built on evidence-based, science-backed AI.</strong>
-</p>
-My goal is to help you achieve your aesthetic and performance targets by combining advanced training strategies,
-          data-driven meal prep, and intelligent supplementation tips that actually work. Whether you’re looking for new
-          ways to boost muscle definition, streamline your nutrition, or fine-tune recovery, I’m here to provide specific,
-          science-based guidance—no fluff or quick fixes.
+        <h1>Meet Al, Your BodyBlueprint AI Trainer</h1>
+        <p style="text-align: center; font-weight: bold;">
+          A high-performance, evidence-based coach designed to accelerate your body transformation.
         </p>
         <p>
-          From crafting a personalized weekly workout plan to outlining precise macros for different fitness phases, I’ll
-          make sure each recommendation is both realistic and aligned with your goals. Feel free to ask about any aspect of
-          training, dietary planning, or supplementation. I’ll translate the latest research into practical steps and strategies
-          that fit your lifestyle, ensuring you stay motivated and consistently see progress.
+          Welcome! I’m <strong>Al</strong>, your personal fitness coach built on
+          cutting-edge AI. My mission is to optimize your training, dial in your nutrition,
+          and refine your supplementation based on real science—no myths or quick-fix gimmicks.
         </p>
         <p>
-          Go ahead—type your questions below. Once I respond, you can easily copy my answer using the small selection icon in
-          the corner of the text box. Let’s start your journey together and maximize your results!
+          Whether you want a new hypertrophy program, strategies for faster fat loss, or
+          guidance on macros and meal timing, I’ve got you covered. I’ll translate the latest
+          research into actionable steps aligned with your lifestyle and goals.
+        </p>
+        <p>
+          Ask me anything: from crafting a personalized workout split to practical tips on
+          boosting recovery. Once I respond, you can easily copy my answer using the button
+          in the corner. Let’s unlock your full potential together!
         </p>
       </div>
 
       <!-- User input area -->
       <div class="input-area">
-        <textarea id="userQuestion" placeholder="Ask me about nutrition, training, supplementation..."></textarea>
-        <button id="askButton">Ask Al</button>
+        <textarea
+          id="userQuestion"
+          placeholder="Ask me about workouts, macros, supplementation, etc."
+        ></textarea>
+        <button id="askButton" class="button5">Ask Al</button>
       </div>
 
       <!-- AI response area with copy button -->
@@ -154,50 +126,50 @@ My goal is to help you achieve your aesthetic and performance targets by combini
       </div>
     </main>
 
-    <footer>
-      <p>本来の面目 Honrai no Menmoku &copy; 2025</p>
+    <footer class="footer-note">
+      <p>&copy; 2025 BodyBlueprint AI</p>
     </footer>
 
+    <!-- CLIENT-SIDE SCRIPT -->
     <script>
-      const askButton = document.getElementById("askButton");
-      const userQuestion = document.getElementById("userQuestion");
-      const aiResponse = document.getElementById("aiResponse");
-      const copyButton = document.getElementById("copyButton");
+      const askButton = document.getElementById('askButton');
+      const userQuestion = document.getElementById('userQuestion');
+      const aiResponse = document.getElementById('aiResponse');
+      const copyButton = document.getElementById('copyButton');
 
-      // On "Ask Alex," send the question to /api/chat
-      askButton.addEventListener("click", async () => {
+      // Send user's question to /api/chat
+      askButton.addEventListener('click', async () => {
         const question = userQuestion.value.trim();
-        if (!question) return; // ignore empty
+        if (!question) return; // ignore empty input
 
-        aiResponse.textContent = "Processing your request...";
-        
+        aiResponse.textContent = 'Processing your request...';
+
         try {
-          // Make a POST request to /api/chat
-          const response = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question })
+          // POST to /api/chat
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question }),
           });
 
           if (!response.ok) {
-            aiResponse.textContent = "Server error. Please try again.";
+            aiResponse.textContent = 'Server error. Please try again.';
             return;
           }
           const data = await response.json();
           if (data.answer) {
             aiResponse.textContent = data.answer;
           } else {
-            aiResponse.textContent = data.error || "No answer received.";
+            aiResponse.textContent = data.error || 'No answer received.';
           }
-
         } catch (err) {
-          console.error("❌ Chat request failed:", err);
-          aiResponse.textContent = "Network or server error. Please try again.";
+          console.error('❌ Chat request failed:', err);
+          aiResponse.textContent = 'Network or server error. Please try again.';
         }
       });
 
       // Copy the AI response text
-      copyButton.addEventListener("click", () => {
+      copyButton.addEventListener('click', () => {
         const range = document.createRange();
         range.selectNodeContents(aiResponse);
         const selection = window.getSelection();
@@ -205,10 +177,10 @@ My goal is to help you achieve your aesthetic and performance targets by combini
         selection.addRange(range);
 
         try {
-          document.execCommand("copy");
-          alert("AI's response copied to clipboard!");
+          document.execCommand('copy');
+          alert('AI response copied to clipboard!');
         } catch (err) {
-          console.error("Failed to copy text:", err);
+          console.error('Failed to copy text:', err);
         }
         selection.removeAllRanges();
       });
