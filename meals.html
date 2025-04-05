@@ -3,303 +3,332 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>本来の面目, Honrai No Menmoku</title>
+    <title>Fuel | BodyBlueprint AI</title>
+
+    <!-- Link to your updated Modern Biohacker CSS -->
     <link rel="stylesheet" href="styles.css" />
+
     <style>
+      /* Additional small tweaks (optional) */
       #mealList {
         list-style-type: none;
         padding: 0;
+        text-align: left;
       }
       #mealList li {
         margin-bottom: 5px;
       }
+      .reset-btn {
+        float: right; 
+        margin-bottom: 1em;
+      }
     </style>
   </head>
+
   <body>
+    <!-- NAVIGATION -->
     <nav>
       <ul>
-        <li><a href="index.html">家 Home</a></li>
-        <li><a href="bmr.html">強 BMR</a></li>
-        <li><a href="weight.html">落 Weight</a></li>
-        <li><a href="meals.html">食 Meals</a></li>
-        <li><a href="chat.html">話 AI Chat</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="bmr.html">Blueprint</a></li>
+        <li><a href="weight.html">Metrics</a></li>
+        <li><a href="meals.html">Fuel</a></li>
+        <li><a href="chat.html">AI Trainer</a></li>
       </ul>
     </nav>
-    <main>
+
+    <!-- SUB-HERO / PAGE HEADER -->
+    <section class="hero" style="padding: 2.5em 1em;">
+      <h1 style="margin-bottom: 0.3em;">Meal Tracker</h1>
+      <p style="max-width: 600px; margin: 0.5em auto;">
+        Log your meals and instantly get calorie &amp; protein estimates to power
+        your results.
+      </p>
+    </section>
+
+    <main style="margin-top: -2em;">
       <section id="meals" class="page">
-        <h1>Meal Tracker</h1>
-        <button id="resetDataButton" class="reset-btn">Reset Day</button>
+        <!-- Reset Day Button -->
+        <button id="resetDataButton" class="reset-btn">
+          Reset Day
+        </button>
 
-        <p>Enter your meal below and get calorie and protein estimates.</p>
+        <!-- Meal Input Form -->
+        <form id="mealForm" style="text-align: left;">
+          <h2>Add a Meal</h2>
+          <p>Enter your meal below for AI-powered nutrition analysis.</p>
 
-        <form id="mealForm">
           <label for="mealInput">Describe your meal:</label><br />
-          <!-- Updated placeholder to align with server fallback example -->
-          <input type="text" id="mealInput" placeholder="E.g., 2 eggs and bread" required />
-          <button type="submit" id="addMealButton" class="button5" >Add Meal</button>
+          <input
+            type="text"
+            id="mealInput"
+            placeholder="E.g., 2 eggs and bread"
+            required
+            style="width: 70%;"
+          />
+          <button type="submit" id="addMealButton" class="button5">
+            Add Meal
+          </button>
         </form>
 
+        <hr style="margin: 2em 0;" />
+
+        <!-- Goals / Progress Section -->
         <h2>Today's Nutrition</h2>
-        <p><strong>Goal:</strong> <span id="goalDisplay">None</span></p>
-        <p><strong>Calories:</strong> <span id="totalCalories">0</span> / <span id="targetCalories">0</span> kcal</p>
+        <p>
+          <strong>Goal:</strong>
+          <span id="goalDisplay">None</span>
+        </p>
+        <p>
+          <strong>Calories:</strong>
+          <span id="totalCalories">0</span> /
+          <span id="targetCalories">0</span> kcal
+        </p>
         <div class="progress-bar-container">
           <div id="calorieProgress" class="progress-bar green"></div>
         </div>
-        <p><strong>Protein:</strong> <span id="totalProtein">0</span>g / <span id="targetProtein">0</span>g</p>
+
+        <p>
+          <strong>Protein:</strong>
+          <span id="totalProtein">0</span>g /
+          <span id="targetProtein">0</span>g
+        </p>
         <div class="progress-bar-container">
           <div id="proteinProgress" class="progress-bar yellow"></div>
         </div>
 
+        <hr style="margin: 2em 0;" />
+
+        <!-- Meal Records -->
         <h2>Meal Records</h2>
         <ul id="mealList"></ul>
 
+        <hr style="margin: 2em 0;" />
+
+        <!-- Daily Summary from AI -->
         <h2>Daily Summary</h2>
         <p id="dailySummary">Awaiting meal entries...</p>
       </section>
     </main>
 
-    <footer>
-      <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
+    <footer class="footer-note">
+      <p>&copy; 2025 BodyBlueprint AI</p>
     </footer>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const storedGoal = localStorage.getItem("goal") || "None";
-        const storedTargetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
-        const storedWeight = parseFloat(localStorage.getItem("weight")) || 70;
-        const storedActivityLevel = localStorage.getItem("activity") || "moderate";
+      document.addEventListener('DOMContentLoaded', function () {
+        const storedGoal = localStorage.getItem('goal') || 'None';
+        const storedTargetCalories = parseInt(localStorage.getItem('targetCalories')) || 2000;
+        const storedWeight = parseFloat(localStorage.getItem('weight')) || 70;
+        const storedActivityLevel = localStorage.getItem('activity') || 'moderate';
 
-        // Calculate custom protein target
-        document.getElementById("goalDisplay").innerText = storedGoal;
-        document.getElementById("targetCalories").innerText = storedTargetCalories;
+        // Display goal & target calories
+        document.getElementById('goalDisplay').innerText = storedGoal;
+        document.getElementById('targetCalories').innerText = storedTargetCalories;
 
+        // Calculate protein target based on weight & goal
         let proteinMultiplier = 1.2;
-        if (storedGoal.includes("Cut") || storedGoal.includes("Bulk")) proteinMultiplier = 1.6;
-        if (storedActivityLevel === "high") proteinMultiplier = 1.7;
-
+        if (storedGoal.includes('Cut') || storedGoal.includes('Bulk')) proteinMultiplier = 1.6;
+        if (storedActivityLevel === 'high') proteinMultiplier = 1.7;
         const targetProtein = Math.round(storedWeight * proteinMultiplier);
-        document.getElementById("targetProtein").innerText = targetProtein;
-        
-        // ✅ Save to localStorage so the meals page can use it
-        localStorage.setItem("targetProtein", targetProtein);
-        
-                // ---- RESET DAY BUTTON ----
-        document.getElementById("resetDataButton").addEventListener("click", function () {
-          console.log("🔄 Resetting daily meal data...");
-          localStorage.removeItem("mealHistory");
-          localStorage.removeItem("totalCalories");
-          localStorage.removeItem("totalProtein");
-          localStorage.removeItem("dailySummary");
+        document.getElementById('targetProtein').innerText = targetProtein;
+        localStorage.setItem('targetProtein', targetProtein);
 
-          document.getElementById("mealList").innerHTML = "";
-          document.getElementById("totalCalories").innerText = "0";
-          document.getElementById("totalProtein").innerText = "0";
-          document.getElementById("calorieProgress").style.width = "0%";
-          document.getElementById("proteinProgress").style.width = "0%";
-          document.getElementById("dailySummary").innerText = "Awaiting meal entries...";
+        // Reset Day Button
+        document.getElementById('resetDataButton').addEventListener('click', function () {
+          if (!confirm('Reset daily meal data? This will clear all meals for today.')) return;
+          console.log('🔄 Resetting daily meal data...');
+          localStorage.removeItem('mealHistory');
+          localStorage.removeItem('totalCalories');
+          localStorage.removeItem('totalProtein');
+          localStorage.removeItem('dailySummary');
 
-          console.log("✅ Daily meal data has been reset!");
+          document.getElementById('mealList').innerHTML = '';
+          document.getElementById('totalCalories').innerText = '0';
+          document.getElementById('totalProtein').innerText = '0';
+          document.getElementById('calorieProgress').style.width = '0%';
+          document.getElementById('proteinProgress').style.width = '0%';
+          document.getElementById('dailySummary').innerText = 'Awaiting meal entries...';
+
+          console.log('✅ Daily meal data has been reset!');
         });
 
-        // ---- SINGLE-CALL FLOW FOR ADDING A MEAL ----
+        // ----- SINGLE-CALL FLOW FOR ADDING A MEAL -----
         async function addMealSingleCall(userMealInput) {
-          // 1) Load any old meals so we can show the AI the entire day
-          const oldMeals = JSON.parse(localStorage.getItem("mealHistory")) || [];
+          // 1) Load any existing meals from localStorage
+          const oldMeals = JSON.parse(localStorage.getItem('mealHistory')) || [];
 
-          // 2) Build the request body. We pass "previousMeals + new meal"
+          // 2) Build request body with current day data
           const body = {
-            meal: userMealInput, // The newly typed meal
-            previousMeals: oldMeals, // The existing meals so far
-            goal: localStorage.getItem("goal") || "None",
-            targetCalories: parseInt(localStorage.getItem("targetCalories")) || 2000,
-            activityLevel: localStorage.getItem("activity") || "moderate",
-            // If you want BMR for weight trends:
-            BMR: parseInt(localStorage.getItem("bmr")) || 1800,
-            // If you track daily total protein:
-            totalProtein: parseInt(localStorage.getItem("totalProtein")) || 0,
-            // If you have weight data and want the server to see it:
-            weightData: JSON.parse(localStorage.getItem("weightData")) || []
+            meal: userMealInput, 
+            previousMeals: oldMeals, 
+            goal: localStorage.getItem('goal') || 'None',
+            targetCalories: parseInt(localStorage.getItem('targetCalories')) || 2000,
+            activityLevel: localStorage.getItem('activity') || 'moderate',
+            BMR: parseInt(localStorage.getItem('bmr')) || 1800,
+            totalProtein: parseInt(localStorage.getItem('totalProtein')) || 0,
+            weightData: JSON.parse(localStorage.getItem('weightData')) || []
           };
 
-          console.log("🔎 Sending single-call request body:", body);
+          console.log('🔎 Sending single-call request body:', body);
 
           // 3) Make ONE API call
           let responseJson;
           try {
-            const resp = await fetch("/api/analyze-meal", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(body)
+            const resp = await fetch('/api/analyze-meal', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body),
             });
 
             responseJson = await resp.json();
-            console.log("🔎 Single-call response:", responseJson);
+            console.log('🔎 Single-call response:', responseJson);
 
-            // If server signaled an error
             if (resp.status !== 200 || responseJson.error) {
-              throw new Error("Server responded with error: " + (responseJson.error || resp.status));
+              throw new Error('Server responded with error: ' + (responseJson.error || resp.status));
             }
           } catch (err) {
-            console.error("❌ Single-call request failed:", err);
-            alert("Error analyzing meal. Please try again.");
+            console.error('❌ Single-call request failed:', err);
+            alert('Error analyzing meal. Please try again.');
             return;
           }
 
-          // 4) The server returns "calories" + "protein" for the NEW meal, plus a daily summary
+          // 4) The server returns macros for the NEW meal + daily summary
           const newMealMacros = {
             name: userMealInput,
             calories: responseJson.calories || 0,
             protein: responseJson.protein || 0
           };
 
-          console.log("✅ newMealMacros from server:", newMealMacros);
+          console.log('✅ newMealMacros from server:', newMealMacros);
 
-          // 5) Save the new meal into localStorage so next time we have correct "previousMeals"
+          // 5) Save the new meal to localStorage
           oldMeals.push(newMealMacros);
-          localStorage.setItem("mealHistory", JSON.stringify(oldMeals));
+          localStorage.setItem('mealHistory', JSON.stringify(oldMeals));
 
           // 6) Update the UI with the new meal
           updateMealList(newMealMacros.name, newMealMacros.calories, newMealMacros.protein);
           updateProgress(
             newMealMacros.calories,
             newMealMacros.protein,
-            parseInt(localStorage.getItem("targetCalories")) || 2000,
-            parseInt(localStorage.getItem("targetProtein")) || 0
+            parseInt(localStorage.getItem('targetCalories')) || 2000,
+            parseInt(localStorage.getItem('targetProtein')) || 0
           );
 
           // 7) Update daily summary from server
           if (responseJson.daily_summary) {
-            document.getElementById("dailySummary").innerText = responseJson.daily_summary;
-            localStorage.setItem("dailySummary", responseJson.daily_summary);
+            document.getElementById('dailySummary').innerText = responseJson.daily_summary;
+            localStorage.setItem('dailySummary', responseJson.daily_summary);
           }
 
           // 8) Re-run UI restore in case you do more stuff
           updateUIFromStorage();
         }
 
-        // ---- THE MEAL FORM SUBMIT ----
-        document.getElementById("mealForm").addEventListener("submit", async (event) => {
+        // ----- THE MEAL FORM SUBMIT -----
+        document.getElementById('mealForm').addEventListener('submit', async (event) => {
           event.preventDefault();
-          const mealInput = document.getElementById("mealInput").value.trim();
-          const addMealButton = document.getElementById("addMealButton");
+          const mealInput = document.getElementById('mealInput').value.trim();
+          const addMealButton = document.getElementById('addMealButton');
 
           if (!mealInput) return;
 
-          addMealButton.textContent = "Processing...";
+          addMealButton.textContent = 'Analyzing...';
           addMealButton.disabled = true;
 
           await addMealSingleCall(mealInput);
 
-          addMealButton.textContent = "Add Meal";
+          addMealButton.textContent = 'Add Meal';
           addMealButton.disabled = false;
-          document.getElementById("mealInput").value = "";
+          document.getElementById('mealInput').value = '';
         });
 
-        // ---- HELPER: SHOW NEWLY ADDED MEAL IN "MEAL RECORDS" ----
+        // ----- HELPER: SHOW NEWLY ADDED MEAL IN LIST -----
         function updateMealList(meal, calories, protein, index) {
-  const mealList = document.getElementById("mealList");
-  const listItem = document.createElement("li");
+          const mealList = document.getElementById('mealList');
+          const listItem = document.createElement('li');
 
-  listItem.innerHTML = `
-    <strong>${meal}</strong>: ${calories} kcal, ${protein}g protein
-    <button class="delete-btn" data-index="${index}">x</button>
-  `;
+          listItem.innerHTML = `
+            <strong>${meal}</strong>: ${calories} kcal, ${protein}g protein
+            <button class="delete-btn" data-index="${index}">x</button>
+          `;
 
-  mealList.appendChild(listItem);
+          mealList.appendChild(listItem);
 
-  // Add event listener to delete button
-  listItem.querySelector(".delete-btn").addEventListener("click", function () {
-    deleteMeal(index);
-  });
-}
-function deleteMeal(index) {
-  let meals = JSON.parse(localStorage.getItem("mealHistory")) || [];
-  if (index >= 0 && index < meals.length) {
-    meals.splice(index, 1);
-    localStorage.setItem("mealHistory", JSON.stringify(meals));
-
-    // Reset totals and recalculate
-    let totalCalories = 0;
-    let totalProtein = 0;
-    meals.forEach(m => {
-      totalCalories += m.calories;
-      totalProtein += m.protein;
-    });
-
-    localStorage.setItem("totalCalories", totalCalories);
-    localStorage.setItem("totalProtein", totalProtein);
-
-    // Clear & restore UI
-    updateUIFromStorage();
-  }
-}
-
-        // ---- HELPER: UPDATE PROGRESS BARS ----
-        function updateProgress(calories, protein, targetCalories, targetProtein) {
-  const oldCals = parseInt(localStorage.getItem("totalCalories")) || 0;
-  const oldProt = parseInt(localStorage.getItem("totalProtein")) || 0;
-
-  const totalCalories = oldCals + calories;
-  const totalProtein = oldProt + protein;
-
-  document.getElementById("totalCalories").innerText = totalCalories;
-  document.getElementById("totalProtein").innerText = totalProtein;
-
-  const caloriePercent = Math.min(Math.floor((totalCalories / targetCalories) * 100), 100);
-  const proteinPercent = Math.min(Math.floor((parseFloat(totalProtein) / parseFloat(targetProtein)) * 100), 100);
-
-  document.getElementById("calorieProgress").style.width = `${caloriePercent}%`;
-  document.getElementById("proteinProgress").style.width = `${proteinPercent}%`;
-
-  // Directly setting colors
-  document.getElementById("calorieProgress").style.backgroundColor = "#FF9F40";  // Orange
-  document.getElementById("proteinProgress").style.backgroundColor = "#FFCD56";  // Yellow
-
-  localStorage.setItem("totalCalories", totalCalories);
-  localStorage.setItem("totalProtein", totalProtein);
-}
-
-        // ---- HELPER: RESTORE UI FROM LOCALSTORAGE ON PAGE LOAD ----
-        function updateUIFromStorage() {
-  document.getElementById("mealList").innerHTML = "";
-
-  const meals = JSON.parse(localStorage.getItem("mealHistory")) || [];
-  meals.forEach((m, i) => updateMealList(m.name, m.calories, m.protein, i));
-
-  const totalCalories = parseInt(localStorage.getItem("totalCalories")) || 0;
-  const totalProtein = parseInt(localStorage.getItem("totalProtein")) || 0;
-  const targetCalories = parseInt(localStorage.getItem("targetCalories")) || 2000;
-  const tProtein = parseInt(localStorage.getItem("targetProtein")) || 100;
-
-  document.getElementById("totalCalories").innerText = totalCalories;
-  document.getElementById("totalProtein").innerText = totalProtein;
-
-  document.getElementById("calorieProgress").style.width = `${Math.min((totalCalories / targetCalories) * 100, 100)}%`;
-  document.getElementById("proteinProgress").style.width = `${Math.min(Math.floor((parseFloat(totalProtein) / parseFloat(tProtein)) * 100), 100)}%`;
-
-  // Directly setting colors again when restoring
-  document.getElementById("calorieProgress").style.backgroundColor = "#FF9F40";  // Orange
-  document.getElementById("proteinProgress").style.backgroundColor = "#9966FF";  // Purple
-
-  const dailySummary = localStorage.getItem("dailySummary") || "Awaiting meal entries...";
-  document.getElementById("dailySummary").innerText = dailySummary;
-}
-
-        // Call once on load
-        updateUIFromStorage();
-
-        // ---- PROGRESS BAR COLOR UTILS ----
-        function restoreProgressBarColor(barId, defaultColor) {
-          const color = localStorage.getItem(`${barId}-color`) || defaultColor;
-          document.getElementById(barId).classList.add(color);
+          // Delete button for each meal
+          listItem.querySelector('.delete-btn').addEventListener('click', function () {
+            deleteMeal(index);
+          });
         }
-        function setProgressBarColor(barId, color) {
-          const progBar = document.getElementById(barId);
-          if (progBar) {
-            progBar.classList.add(color);
-            localStorage.setItem(`${barId}-color`, color);
+
+        function deleteMeal(index) {
+          let meals = JSON.parse(localStorage.getItem('mealHistory')) || [];
+          if (index >= 0 && index < meals.length) {
+            meals.splice(index, 1);
+            localStorage.setItem('mealHistory', JSON.stringify(meals));
+
+            // Recalculate totals
+            let totalCalories = 0;
+            let totalProtein = 0;
+            meals.forEach((m) => {
+              totalCalories += m.calories;
+              totalProtein += m.protein;
+            });
+
+            localStorage.setItem('totalCalories', totalCalories);
+            localStorage.setItem('totalProtein', totalProtein);
+
+            // Refresh UI
+            updateUIFromStorage();
           }
         }
+
+        // ----- HELPER: UPDATE PROGRESS BARS -----
+        function updateProgress(calories, protein, targetCalories, targetProtein) {
+          const oldCals = parseInt(localStorage.getItem('totalCalories')) || 0;
+          const oldProt = parseInt(localStorage.getItem('totalProtein')) || 0;
+
+          const newCalories = oldCals + calories;
+          const newProtein = oldProt + protein;
+
+          document.getElementById('totalCalories').innerText = newCalories;
+          document.getElementById('totalProtein').innerText = newProtein;
+
+          const caloriePercent = Math.min(Math.floor((newCalories / targetCalories) * 100), 100);
+          const proteinPercent = Math.min(Math.floor((newProtein / targetProtein) * 100), 100);
+
+          document.getElementById('calorieProgress').style.width = caloriePercent + '%';
+          document.getElementById('proteinProgress').style.width = proteinPercent + '%';
+
+          // Store updated totals
+          localStorage.setItem('totalCalories', newCalories);
+          localStorage.setItem('totalProtein', newProtein);
+        }
+
+        // ----- HELPER: RESTORE UI FROM LOCALSTORAGE -----
+        function updateUIFromStorage() {
+          document.getElementById('mealList').innerHTML = '';
+
+          const meals = JSON.parse(localStorage.getItem('mealHistory')) || [];
+          meals.forEach((m, i) => updateMealList(m.name, m.calories, m.protein, i));
+
+          const totalCalories = parseInt(localStorage.getItem('totalCalories')) || 0;
+          const totalProtein = parseInt(localStorage.getItem('totalProtein')) || 0;
+          const targetCalories = parseInt(localStorage.getItem('targetCalories')) || 2000;
+          const tProtein = parseInt(localStorage.getItem('targetProtein')) || 100;
+
+          document.getElementById('totalCalories').innerText = totalCalories;
+          document.getElementById('totalProtein').innerText = totalProtein;
+
+          document.getElementById('calorieProgress').style.width = `${Math.min((totalCalories / targetCalories) * 100, 100)}%`;
+          document.getElementById('proteinProgress').style.width = `${Math.min((totalProtein / tProtein) * 100, 100)}%`;
+
+          const dailySummary = localStorage.getItem('dailySummary') || 'Awaiting meal entries...';
+          document.getElementById('dailySummary').innerText = dailySummary;
+        }
+
+        // Initial load
+        updateUIFromStorage();
       });
     </script>
   </body>

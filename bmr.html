@@ -3,27 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>本来の面目, Honrai No Menmoku</title>
+    <title>Blueprint | BodyBlueprint AI</title>
+    <!-- Link to your updated Modern Biohacker CSS -->
     <link rel="stylesheet" href="styles.css" />
   </head>
+
   <body>
+    <!-- NAVIGATION -->
     <nav>
       <ul>
-        <li><a href="index.html">家 Home</a></li>
-        <li><a href="bmr.html">強 BMR</a></li>
-        <li><a href="weight.html">落 Weight</a></li>
-        <li><a href="meals.html">食 Meals</a></li>
-        <li><a href="chat.html">話 AI Chat</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="bmr.html">Blueprint</a></li>
+        <li><a href="weight.html">Metrics</a></li>
+        <li><a href="meals.html">Fuel</a></li>
+        <li><a href="chat.html">AI Trainer</a></li>
       </ul>
     </nav>
 
-    <main>
-      <section id="bmr" class="page">
-        <h1>BMR & Calorie Goal</h1>
-        <p>Calculate your Basal Metabolic Rate (TDEE) and set your calorie goal.</p>
+    <!-- SUB-HERO / PAGE HEADER -->
+    <section class="hero" style="padding: 2.5em 1em;">
+      <h1 style="margin-bottom: 0.3em;">BMR &amp; Calorie Goal</h1>
+      <p style="max-width: 600px; margin: 0.5em auto;">
+        Calculate your Basal Metabolic Rate (TDEE) and set your personal calorie goal.
+      </p>
+    </section>
 
-        <!-- BMR Form -->
+    <!-- MAIN CONTENT WRAPPER -->
+    <main style="margin-top: -2em;">
+      <!-- BMR FORM SECTION -->
+      <section id="bmr" class="page">
         <form id="bmrForm">
+          <h2>Calculate Your TDEE</h2>
+          <p>Enter your details to see your Basal Metabolic Rate.</p>
+          
           <label for="age">Age:</label><br />
           <input type="number" id="age" required /><br /><br />
 
@@ -46,130 +58,135 @@
             <option value="high">5x per week</option>
           </select><br /><br />
 
+          <!-- Use your teal button style (button4) for consistency -->
           <button id="button4" type="submit">Calculate TDEE</button>
         </form>
 
-        <div id="bmrResults"></div>
+        <div id="bmrResults" style="margin-top: 1em;"></div>
 
-        <!-- Cut / Bulk / Maintain Section -->
-        <h2>Set Your Goal</h2>
+        <!-- GOAL SECTION -->
+        <h2 style="margin-top: 2em;">Set Your Goal</h2>
         <p><strong>Suggested Ranges:</strong> Light cut/bulk: 250 kcal | Heavy cut/bulk: 500 kcal</p>
         <p><strong>Current Goal:</strong> <span id="goalDisplay">None</span></p>
         <p><strong>Target Calories:</strong> <span id="targetCalories">-</span> kcal</p>
 
-        <label for="cutCalories">Cut:</label>
-        <input type="number" id="cutCalories" placeholder="Enter deficit (e.g. 250)" />
+        <!-- CUT GOAL -->
+        <label for="cutCalories">Cut (Deficit):</label>
+        <input type="number" id="cutCalories" placeholder="e.g. 250" />
         <button id="button3" onclick="setGoal('cut')">Set Cut Goal</button>
         <br /><br />
 
-        <label for="bulkCalories">Bulk:</label>
-        <input type="number" id="bulkCalories" placeholder="Enter surplus (e.g. 250)" />
+        <!-- BULK GOAL -->
+        <label for="bulkCalories">Bulk (Surplus):</label>
+        <input type="number" id="bulkCalories" placeholder="e.g. 250" />
         <button id="button2" onclick="setGoal('bulk')">Set Bulk Goal</button>
         <br /><br />
 
+        <!-- MAINTAIN GOAL -->
         <label for="maintainCalories">Maintain:</label>
         <input type="number" id="maintainCalories" placeholder="Adjust maintain kcal" />
         <button id="button1" onclick="setGoal('maintain')">Set Maintain Goal</button>
       </section>
     </main>
 
-    <footer>
-      <p>本来の面目, Honrai No Menmoku &copy; 2025</p>
+    <!-- FOOTER -->
+    <footer class="footer-note" style="margin-top: 1em;">
+      &copy; 2025 BodyBlueprint AI
     </footer>
 
+    <!-- SCRIPT LOGIC -->
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // ✅ Load stored activity level on page load
-        const storedActivity = localStorage.getItem("activity") || "moderate";
-        document.getElementById("activity").value = storedActivity;
+      document.addEventListener('DOMContentLoaded', function () {
+        // Load stored activity level
+        const storedActivity = localStorage.getItem('activity') || 'moderate';
+        document.getElementById('activity').value = storedActivity;
 
-        // ✅ Update activity level on change
-        document.getElementById("activity").addEventListener("change", function () {
-          localStorage.setItem("activity", this.value);
+        // Update localStorage on change
+        document.getElementById('activity').addEventListener('change', function () {
+          localStorage.setItem('activity', this.value);
         });
 
         updateGoalDisplay();
       });
 
-      document.getElementById("bmrForm").addEventListener("submit", function (event) {
-    event.preventDefault();
+      document.getElementById('bmrForm').addEventListener('submit', function (event) {
+        event.preventDefault();
 
-    const age = parseInt(document.getElementById("age").value);
-    const gender = document.getElementById("gender").value;
-    const weight = parseFloat(document.getElementById("weight").value);
-    const height = parseFloat(document.getElementById("height").value);
-    const activityLevel = document.getElementById("activity").value;
+        const age = parseInt(document.getElementById('age').value);
+        const gender = document.getElementById('gender').value;
+        const weight = parseFloat(document.getElementById('weight').value);
+        const height = parseFloat(document.getElementById('height').value);
+        const activityLevel = document.getElementById('activity').value;
 
-    if (!age || !weight || !height) {
-        alert("Please enter all fields correctly.");
-        return;
-    }
+        if (!age || !weight || !height) {
+          alert('Please enter all fields correctly.');
+          return;
+        }
 
-    // ✅ Calculate BMR
-    let bmr;
-    if (gender === "male") {
-        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
-    } else {
-        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
-    }
+        // Calculate BMR
+        let bmr;
+        if (gender === 'male') {
+          bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+        } else {
+          bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+        }
 
-    // ✅ Adjust BMR using Activity Level
-    let activityMultiplier = 1.0; // Default sedentary
-    if (activityLevel === "moderate") activityMultiplier = 1.05;
-    if (activityLevel === "high") activityMultiplier = 1.1;
+        // Activity multiplier
+        let activityMultiplier = 1.0; // Default base
+        if (activityLevel === 'moderate') activityMultiplier = 1.05;
+        if (activityLevel === 'high') activityMultiplier = 1.1;
 
-    const tdee = bmr * activityMultiplier;
+        const tdee = bmr * activityMultiplier;
 
-    document.getElementById("bmrResults").innerHTML = `
-      <h2>Your Results</h2>
-      <p><strong>BMR (Base):</strong> ${bmr.toFixed(2)} kcal/day</p>
-      <p><strong>TDEE (with Activity):</strong> ${tdee.toFixed(2)} kcal/day</p>
-    `;
+        document.getElementById('bmrResults').innerHTML = `
+          <h3>Your Results</h3>
+          <p><strong>BMR (Base):</strong> ${bmr.toFixed(2)} kcal/day</p>
+          <p><strong>TDEE (with Activity):</strong> ${tdee.toFixed(2)} kcal/day</p>
+        `;
 
-    // ✅ Store values in localStorage
-    localStorage.setItem("bmr", bmr.toFixed(2));
-    localStorage.setItem("tdee", tdee.toFixed(2));
-    localStorage.setItem("activity", activityLevel);
-    localStorage.setItem("weight", weight.toFixed(2)); // ✅ Store Weight Locally
+        // Store values
+        localStorage.setItem('bmr', bmr.toFixed(2));
+        localStorage.setItem('tdee', tdee.toFixed(2));
+        localStorage.setItem('activity', activityLevel);
+        localStorage.setItem('weight', weight.toFixed(2));
 
-    updateGoalDisplay();
-});
+        updateGoalDisplay();
+      });
 
       function setGoal(type) {
-        const tdee = parseFloat(localStorage.getItem("tdee")) || 0;
+        const tdee = parseFloat(localStorage.getItem('tdee')) || 0;
         let goal, targetCalories;
 
-        if (type === "cut") {
-          const deficit = parseFloat(document.getElementById("cutCalories").value) || 250;
+        if (type === 'cut') {
+          const deficit = parseFloat(document.getElementById('cutCalories').value) || 250;
           targetCalories = tdee - deficit;
           goal = `Cut (-${deficit} kcal)`;
-        } else if (type === "bulk") {
-          const surplus = parseFloat(document.getElementById("bulkCalories").value) || 250;
+        } else if (type === 'bulk') {
+          const surplus = parseFloat(document.getElementById('bulkCalories').value) || 250;
           targetCalories = tdee + surplus;
           goal = `Bulk (+${surplus} kcal)`;
         } else {
-          targetCalories = tdee;
-          goal = "Maintain";
+          // maintain
+          const maintainAdjustment = parseFloat(document.getElementById('maintainCalories').value) || 0;
+          targetCalories = tdee + maintainAdjustment;
+          goal = 'Maintain';
         }
 
-        // ✅ Store goal & updated target calories
-        localStorage.setItem("goal", goal);
-        localStorage.setItem("targetCalories", targetCalories.toFixed(2));
+        localStorage.setItem('goal', goal);
+        localStorage.setItem('targetCalories', targetCalories.toFixed(2));
 
         updateGoalDisplay();
       }
 
       function updateGoalDisplay() {
-        const goal = localStorage.getItem("goal") || "None";
-        const targetCalories = localStorage.getItem("targetCalories") || "-";
-        const activityLevel = localStorage.getItem("activity") || "moderate";
+        const goal = localStorage.getItem('goal') || 'None';
+        const targetCalories = localStorage.getItem('targetCalories') || '-';
+        const activityLevel = localStorage.getItem('activity') || 'moderate';
 
-        document.getElementById("goalDisplay").innerText = goal;
-        document.getElementById("targetCalories").innerText = `${targetCalories} kcal/day`;
-        document.getElementById("activity").value = activityLevel;
+        document.getElementById('goalDisplay').innerText = goal;
+        document.getElementById('targetCalories').innerText = `${targetCalories} kcal/day`;
+        document.getElementById('activity').value = activityLevel;
       }
-
-      updateGoalDisplay();
     </script>
   </body>
 </html>
