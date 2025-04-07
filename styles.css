@@ -38,6 +38,21 @@ nav ul li a:hover {
   text-decoration: underline;
 }
 
+.button-blue {
+  background-color: #2196f3; /* bright blue */
+  color: #ffffff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+.button-blue:hover {
+  background-color: #1976d2; /* darker blue on hover */
+}
+
 /* --------------- Hero Section --------------- */
 .hero {
   position: relative;
