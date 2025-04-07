@@ -59,7 +59,7 @@
           </select><br /><br />
 
           <!-- Use your teal button style (button4) for consistency -->
-          <button id="button4" type="submit">Calculate TDEE</button>
+          <button class="button-green" type="submit">Calculate TDEE</button>
         </form>
 
         <div id="bmrResults" style="margin-top: 1em;"></div>
@@ -73,19 +73,19 @@
         <!-- CUT GOAL -->
         <label for="cutCalories">Cut (Deficit):</label>
         <input type="number" id="cutCalories" placeholder="e.g. 250" />
-        <button id="button3" onclick="setGoal('cut')">Set Cut Goal</button>
+        <button class="button-green" onclick="setGoal('cut')">Set Cut Goal</button>
         <br /><br />
 
         <!-- BULK GOAL -->
         <label for="bulkCalories">Bulk (Surplus):</label>
         <input type="number" id="bulkCalories" placeholder="e.g. 250" />
-        <button id="button2" onclick="setGoal('bulk')">Set Bulk Goal</button>
+        <button class="button-green" onclick="setGoal('bulk')">Set Bulk Goal</button>
         <br /><br />
 
         <!-- MAINTAIN GOAL -->
         <label for="maintainCalories">Maintain:</label>
         <input type="number" id="maintainCalories" placeholder="Adjust maintain kcal" />
-        <button id="button1" onclick="setGoal('maintain')">Set Maintain Goal</button>
+        <button class="button-green" onclick="setGoal('maintain')">Set Maintain Goal</button>
       </section>
     </main>
 

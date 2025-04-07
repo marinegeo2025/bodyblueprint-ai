@@ -56,7 +56,6 @@ main {
 }
 
 /* --------------- Hero Section (Optional) --------------- */
-/* Use this if you have a separate hero banner on your index page */
 .hero {
   background: linear-gradient(120deg, #262626, #333333);
   color: #fff;
@@ -119,11 +118,11 @@ main {
   margin-bottom: 2em;
 }
 
-
 /* ----------------- Button Styles ----------------- */
+/* Default 'button' element is now more neutral so it won't override .button-green */
 button {
-  background-color: #444; /* Zen Dark Grey */
-  color: white;
+  background-color: #e0e0e0; /* or remove this, then the .button-green will stand out */
+  color: #000;
   border: none;
   padding: 10px 15px;
   cursor: pointer;
@@ -132,11 +131,14 @@ button {
 }
 
 button:hover {
-  background-color: #333; /* Slightly Darker on Hover */
+  background-color: #ccc; /* a neutral hover */
   opacity: 0.8;
 }
 
-/* If you prefer distinct colored buttons, see below: */
+/* If you prefer distinct colored buttons, they must be applied via classes. 
+   #button1, #button2, #button3, #button4 are optional if you still use them. 
+   Remove them if not needed.
+*/
 
 /* Pink */
 #button1 {
@@ -170,24 +172,26 @@ button:hover {
   opacity: 0.85;
 }
 
-/* Generic button with teal color */
+/* 
+   .button5 and .input-area button#askButton references are commented out 
+   or removed if you no longer want them 
+*/
+
+/* 
 .button5,
 .input-area button#askButton {
   background-color: #4BC0C0;
   color: #ffffff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  ...
 }
-.button5:hover,
-.input-area button#askButton:hover {
-  background-color: #3da5a5;
-}
+*/
+
+/* 
+   The .button-green class for the neon green 
+*/
 .button-green {
   background-color: #42f59e; /* Neon green */
-  color: #000000;              /* Black text stands out on neon */
+  color: #000000;            /* Black text stands out on neon */
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
@@ -200,6 +204,7 @@ button:hover {
 .button-green:hover {
   background-color: #23da80; /* Slightly darker neon green */
 }
+
 /* --------------- Progress Bar Styles --------------- */
 .progress-bar-container {
   width: 100%;
@@ -267,7 +272,7 @@ button:hover {
 }
 
 /* --------------- Weight Form Submit --------------- */
-#weightForm button[type="submit"] {
+#weightForm button[type='submit'] {
   background-color: #4BC0C0;
   color: #ffffff;
   border: none;
@@ -277,7 +282,7 @@ button:hover {
   transition: background-color 0.3s ease;
 }
 
-#weightForm button[type="submit"]:hover {
+#weightForm button[type='submit']:hover {
   background-color: #3da5a5;
 }
 
