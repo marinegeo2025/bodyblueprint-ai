@@ -99,7 +99,9 @@
         <form id="weightForm" style="margin-top: 1em;">
           <h2>Add a New Entry</h2>
 
-          <label for="weightInput">Enter Weight (kg):</label><br />
+          <label for="weightInput">Enter Weight:</label>
+          <br />
+          <!-- Weight input -->
           <input
             type="number"
             id="weightInput"
@@ -107,6 +109,13 @@
             required
             style="max-width: 150px;"
           />
+
+          <!-- Unit dropdown -->
+          <select id="unitSelect" style="margin-left: 8px;">
+            <option value="kg">kg</option>
+            <option value="lb">lb</option>
+            <option value="st">stone</option>
+          </select>
           <br /><br />
 
           <label for="dateInput">Date:</label><br />
@@ -136,7 +145,7 @@
           <thead>
             <tr>
               <th>Date</th>
-              <th>Weight (kg)</th>
+              <th id="weightColHeader">Weight (kg)</th>
               <th>Notes</th>
               <th>Action</th>
             </tr>
@@ -154,11 +163,65 @@
 
     <!-- WEIGHT TRACKING SCRIPT -->
     <script>
+      // For unit conversion:
+      // 1 lb = 0.45359237 kg
+      // 1 stone = 6.35029318 kg
+      function toKg(value, unit) {
+        switch (unit) {
+          case 'lb':
+            return value * 0.45359237;
+          case 'st':
+            return value * 6.35029318;
+          default: // kg
+            return value;
+        }
+      }
+
+      // Convert from kg to user selected
+      function fromKg(valueInKg, unit) {
+        switch (unit) {
+          case 'lb':
+            return valueInKg / 0.45359237;
+          case 'st':
+            return valueInKg / 6.35029318;
+          default:
+            return valueInKg;
+        }
+      }
+
+      // --------- On Page Load, Initialize Unit Select & localStorage
+      const unitSelect = document.getElementById('unitSelect');
+      let storedUnit = localStorage.getItem('weightUnit') || 'kg';
+      unitSelect.value = storedUnit;
+
+      // Update localStorage whenever user changes unit manually
+      unitSelect.addEventListener('change', () => {
+        localStorage.setItem('weightUnit', unitSelect.value);
+        updateWeightTable();
+        updateChart();
+        updateColumnHeader();
+      });
+
+      // Also update the column header to reflect chosen unit
+      function updateColumnHeader() {
+        const colHeader = document.getElementById('weightColHeader');
+        const selectedUnit = localStorage.getItem('weightUnit') || 'kg';
+        colHeader.textContent = `Weight (${selectedUnit})`;
+      }
+
+      updateColumnHeader(); // run once on load
+
       // Handle form submission
       document.getElementById('weightForm').addEventListener('submit', function (event) {
         event.preventDefault();
-        
-        const weight = parseFloat(document.getElementById('weightInput').value);
+
+        const unit = unitSelect.value; // e.g. 'kg', 'lb', 'st'
+        const rawWeight = parseFloat(document.getElementById('weightInput').value);
+        if (isNaN(rawWeight)) return alert('Please enter a valid weight.');
+
+        // Convert user input to kg for storage
+        const weightInKg = toKg(rawWeight, unit);
+
         const notes = document.getElementById('notes').value;
         let dateVal = document.getElementById('dateInput').value;
         
@@ -168,8 +231,8 @@
         }
 
         let weightData = JSON.parse(localStorage.getItem('weightData')) || [];
-        // Append new weight entry
-        weightData.push({ date: dateVal, weight, notes });
+        // Append new weight entry (ALWAYS store in kg)
+        weightData.push({ date: dateVal, weightKg: weightInKg, notes });
         localStorage.setItem('weightData', JSON.stringify(weightData));
 
         // Reset form fields
@@ -191,6 +254,8 @@
         // Sort entries by date ascending
         weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+        const userUnit = localStorage.getItem('weightUnit') || 'kg';
+
         weightData.forEach((entry, index) => {
           const row = document.createElement('tr');
 
@@ -208,9 +273,11 @@
           dateCell.appendChild(dateInput);
           row.appendChild(dateCell);
 
-          // Weight cell
+          // Weight cell in user-chosen unit
           const weightCell = document.createElement('td');
-          weightCell.textContent = entry.weight;
+          // Convert from kg to user’s unit
+          const convertedWeight = fromKg(entry.weightKg, userUnit).toFixed(2);
+          weightCell.textContent = convertedWeight;
           row.appendChild(weightCell);
 
           // Notes cell
@@ -237,6 +304,8 @@
 
           tbody.appendChild(row);
         });
+
+        updateColumnHeader();
       }
 
       // ---- RENDER/UPDATE CHART ----
@@ -260,13 +329,13 @@
         const endDate = new Date(latestDate);
         endDate.setMonth(endDate.getMonth() + 1);
 
-        // Build a daily map of weights
+        // Build a daily map of weights (in kg)
         const dailyMap = {};
         weightData.forEach(item => {
           if (!dailyMap[item.date]) {
             dailyMap[item.date] = [];
           }
-          dailyMap[item.date].push(item.weight);
+          dailyMap[item.date].push(item.weightKg);
         });
 
         // Generate a chronological list of dates from earliest to extended end
@@ -277,16 +346,16 @@
           tempDate.setDate(tempDate.getDate() + 1);
         }
 
-        // For each date, compute average weight or null if no data
-        const avgWeights = dates.map(dateStr => {
+        // For each date, compute average weight (in kg) or null if no data
+        const avgWeightsKg = dates.map(dateStr => {
           if (dailyMap[dateStr]) {
             const sum = dailyMap[dateStr].reduce((a, b) => a + b, 0);
-            return (sum / dailyMap[dateStr].length).toFixed(1);
+            return sum / dailyMap[dateStr].length; // average in kg
           }
           return null;
         });
 
-        // Create linear regression for trendline
+        // Create linear regression in base kg
         function linearRegression(xVals, yVals) {
           const validPoints = [];
           yVals.forEach((val, i) => {
@@ -309,9 +378,14 @@
           return yVals.map((val, i) => slope * i + intercept);
         }
 
-        const trendline = linearRegression(dates, avgWeights);
+        const trendlineKg = linearRegression(dates, avgWeightsKg);
 
-        // Build x-axis labels in DD-MM format
+        // Convert avgWeights (kg) to user-chosen unit for display
+        const userUnit = localStorage.getItem('weightUnit') || 'kg';
+        const avgWeightsConverted = avgWeightsKg.map(val => (val !== null ? fromKg(val, userUnit).toFixed(1) : null));
+        const trendlineConverted = trendlineKg.map(val => (val !== null ? fromKg(val, userUnit) : null));
+
+        // Build x-axis labels in DD-MM
         const formattedDates = dates.map(dateStr => {
           const parts = dateStr.split('-');
           return `${parts[2]}-${parts[1]}`; // e.g. 'DD-MM'
@@ -330,8 +404,8 @@
             labels: formattedDates,
             datasets: [
               {
-                label: 'Daily Avg Weight',
-                data: avgWeights,
+                label: `Daily Avg Weight (${userUnit})`,
+                data: avgWeightsConverted,
                 borderColor: '#36A2EB',
                 fill: false,
                 pointStyle: 'circle',
@@ -341,7 +415,7 @@
               },
               {
                 label: 'Trendline',
-                data: trendline,
+                data: trendlineConverted,
                 borderColor: '#FF6384',
                 borderDash: [5, 5],
                 fill: false,
@@ -392,7 +466,8 @@
         .addEventListener('click', function () {
           if (confirm('Are you sure you want to delete all weight data?')) {
             localStorage.removeItem('weightData');
-            document.querySelector('#weightTable tbody').innerHTML = '';
+            const tbody = document.querySelector('#weightTable tbody');
+            if (tbody) tbody.innerHTML = '';
             if (window.myChart) {
               window.myChart.destroy();
             }

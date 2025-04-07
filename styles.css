@@ -185,7 +185,21 @@ button:hover {
 .input-area button#askButton:hover {
   background-color: #3da5a5;
 }
+.button-green {
+  background-color: #42f59e; /* Neon green */
+  color: #000000;              /* Black text stands out on neon */
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
 
+.button-green:hover {
+  background-color: #23da80; /* Slightly darker neon green */
+}
 /* --------------- Progress Bar Styles --------------- */
 .progress-bar-container {
   width: 100%;
