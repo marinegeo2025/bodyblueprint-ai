@@ -77,17 +77,16 @@ main {
 }
 .hero .cta-button {
   display: inline-block;
-  background-color: #4BC0C0; /* Teal */
-  color: #fff;
+  background-color: #2196f3; /* bright blue */
+  color: #ffffff;
   padding: 0.75em 1.5em;
-  border-radius: 5px;
+  border-radius: 4px;
   font-weight: 600;
   text-decoration: none;
   transition: background 0.3s ease;
-  margin-top: 1em;
 }
 .hero .cta-button:hover {
-  background-color: #3da5a5;
+  background-color: #1976d2; /* slightly darker blue on hover */
 }
 
 .top-controls {
@@ -187,11 +186,11 @@ button:hover {
 */
 
 /* 
-   The .button-green class for the neon green 
+   The .button-blue class for the neon blue 
 */
-.button-green {
-  background-color: #42f59e; /* Neon green */
-  color: #000000;            /* Black text stands out on neon */
+.button-blue {
+  background-color: #2196f3; /* Bright Blue */
+  color: #ffffff;            /* White text */
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
@@ -201,8 +200,8 @@ button:hover {
   transition: background 0.3s ease;
 }
 
-.button-green:hover {
-  background-color: #23da80; /* Slightly darker neon green */
+.button-blue:hover {
+  background-color: #1976d2; /* Slightly darker blue on hover */
 }
 
 /* --------------- Progress Bar Styles --------------- */
@@ -272,7 +271,7 @@ button:hover {
 }
 
 /* --------------- Weight Form Submit --------------- */
-#weightForm button[type='submit'] {
+/* #weightForm button[type='submit'] {
   background-color: #4BC0C0;
   color: #ffffff;
   border: none;
