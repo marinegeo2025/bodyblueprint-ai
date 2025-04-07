@@ -11,7 +11,6 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
 
-    <!-- Inline CSS for demo (move to styles.css as desired) -->
     <style>
       /* Basic resets & fonts */
       * {
@@ -24,6 +23,7 @@
         background: #f6f6f6;
         color: #333;
       }
+
       nav {
         background: #222;
         padding: 1em;
@@ -66,8 +66,8 @@
       }
       .hero .cta-button {
         display: inline-block;
-        background-color: #2196f3; /* neon green accent */
-        color: #000;
+        background-color: #2196f3; /* Bright Blue */
+        color: #fff;
         padding: 0.75em 1.5em;
         border-radius: 4px;
         font-weight: 600;
@@ -75,7 +75,7 @@
         transition: background 0.3s ease;
       }
       .hero .cta-button:hover {
-        background-color: #1976d2;
+        background-color: #1976d2; /* Darker blue on hover */
       }
 
       /* Main Content Area */
@@ -85,19 +85,27 @@
         padding: 1em;
       }
 
-      /* Features Section */
+      /* FEATURES SECTION */
       .features {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 1.5em;
         margin: 3em 0;
       }
-      .feature {
+      a.feature {
+        display: block;
         background: #fff;
         border-radius: 6px;
         padding: 1.5em;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         text-align: center;
+        text-decoration: none; /* remove underline */
+        color: inherit;        /* use normal text color */
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+      }
+      a.feature:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
       }
       .feature h3 {
         margin-bottom: 0.5em;
@@ -108,41 +116,33 @@
         line-height: 1.4;
       }
       .feature i {
-        color: #2196f3; /* match CTA accent */
+        color: #2196f3; /* Same bright blue for icons */
         margin-right: 0.3em;
       }
 
-      /* Optional Testimonial Section */
-      .testimonial {
-        background: #fff;
-        padding: 2em;
-        margin-bottom: 2em;
-        border-radius: 6px;
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      .testimonial p {
-        font-style: italic;
-        margin-bottom: 1em;
-      }
-      .testimonial .author {
-        font-weight: 600;
-      }
-
-      /* Privacy / Footer Info */
+      /* PRIVACY SECTION */
       .privacy {
         background: #fff;
         padding: 1.5em;
         border-radius: 6px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-top: 2em;
       }
       .privacy h4 {
         margin-bottom: 0.5em;
+        font-size: 1.25rem;
+        font-weight: 700;
       }
       .privacy p {
         font-size: 0.9rem;
-        line-height: 1.4;
+        line-height: 1.6;
+        margin-bottom: 1em;
       }
+      .privacy i {
+        color: #2196f3;
+        margin-right: 0.3em;
+      }
+
       .footer-note {
         font-size: 0.8rem;
         color: #777;
@@ -169,8 +169,10 @@
 
     <!-- HERO SECTION -->
     <section class="hero">
-      <h1>BodyBlueprint AI</h1>
-      <p>Unlock Your Body's Full Potential. Guided by AI.</p>
+  <h1>
+    <span class="highlighted-title">BodyBlueprint AI</span>
+  </h1>
+  <p>Unlock Your Body's Full Potential. Guided by AI.</p>
       <p>
         BodyBlueprint AI analyzes your weight, meals, and habits to build the
         lean, powerful version of yourself — smarter, faster, and fully private.
@@ -182,43 +184,31 @@
     <main>
       <!-- FEATURES -->
       <section class="features">
-        <div class="feature">
-          <h3><i class="fas fa-bolt"></i>Smart BMR & Goal Setting</h3>
+        <a href="bmr.html" class="feature">
+          <h3><i class="fas fa-bolt"></i> Smart BMR &amp; Goal Setting</h3>
+          <p>Calculate your true daily needs and set precise fitness targets.</p>
+        </a>
+        <a href="meals.html" class="feature">
+          <h3><i class="fas fa-utensils"></i> AI Meal Analysis</h3>
+          <p>Log your meals for immediate calorie, protein, and optimization feedback.</p>
+        </a>
+        <a href="weight.html" class="feature">
+          <h3><i class="fas fa-chart-line"></i> Weight Trend Prediction</h3>
           <p>
-            Calculate your true daily needs and set precise fitness targets.
+            Track, visualize, and forecast your weight trajectory with science-backed AI insights.
           </p>
-        </div>
-        <div class="feature">
-          <h3><i class="fas fa-utensils"></i>AI Meal Analysis</h3>
+        </a>
+        <a href="chat.html" class="feature">
+          <h3><i class="fas fa-user"></i> AI Trainer</h3>
           <p>
-            Log your meals for immediate calorie, protein, and optimization
-            feedback.
+            Personalized workout and nutrition advice from AL, your AI fitness coach.
           </p>
-        </div>
-        <div class="feature">
-          <h3><i class="fas fa-chart-line"></i>Weight Trend Prediction</h3>
-          <p>
-            Track, visualize, and forecast your weight trajectory with science-backed insights.
-          </p>
-        </div>
-        <div class="feature">
-          <h3><i class="fas fa-lock"></i>100% Private</h3>
-          <p>Your data stays on your device. No accounts. No ads. No tracking.</p>
-        </div>
+        </a>
       </section>
-
-      <!-- OPTIONAL TESTIMONIAL / SOCIAL PROOF -->
-      <!-- Remove or uncomment once you have user quotes -->
-      <!--
-      <section class="testimonial">
-        <p>"I lost 10 lbs in 6 weeks using BodyBlueprint AI's meal planner. It's like having a personal coach 24/7!"</p>
-        <p class="author">— Jordan, Early Beta User</p>
-      </section>
-      -->
 
       <!-- PRIVACY SECTION -->
       <section class="privacy">
-        <h4>Data Security & Privacy</h4>
+        <h4><i class="fas fa-shield-alt"></i> Data Security &amp; Privacy</h4>
         <p>
           BodyBlueprint AI is designed with your privacy in mind. All data is
           stored locally on your device. Some information you input (such as meal
@@ -230,6 +220,11 @@
             >OpenAI's API</a
           >
           for processing.
+        </p>
+        <p>
+          We are <strong>100% private</strong>: no accounts, no ads, no
+          third-party tracking. 
+          <em>Your data stays on your device</em> — always.
         </p>
       </section>
 

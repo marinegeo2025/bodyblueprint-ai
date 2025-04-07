@@ -116,6 +116,12 @@ main {
   margin-top: 1em;
   margin-bottom: 2em;
 }
+.highlighted-title {
+  background-color: #2196f3; /* bright blue highlight */
+  color: #ffffff;              /* white text on blue */
+  padding: 0.2em 0.4em;     /* some horizontal & vertical padding */
+  border-radius: 4px;       /* optional, for smooth corners */
+}
 
 /* ----------------- Button Styles ----------------- */
 /* Default 'button' element is now more neutral so it won't override .button-green */
