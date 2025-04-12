@@ -33,17 +33,27 @@
   </nav>
 
   <main class="unlock-container">
-    <h1>Unlock Full Access</h1>
-    <p>Enter your unlock code below to activate unlimited AI features.</p>
+  <h1>Unlock Full Access</h1>
+  <p>Enter your unlock code below to activate unlimited AI features.</p>
 
-    <input type="text" id="unlockCode" placeholder="Enter unlock code" />
-    <button class="button-blue" id="unlockButton">Unlock!</button>
+  <input type="text" id="unlockCode" placeholder="Enter unlock code" />
+  <button class="button-blue" id="unlockButton">Unlock!</button>
 
-    <p id="unlockMessage" style="margin-top: 1em;"></p>
-  </main>
+  <p id="unlockMessage" style="margin-top: 1em;"></p>
+
+  <!-- 🚀 Buy Unlock Button -->
+  <!-- 🚀 Buy Unlock Button -->
+<a href="https://buy.stripe.com/cN2dT5f369k0bYY9AA" 
+   target="_blank" 
+   id="buyUnlockButton"
+   class="button-blue" 
+   style="margin-top: 1em; display: inline-block; padding: 12px 24px; font-size: 1rem;">
+  💎 Buy Unlock Code ($25)
+</a>
+</main>
 
   <footer class="footer-note">
-    <p>&copy; 2025 BodyBlueprint AI</p>
+    <p>&copy; 2025 BodyBlueprint AI by Daisy's Cold Water Surf Team</p>
   </footer>
 
   <script>
@@ -67,6 +77,15 @@
         document.getElementById('unlockMessage').style.color = 'red';
       }
     }
+    // --- Hide Buy Button if Already Unlocked ---
+document.addEventListener('DOMContentLoaded', function () {
+  const unlocked = localStorage.getItem('proUnlocked') === 'true';
+  const buyButton = document.getElementById('buyUnlockButton');
+  
+  if (unlocked && buyButton) {
+    buyButton.style.display = 'none'; // 🎯 Hide the button if unlocked
+  }
+});
   </script>
-</body>
+  </body>
 </html>
