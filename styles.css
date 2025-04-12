@@ -88,12 +88,17 @@ nav ul li a:hover {
 }
 
 /* Title Highlight */
-.highlighted-title {
-  background-color: #2196f3; /* same bright blue */
-  color: #ffffff;
-  padding: 0.2em 0.4em;
-  border-radius: 4px;
+  .highlighted-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2196f3; /* blue text matching the button */
+    background: #ffffff; /* white background */
+    padding: 0.2em 0.5em; /* add gentle padding so it looks neat */
+    border-radius: 8px; /* slightly rounded corners for style */
+    display: inline-block; /* so the background only fits the text, not whole line */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
+
 .sub-hero {
   background: linear-gradient(120deg, #262626, #333333);
   color: #fff;
