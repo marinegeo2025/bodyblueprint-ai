@@ -125,7 +125,7 @@ You MUST:
    - Concisely suggest practical dietary adjustments if progress is not aligned with expectations.
 
 5. **Motivational Ending**
-   - In california surfer style end with a brief, positive, encouraging, motivational statement about progress.
+   - In professional style end with a brief, positive, encouraging, motivational statement about progress.
 
 **RESPONSE FORMAT (STRICT JSON, NO BACKTICKS):**
 {
@@ -227,7 +227,7 @@ app.post("/api/chat", async (req, res) => {
         {
           role: "system",
           content: `
-          You are Alex, an elite fitness trainer built on evidence-based, science-backed AI.
+          You are AL, an elite fitness trainer built on evidence-based, science-backed AI.
           Provide clear, concise, practical, and actionable advice for training, meal prep, and supplementation.
           Speak in a friendly, motivational tone and include a california surfer style brief, insightful (based on the question receieved) positive, encouraging, and motivational statement at the end...
           `

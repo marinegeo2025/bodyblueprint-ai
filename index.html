@@ -32,7 +32,7 @@
     <section class="hero">
       <h1>
         <!-- The highlighted title -->
-        <span class="highlighted-title">BodyBlueprint AI</span>
+        <span id="siteTitle" class="highlighted-title">BodyBlueprint AI</span>
       </h1>
       <p>Unlock Your Body's Full Potential. Guided by AI.</p>
       <p>
@@ -44,35 +44,50 @@
 
     <!-- MAIN CONTENT -->
     <main>
-    <div id="thankYouBadge" style="text-align: center; margin-top: 2em;"></div>
-  
+      <div id="thankYouBadge" style="text-align: center; margin-top: 2em"></div>
+
       <!-- FEATURES -->
       <section class="features">
         <a href="bmr.html" class="feature">
           <h3><i class="fas fa-bolt"></i> Smart BMR &amp; Goal Setting</h3>
-          <p>Calculate your true daily needs and set precise fitness targets.</p>
+          <p>
+            Calculate your true daily needs and set precise fitness targets.
+          </p>
         </a>
         <a href="meals.html" class="feature">
           <h3><i class="fas fa-utensils"></i> AI Meal Analysis</h3>
-          <p>Log your meals for immediate calorie, protein, and optimization feedback.</p>
+          <p>
+            Log your meals for immediate calorie, protein, and optimization
+            feedback.
+          </p>
         </a>
         <a href="weight.html" class="feature">
           <h3><i class="fas fa-chart-line"></i> Weight Trend Prediction</h3>
           <p>
-            Track, visualize, and forecast your weight trajectory with science-backed AI insights.
+            Track, visualize, and forecast your weight trajectory with
+            science-backed AI insights.
           </p>
         </a>
         <a href="chat.html" class="feature">
           <h3><i class="fas fa-user"></i> AI Trainer</h3>
           <p>
-            Personalized workout and nutrition advice from AL, your AI fitness coach.
+            Personalized workout and nutrition advice from AL, your AI fitness
+            coach.
           </p>
         </a>
-          <a href="unlock.html" id="unlockFeatureBox" class="feature" style="background: #f9f9f9;">
-  <h3><i class="fas fa-unlock-alt"></i> Unlock Full Access</h3>
-  <p>Get unlimited AI analysis and coaching across all features.</p>
-  <p id="usageInfo" style="margin-top: 0.5em; font-size: 0.85rem; color: #555;"></p>
-</a>
+        <a
+          href="unlock.html"
+          id="unlockFeatureBox"
+          class="feature"
+          style="background: #f9f9f9"
+        >
+          <h3><i class="fas fa-unlock-alt"></i> Unlock Full Access</h3>
+          <p>Get unlimited AI analysis and coaching across all features.</p>
+          <p
+            id="usageInfo"
+            style="margin-top: 0.5em; font-size: 0.85rem; color: #555"
+          ></p>
+        </a>
       </section>
 
       <!-- PRIVACY SECTION -->
@@ -80,8 +95,8 @@
         <h4><i class="fas fa-shield-alt"></i> Data Security &amp; Privacy</h4>
         <p>
           BodyBlueprint AI is designed with your privacy in mind. All data is
-          stored locally on your device. Some information you input (such as meal
-          descriptions) is sent securely to
+          stored locally on your device. Some information you input (such as
+          meal descriptions) is sent securely to
           <a
             href="https://openai.com/security-and-privacy/"
             target="_blank"
@@ -93,48 +108,11 @@
         </p>
         <p>
           We are <strong>100% private</strong>: no accounts, no ads, no
-          third-party tracking. 
-          <em>Your data stays on your device</em> — always.
+          third-party tracking. <em>Your data stays on your device</em> —
+          always.
         </p>
       </section>
-<!-- 🚨 Insert SCRIPT TAGS properly here -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  showApiUsage();
-});
-function showApiUsage() {
-  const unlocked = localStorage.getItem('proUnlocked') === 'true';
-  const usage = parseInt(localStorage.getItem('apiUsage') || '0');
-  const usageElement = document.getElementById('usageInfo');
-  const unlockFeatureBox = document.getElementById('unlockFeatureBox');
-  const thankYouBadge = document.getElementById('thankYouBadge');
-
-  if (usageElement) {
-    if (unlocked) {
-      usageElement.innerText = '✅ Full Access Unlocked!';
-      if (unlockFeatureBox) {
-        unlockFeatureBox.style.display = 'none';
-      }
-    } else {
-      usageElement.innerText = `🔓 ${50 - usage} free uses left`;
-      if (unlockFeatureBox) {
-        unlockFeatureBox.style.display = 'block';
-      }
-    }
-  }
-
-  // 🎯 Show Thank You Badge if unlocked
-  if (unlocked && thankYouBadge) {
-    thankYouBadge.innerHTML = `
-      <p style="background: #dff0d8; color: #3c763d; display: inline-block; padding: 10px 20px; border-radius: 8px; font-size: 1rem;">
-        🎉 Thank you for supporting BodyBlueprint AI!
-      </p>
-    `;
-  }
-}
-
-</script>
-
+      <!-- 🚨 Insert SCRIPT TAGS properly here -->
       <p class="footer-note">
         &copy; 2025 BodyBlueprint AI by Daisy's Cold Water Surf Team. Built on
         <a href="https://glitch.com/" target="_blank" rel="noopener noreferrer"
@@ -142,5 +120,47 @@ function showApiUsage() {
         >.
       </p>
     </main>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        showApiUsage();
+      });
+      function showApiUsage() {
+        const unlocked = localStorage.getItem("proUnlocked") === "true";
+        const usage = parseInt(localStorage.getItem("apiUsage") || "0");
+        const usageElement = document.getElementById("usageInfo");
+        const unlockFeatureBox = document.getElementById("unlockFeatureBox");
+        const thankYouBadge = document.getElementById("thankYouBadge");
+        const siteTitle = document.getElementById("siteTitle");
+
+        if (usageElement) {
+          if (unlocked) {
+            usageElement.innerText = "✅ Full Access Unlocked!";
+            if (unlockFeatureBox) {
+              unlockFeatureBox.style.display = "none";
+            }
+          } else {
+            usageElement.innerText = `🔓 ${50 - usage} free uses left`;
+            if (unlockFeatureBox) {
+              unlockFeatureBox.style.display = "block";
+            }
+          }
+        }
+
+        // 🎯 Show Thank You Badge if unlocked
+        if (unlocked && thankYouBadge) {
+          thankYouBadge.innerHTML = `
+      <p class="fade-in" style="background: #dff0d8; color: #3c763d; display: inline-block; padding: 10px 20px; border-radius: 8px; font-size: 1rem;">
+        🎉 Thank you for supporting BodyBlueprint AI!
+      </p>
+    `;
+        }
+
+        // 🎯 Show Pro Badge in Title if unlocked
+        if (unlocked && siteTitle) {
+          siteTitle.innerText = "BodyBlueprint AI ✅";
+          siteTitle.classList.add("pro-glow"); // 🎯 Add the glowing class!
+        }
+      }
+    </script>
   </body>
 </html>

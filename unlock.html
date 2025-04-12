@@ -1,92 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unlock | BodyBlueprint AI</title>
-  <link rel="stylesheet" href="styles.css" />
-  <style>
-    .unlock-container {
-      max-width: 500px;
-      margin: 50px auto;
-      text-align: center;
-    }
-    input, button {
-      margin-top: 1em;
-      padding: 10px;
-      font-size: 1rem;
-      width: 100%;
-    }
-  </style>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unlock | BodyBlueprint AI</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .unlock-container {
+        max-width: 500px;
+        margin: 50px auto;
+        text-align: center;
+      }
+      input,
+      button {
+        margin-top: 1em;
+        padding: 10px;
+        font-size: 1rem;
+        width: 100%;
+      }
+      .fade-in {
+        animation: fadeInAnimation ease 2s;
+        animation-iteration-count: 1;
+        animation-fill-mode: forwards;
+      }
+      @keyframes fadeInAnimation {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
 
-<body>
-  <nav>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="bmr.html">Blueprint</a></li>
-      <li><a href="weight.html">Metrics</a></li>
-      <li><a href="meals.html">Fuel</a></li>
-      <li><a href="chat.html">AI Trainer</a></li>
-      <li><a href="unlock.html">Unlock</a></li>
-    </ul>
-  </nav>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="bmr.html">Blueprint</a></li>
+        <li><a href="weight.html">Metrics</a></li>
+        <li><a href="meals.html">Fuel</a></li>
+        <li><a href="chat.html">AI Trainer</a></li>
+        <li><a href="unlock.html">Unlock</a></li>
+      </ul>
+    </nav>
 
-  <main class="unlock-container">
-  <h1>Unlock Full Access</h1>
-  <p>Enter your unlock code below to activate unlimited AI features.</p>
+    <main class="unlock-container">
+      <h1>Unlock Full Access</h1>
+      <p>Enter your unlock code below to activate unlimited AI features.</p>
 
-  <input type="text" id="unlockCode" placeholder="Enter unlock code" />
-  <button class="button-blue" id="unlockButton">Unlock!</button>
+      <input type="text" id="unlockCode" placeholder="Enter unlock code" />
+      <button class="button-blue" id="unlockButton">Unlock!</button>
 
-  <p id="unlockMessage" style="margin-top: 1em;"></p>
+      <p id="unlockMessage" style="margin-top: 1em"></p>
 
-  <!-- 🚀 Buy Unlock Button -->
-  <!-- 🚀 Buy Unlock Button -->
-<div style="margin-top: 1em; text-align: center;">
-  <a href="https://buy.stripe.com/cN2dT5f369k0bYY9AA" 
-     target="_blank" 
-     id="buyUnlockButton"
-     class="button-blue" 
-     style="padding: 12px 24px; font-size: 1rem; display: inline-block;">
-    💎 Buy Unlock Code ($25)
-  </a>
-</div>
-</main>
+      <!-- 🚀 Buy Unlock Button -->
+      <!-- 🚀 Buy Unlock Button -->
+      <div style="margin-top: 1em; text-align: center">
+        <a
+          href="https://buy.stripe.com/cN2dT5f369k0bYY9AA"
+          target="_blank"
+          id="buyUnlockButton"
+          class="button-blue"
+          style="padding: 12px 24px; font-size: 1rem; display: inline-block"
+        >
+          💎 Buy Unlock Code ($25)
+        </a>
+      </div>
+    </main>
 
-  <footer class="footer-note">
-    <p>&copy; 2025 BodyBlueprint AI by Daisy's Cold Water Surf Team</p>
-  </footer>
+    <footer class="footer-note">
+      <p>&copy; 2025 BodyBlueprint AI by Daisy's Cold Water Surf Team</p>
+    </footer>
 
-  <script>
-    document.getElementById('unlockButton').addEventListener('click', function () {
-      const code = document.getElementById('unlockCode').value.trim();
-      unlockPro(code);
-    });
+    <script>
+      document
+        .getElementById("unlockButton")
+        .addEventListener("click", function () {
+          const code = document.getElementById("unlockCode").value.trim();
+          unlockPro(code);
+        });
 
-    function unlockPro(code) {
-      const validCodes = ['BLUEPRINT25', 'AIUNLOCK25', 'BBPRO25']; // ✅ You control these
+      function unlockPro(code) {
+        const validCodes = ["BLUEPRINT25", "AIUNLOCK25", "BBPRO25"]; // ✅ You control these
 
-      if (validCodes.includes(code)) {
-  const deviceId = crypto.randomUUID();
-  localStorage.setItem('proUnlocked', 'true');
-  localStorage.setItem('deviceId', deviceId);
+        if (validCodes.includes(code)) {
+          const deviceId = crypto.randomUUID();
+          localStorage.setItem("proUnlocked", "true");
+          localStorage.setItem("deviceId", deviceId);
 
-  console.log('🎯 A new user just unlocked BodyBlueprint AI!');
+          console.log("🎯 A new user just unlocked BodyBlueprint AI!");
 
-  document.getElementById('unlockMessage').innerText = '✅ Success! You have unlocked full access!';
-  document.getElementById('unlockMessage').style.color = 'green';
-}
-    }
-    // --- Hide Buy Button if Already Unlocked ---
-document.addEventListener('DOMContentLoaded', function () {
-  const unlocked = localStorage.getItem('proUnlocked') === 'true';
-  const buyButton = document.getElementById('buyUnlockButton');
-  
-  if (unlocked && buyButton) {
-    buyButton.style.display = 'none'; // 🎯 Hide the button if unlocked
-  }
-});
-  </script>
+          document.getElementById("unlockMessage").innerText =
+            "✅ Success! You have unlocked full access!";
+          document.getElementById("unlockMessage").style.color = "green";
+        }
+      }
+      // --- Hide Buy Button if Already Unlocked ---
+      document.addEventListener("DOMContentLoaded", function () {
+        const unlocked = localStorage.getItem("proUnlocked") === "true";
+        const buyButton = document.getElementById("buyUnlockButton");
+
+        if (unlocked && buyButton) {
+          buyButton.style.display = "none"; // 🎯 Hide the button if unlocked
+        }
+      });
+    </script>
   </body>
 </html>
