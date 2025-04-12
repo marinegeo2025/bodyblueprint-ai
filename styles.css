@@ -20,7 +20,7 @@ body {
 nav ul {
   list-style-type: none;
   padding: 10px 0; /* 🎯 top and bottom padding */
-  background: #333333;
+  background: 	#37474f;
   width: 100%;
   text-align: center;
   margin: 0; /* 🎯 remove default browser margin */
@@ -35,9 +35,11 @@ nav ul li {
 nav ul li a {
   color: white;
   text-decoration: none;
-  font-size: 1.2rem; /* 🎯 slightly bigger font size (~19px) */
-  display: inline-block; /* 🎯 expand clickable area */
-  padding: 0.5em 0.75em; /* 🎯 inner padding for bigger tap zone */
+  font-size: 1.2rem;
+  font-weight: bold; /* 🎯 Make it bold */
+  display: inline-flex; /* 🎯 Needed for icon + text side by side */
+  align-items: center; /* 🎯 Vertically align icon and text */
+  gap: 0.5em; /* 🎯 Space between icon and text */
 }
 
 nav ul li a:hover {
