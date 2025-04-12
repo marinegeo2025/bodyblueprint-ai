@@ -43,13 +43,15 @@
 
   <!-- 🚀 Buy Unlock Button -->
   <!-- 🚀 Buy Unlock Button -->
-<a href="https://buy.stripe.com/cN2dT5f369k0bYY9AA" 
-   target="_blank" 
-   id="buyUnlockButton"
-   class="button-blue" 
-   style="margin-top: 1em; display: inline-block; padding: 12px 24px; font-size: 1rem;">
-  💎 Buy Unlock Code ($25)
-</a>
+<div style="margin-top: 1em; text-align: center;">
+  <a href="https://buy.stripe.com/cN2dT5f369k0bYY9AA" 
+     target="_blank" 
+     id="buyUnlockButton"
+     class="button-blue" 
+     style="padding: 12px 24px; font-size: 1rem; display: inline-block;">
+    💎 Buy Unlock Code ($25)
+  </a>
+</div>
 </main>
 
   <footer class="footer-note">
@@ -66,16 +68,15 @@
       const validCodes = ['BLUEPRINT25', 'AIUNLOCK25', 'BBPRO25']; // ✅ You control these
 
       if (validCodes.includes(code)) {
-        const deviceId = crypto.randomUUID();
-        localStorage.setItem('proUnlocked', 'true');
-        localStorage.setItem('deviceId', deviceId);
+  const deviceId = crypto.randomUUID();
+  localStorage.setItem('proUnlocked', 'true');
+  localStorage.setItem('deviceId', deviceId);
 
-        document.getElementById('unlockMessage').innerText = '✅ Success! You have unlocked full access!';
-        document.getElementById('unlockMessage').style.color = 'green';
-      } else {
-        document.getElementById('unlockMessage').innerText = '❌ Invalid code. Please try again.';
-        document.getElementById('unlockMessage').style.color = 'red';
-      }
+  console.log('🎯 A new user just unlocked BodyBlueprint AI!');
+
+  document.getElementById('unlockMessage').innerText = '✅ Success! You have unlocked full access!';
+  document.getElementById('unlockMessage').style.color = 'green';
+}
     }
     // --- Hide Buy Button if Already Unlocked ---
 document.addEventListener('DOMContentLoaded', function () {
