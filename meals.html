@@ -34,6 +34,7 @@
         <li><a href="weight.html">Metrics</a></li>
         <li><a href="meals.html">Fuel</a></li>
         <li><a href="chat.html">AI Trainer</a></li>
+        <li><a href="unlock.html">Unlock</a></li>
       </ul>
     </nav>
 
@@ -215,23 +216,50 @@
           updateUIFromStorage();
         }
 
+        function canUseApi() {
+  const unlocked = localStorage.getItem('proUnlocked') === 'true';
+  const usage = parseInt(localStorage.getItem('apiUsage') || '0');
+
+  if (unlocked) {
+    return true; // Unlimited if unlocked
+  } else if (usage < 50) {
+    return true; // Still allowed
+  } else {
+    alert('🔒 You have reached the free usage limit. Please unlock full access.');
+    window.location.href = 'unlock.html'; // Redirect to Unlock page
+    return false;
+  }
+}
+
+function incrementApiUsage() {
+  let usage = parseInt(localStorage.getItem('apiUsage') || '0');
+  usage++;
+  localStorage.setItem('apiUsage', usage);
+}
+        
         // ----- THE MEAL FORM SUBMIT -----
         document.getElementById('mealForm').addEventListener('submit', async (event) => {
-          event.preventDefault();
-          const mealInput = document.getElementById('mealInput').value.trim();
-          const addMealButton = document.getElementById('addMealButton');
+  event.preventDefault();
 
-          if (!mealInput) return;
+  if (!canUseApi()) return; // 🚨 ADD THIS AT THE VERY TOP!
 
-          addMealButton.textContent = 'Analyzing...';
-          addMealButton.disabled = true;
+  const mealInput = document.getElementById('mealInput').value.trim();
+  const addMealButton = document.getElementById('addMealButton');
 
-          await addMealSingleCall(mealInput);
+  if (!mealInput) return;
 
-          addMealButton.textContent = 'Add Meal';
-          addMealButton.disabled = false;
-          document.getElementById('mealInput').value = '';
-        });
+  incrementApiUsage(); // 🚨 ADD THIS just before you send the request!
+
+  addMealButton.textContent = 'Analyzing...';
+  addMealButton.disabled = true;
+
+  await addMealSingleCall(mealInput);
+
+  addMealButton.textContent = 'Add Meal';
+  addMealButton.disabled = false;
+  document.getElementById('mealInput').value = '';
+});
+
 
         // ----- HELPER: SHOW NEWLY ADDED MEAL IN LIST -----
         function updateMealList(meal, calories, protein, index) {

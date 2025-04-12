@@ -82,6 +82,7 @@
         <li><a href="weight.html">Metrics</a></li>
         <li><a href="meals.html">Fuel</a></li>
         <li><a href="chat.html">AI Trainer</a></li>
+        <li><a href="unlock.html">Unlock</a></li>
       </ul>
     </nav>
 
@@ -139,18 +140,21 @@
 
       // Send user's question to /api/chat
       askButton.addEventListener('click', async () => {
-        const question = userQuestion.value.trim();
-        if (!question) return; // ignore empty input
+  if (!canUseApi()) return; // 🚨 ADD THIS AT THE VERY TOP!
 
-        aiResponse.textContent = 'Processing your request...';
+  incrementApiUsage(); // 🚨 ADD THIS before sending the request!
 
-        try {
-          // POST to /api/chat
-          const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ question }),
-          });
+  const question = userQuestion.value.trim();
+  if (!question) return; // ignore empty input
+
+  aiResponse.textContent = 'Processing your request...';
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question }),
+    });
 
           if (!response.ok) {
             aiResponse.textContent = 'Server error. Please try again.';

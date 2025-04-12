@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unlock | BodyBlueprint AI</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .unlock-container {
+      max-width: 500px;
+      margin: 50px auto;
+      text-align: center;
+    }
+    input, button {
+      margin-top: 1em;
+      padding: 10px;
+      font-size: 1rem;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="bmr.html">Blueprint</a></li>
+      <li><a href="weight.html">Metrics</a></li>
+      <li><a href="meals.html">Fuel</a></li>
+      <li><a href="chat.html">AI Trainer</a></li>
+      <li><a href="unlock.html">Unlock</a></li>
+    </ul>
+  </nav>
+
+  <main class="unlock-container">
+    <h1>Unlock Full Access</h1>
+    <p>Enter your unlock code below to activate unlimited AI features.</p>
+
+    <input type="text" id="unlockCode" placeholder="Enter unlock code" />
+    <button class="button-blue" id="unlockButton">Unlock!</button>
+
+    <p id="unlockMessage" style="margin-top: 1em;"></p>
+  </main>
+
+  <footer class="footer-note">
+    <p>&copy; 2025 BodyBlueprint AI</p>
+  </footer>
+
+  <script>
+    document.getElementById('unlockButton').addEventListener('click', function () {
+      const code = document.getElementById('unlockCode').value.trim();
+      unlockPro(code);
+    });
+
+    function unlockPro(code) {
+      const validCodes = ['BLUEPRINT25', 'AIUNLOCK25', 'BBPRO25']; // ✅ You control these
+
+      if (validCodes.includes(code)) {
+        const deviceId = crypto.randomUUID();
+        localStorage.setItem('proUnlocked', 'true');
+        localStorage.setItem('deviceId', deviceId);
+
+        document.getElementById('unlockMessage').innerText = '✅ Success! You have unlocked full access!';
+        document.getElementById('unlockMessage').style.color = 'green';
+      } else {
+        document.getElementById('unlockMessage').innerText = '❌ Invalid code. Please try again.';
+        document.getElementById('unlockMessage').style.color = 'red';
+      }
+    }
+  </script>
+</body>
+</html>
