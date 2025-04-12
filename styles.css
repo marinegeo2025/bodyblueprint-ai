@@ -231,6 +231,25 @@ main {
   margin-right: 0.3em;
 }
 
+/* --- Progress Bar Container --- */
+.progress-bar-container {
+  background-color: #e0e0e0; /* Light gray background */
+  height: 20px;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1em 0;
+}
+
+/* --- Progress Bar --- */
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #42F59E; /* Default color (your calorie bar is green) */
+  transition: width 0.5s ease;
+  border-radius: 10px;
+}
+
 /* --------------- Privacy Section --------------- */
 .privacy {
   background: #fff;
