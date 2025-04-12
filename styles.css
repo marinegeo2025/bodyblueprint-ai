@@ -19,24 +19,31 @@ body {
 /* ----------------- Navigation Styles ----------------- */
 nav ul {
   list-style-type: none;
-  padding: 10px;
+  padding: 10px 0; /* 🎯 top and bottom padding */
   background: #333333;
-  display: inline-block;
   width: 100%;
   text-align: center;
+  margin: 0; /* 🎯 remove default browser margin */
 }
+
 nav ul li {
-  display: inline;
-  margin: 0 10px;
+  display: inline-block; /* 🎯 change from 'inline' to 'inline-block' */
+  margin: 0 15px; /* 🎯 more margin = easier to tap */
+  padding: 10px 5px; /* 🎯 padding around the links for tapability */
 }
+
 nav ul li a {
   color: white;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 1.2rem; /* 🎯 slightly bigger font size (~19px) */
+  display: inline-block; /* 🎯 expand clickable area */
+  padding: 0.5em 0.75em; /* 🎯 inner padding for bigger tap zone */
 }
+
 nav ul li a:hover {
   text-decoration: underline;
 }
+
 
 .button-blue {
   background-color: #2196f3; /* bright blue */
