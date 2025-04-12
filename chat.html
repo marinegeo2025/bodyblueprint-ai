@@ -2,9 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Trainer | BodyBlueprint AI</title>
-
+     <!-- ✅ ADD THIS Font Awesome link here too -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
     <!-- Use your updated Modern Biohacker stylesheet here -->
     <link rel="stylesheet" href="styles.css" />
 
@@ -77,12 +81,24 @@
     <!-- NAVIGATION -->
     <nav>
       <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="bmr.html">Blueprint</a></li>
-        <li><a href="weight.html">Metrics</a></li>
-        <li><a href="meals.html">Fuel</a></li>
-        <li><a href="chat.html">AI Trainer</a></li>
-        <li><a href="unlock.html">Unlock</a></li>
+        <li>
+          <a href="index.html"><i class="fas fa-home"></i> Home</a>
+        </li>
+        <li>
+          <a href="bmr.html"><i class="fas fa-bolt"></i> Blueprint</a>
+        </li>
+        <li>
+          <a href="weight.html"><i class="fas fa-chart-line"></i> Metrics</a>
+        </li>
+        <li>
+          <a href="meals.html"><i class="fas fa-utensils"></i> Fuel</a>
+        </li>
+        <li>
+          <a href="chat.html"><i class="fas fa-user"></i> AI Trainer</a>
+        </li>
+        <li>
+          <a href="unlock.html"><i class="fas fa-lock-open"></i> Unlock</a>
+        </li>
       </ul>
     </nav>
 
@@ -91,23 +107,27 @@
       <!-- Introduction -->
       <div class="intro-section">
         <h1>Meet AL, Your BodyBlueprint AI Trainer</h1>
-        <p style="text-align: center; font-weight: bold;">
-          A high-performance, evidence-based coach designed to accelerate your body transformation.
+        <p style="text-align: center; font-weight: bold">
+          A high-performance, evidence-based coach designed to accelerate your
+          body transformation.
         </p>
         <p>
           Welcome! I’m <strong>AL</strong>, your personal fitness coach built on
-          cutting-edge AI. My mission is to optimize your training, dial in your nutrition,
-          and refine your supplementation based on real science—no myths or quick-fix gimmicks.
+          cutting-edge AI. My mission is to optimize your training, dial in your
+          nutrition, and refine your supplementation based on real science—no
+          myths or quick-fix gimmicks.
         </p>
         <p>
-          Whether you want a new hypertrophy program, strategies for faster fat loss, or
-          guidance on macros and meal timing, I’ve got you covered. I’ll translate the latest
-          research into actionable steps aligned with your lifestyle and goals.
+          Whether you want a new hypertrophy program, strategies for faster fat
+          loss, or guidance on macros and meal timing, I’ve got you covered.
+          I’ll translate the latest research into actionable steps aligned with
+          your lifestyle and goals.
         </p>
         <p>
-          Ask me anything: from crafting a personalized workout split to practical tips on
-          boosting recovery. Once I respond, you can easily copy my answer using the button
-          in the corner. Let’s unlock your full potential together!
+          Ask me anything: from crafting a personalized workout split to
+          practical tips on boosting recovery. Once I respond, you can easily
+          copy my answer using the button in the corner. Let’s unlock your full
+          potential together!
         </p>
       </div>
 
@@ -133,47 +153,47 @@
 
     <!-- CLIENT-SIDE SCRIPT -->
     <script>
-      const askButton = document.getElementById('askButton');
-      const userQuestion = document.getElementById('userQuestion');
-      const aiResponse = document.getElementById('aiResponse');
-      const copyButton = document.getElementById('copyButton');
+      const askButton = document.getElementById("askButton");
+      const userQuestion = document.getElementById("userQuestion");
+      const aiResponse = document.getElementById("aiResponse");
+      const copyButton = document.getElementById("copyButton");
 
       // Send user's question to /api/chat
-      askButton.addEventListener('click', async () => {
-  if (!canUseApi()) return; // 🚨 ADD this check right at the top
+      askButton.addEventListener("click", async () => {
+        if (!canUseApi()) return; // 🚨 ADD this check right at the top
 
-  incrementApiUsage(); // 🚨 ADD this BEFORE sending your API call
+        incrementApiUsage(); // 🚨 ADD this BEFORE sending your API call
 
-  const question = userQuestion.value.trim();
-  if (!question) return;
+        const question = userQuestion.value.trim();
+        if (!question) return;
 
-  aiResponse.textContent = 'Processing your request...';
+        aiResponse.textContent = "Processing your request...";
 
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question }),
-    });
+        try {
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question }),
+          });
 
           if (!response.ok) {
-            aiResponse.textContent = 'Server error. Please try again.';
+            aiResponse.textContent = "Server error. Please try again.";
             return;
           }
           const data = await response.json();
           if (data.answer) {
             aiResponse.textContent = data.answer;
           } else {
-            aiResponse.textContent = data.error || 'No answer received.';
+            aiResponse.textContent = data.error || "No answer received.";
           }
         } catch (err) {
-          console.error('❌ Chat request failed:', err);
-          aiResponse.textContent = 'Network or server error. Please try again.';
+          console.error("❌ Chat request failed:", err);
+          aiResponse.textContent = "Network or server error. Please try again.";
         }
       });
 
       // Copy the AI response text
-      copyButton.addEventListener('click', () => {
+      copyButton.addEventListener("click", () => {
         const range = document.createRange();
         range.selectNodeContents(aiResponse);
         const selection = window.getSelection();
@@ -181,34 +201,36 @@
         selection.addRange(range);
 
         try {
-          document.execCommand('copy');
-          alert('AI response copied to clipboard!');
+          document.execCommand("copy");
+          alert("AI response copied to clipboard!");
         } catch (err) {
-          console.error('Failed to copy text:', err);
+          console.error("Failed to copy text:", err);
         }
         selection.removeAllRanges();
       });
       // --- Helper Functions for API Usage Control ---
-function canUseApi() {
-  const unlocked = localStorage.getItem('proUnlocked') === 'true';
-  const usage = parseInt(localStorage.getItem('apiUsage') || '0');
+      function canUseApi() {
+        const unlocked = localStorage.getItem("proUnlocked") === "true";
+        const usage = parseInt(localStorage.getItem("apiUsage") || "0");
 
-  if (unlocked) {
-    return true;
-  } else if (usage < 50) {
-    return true;
-  } else {
-    alert('🔒 You have reached the free usage limit. Please unlock full access.');
-    window.location.href = 'unlock.html';
-    return false;
-  }
-}
+        if (unlocked) {
+          return true;
+        } else if (usage < 50) {
+          return true;
+        } else {
+          alert(
+            "🔒 You have reached the free usage limit. Please unlock full access."
+          );
+          window.location.href = "unlock.html";
+          return false;
+        }
+      }
 
-function incrementApiUsage() {
-  let usage = parseInt(localStorage.getItem('apiUsage') || '0');
-  usage++;
-  localStorage.setItem('apiUsage', usage);
-}
+      function incrementApiUsage() {
+        let usage = parseInt(localStorage.getItem("apiUsage") || "0");
+        usage++;
+        localStorage.setItem("apiUsage", usage);
+      }
     </script>
   </body>
 </html>

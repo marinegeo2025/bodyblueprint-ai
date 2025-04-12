@@ -20,7 +20,7 @@ body {
 nav ul {
   list-style-type: none;
   padding: 10px 0; /* 🎯 top and bottom padding */
-  background: 	#37474f;
+  background: #37474f;
   width: 100%;
   text-align: center;
   margin: 0; /* 🎯 remove default browser margin */
@@ -33,19 +33,33 @@ nav ul li {
 }
 
 nav ul li a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
   color: white;
   text-decoration: none;
-  font-size: 1.2rem;
-  font-weight: bold; /* 🎯 Make it bold */
-  display: inline-flex; /* 🎯 Needed for icon + text side by side */
-  align-items: center; /* 🎯 Vertically align icon and text */
-  gap: 0.5em; /* 🎯 Space between icon and text */
+  font-size: 18px;
+  font-weight: normal; /* 🔥 Reset to normal */
+  font-family: sans-serif; /* 🔥 Go back to clean default */
 }
 
 nav ul li a:hover {
   text-decoration: underline;
 }
+nav ul li a i {
+  color: #2196f3; /* 🎯 Button blue color for icons */
+  font-size: 1.2rem; /* Optional: same size as text */
+}
+/* 🎯 Animate icons on hover */
+nav ul li a i {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
 
+/* 🎯 Hover effect */
+nav ul li a:hover i {
+  transform: scale(1.3) rotate(8deg); /* Grows 30% + slight rotation */
+  color: #42F59E; /* Light neon green on hover, or pick your color! */
+}
 .button-blue {
   background-color: #2196f3; /* bright blue */
   color: #ffffff;
