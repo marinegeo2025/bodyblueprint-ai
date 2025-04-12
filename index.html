@@ -66,6 +66,11 @@
             Personalized workout and nutrition advice from AL, your AI fitness coach.
           </p>
         </a>
+          <a href="unlock.html" id="unlockFeatureBox" class="feature" style="background: #f9f9f9;">
+  <h3><i class="fas fa-unlock-alt"></i> Unlock Full Access</h3>
+  <p>Get unlimited AI analysis and coaching across all features.</p>
+  <p id="usageInfo" style="margin-top: 0.5em; font-size: 0.85rem; color: #555;"></p>
+</a>
       </section>
 
       <!-- PRIVACY SECTION -->
@@ -90,6 +95,33 @@
           <em>Your data stays on your device</em> — always.
         </p>
       </section>
+<!-- 🚨 Insert SCRIPT TAGS properly here -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  showApiUsage();
+});
+function showApiUsage() {
+  const unlocked = localStorage.getItem('proUnlocked') === 'true';
+  const usage = parseInt(localStorage.getItem('apiUsage') || '0');
+  const usageElement = document.getElementById('usageInfo');
+  const unlockFeatureBox = document.getElementById('unlockFeatureBox'); // 🎯 get the box
+
+  if (usageElement) {
+    if (unlocked) {
+      usageElement.innerText = '✅ Full Access Unlocked!';
+      if (unlockFeatureBox) {
+        unlockFeatureBox.style.display = 'none'; // 🎯 HIDE the unlock box
+      }
+    } else {
+      usageElement.innerText = `🔓 ${50 - usage} free uses left`;
+      if (unlockFeatureBox) {
+        unlockFeatureBox.style.display = 'block'; // 🎯 SHOW the unlock box if still locked
+      }
+    }
+  }
+}
+
+</script>
 
       <p class="footer-note">
         &copy; 2025 BodyBlueprint AI. Built on

@@ -140,12 +140,12 @@
 
       // Send user's question to /api/chat
       askButton.addEventListener('click', async () => {
-  if (!canUseApi()) return; // 🚨 ADD THIS AT THE VERY TOP!
+  if (!canUseApi()) return; // 🚨 ADD this check right at the top
 
-  incrementApiUsage(); // 🚨 ADD THIS before sending the request!
+  incrementApiUsage(); // 🚨 ADD this BEFORE sending your API call
 
   const question = userQuestion.value.trim();
-  if (!question) return; // ignore empty input
+  if (!question) return;
 
   aiResponse.textContent = 'Processing your request...';
 
@@ -188,6 +188,27 @@
         }
         selection.removeAllRanges();
       });
+      // --- Helper Functions for API Usage Control ---
+function canUseApi() {
+  const unlocked = localStorage.getItem('proUnlocked') === 'true';
+  const usage = parseInt(localStorage.getItem('apiUsage') || '0');
+
+  if (unlocked) {
+    return true;
+  } else if (usage < 50) {
+    return true;
+  } else {
+    alert('🔒 You have reached the free usage limit. Please unlock full access.');
+    window.location.href = 'unlock.html';
+    return false;
+  }
+}
+
+function incrementApiUsage() {
+  let usage = parseInt(localStorage.getItem('apiUsage') || '0');
+  usage++;
+  localStorage.setItem('apiUsage', usage);
+}
     </script>
   </body>
 </html>
