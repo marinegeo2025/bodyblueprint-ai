@@ -258,6 +258,11 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
+// ✅ Simple GET route for testing
+app.get("/api/meals", (req, res) => {
+  res.json({ message: "✅ Meals endpoint is working!" });
+});
+
 // ✅ Start the server
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
