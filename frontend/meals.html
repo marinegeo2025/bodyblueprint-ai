@@ -217,7 +217,7 @@
           // 3) Make ONE API call
           let responseJson;
           try {
-            const resp = await fetch("/api/analyze-meal", {
+            const resp = await fetch("https://bodyblueprint-ai.onrender.com/api/analyze-meal", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(body),
