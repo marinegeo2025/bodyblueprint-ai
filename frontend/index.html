@@ -260,6 +260,7 @@
         }
       }
     </script>
+
 <script>
   let deferredPrompt;
   const installFeatureBox = document.getElementById("installFeatureBox");
@@ -288,80 +289,78 @@
       }
     });
   }
-</script>
-
 <script>
-  const tour = new Shepherd.Tour({
-    useModalOverlay: true,
-    defaultStepOptions: {
-      classes: 'shepherd-theme-arrows',
-      scrollTo: true,
-      cancelIcon: { enabled: true }
+  document.addEventListener("DOMContentLoaded", function () {
+    const tour = new Shepherd.Tour({
+      useModalOverlay: true,
+      defaultStepOptions: {
+        classes: 'shepherd-theme-arrows',
+        scrollTo: true,
+        cancelIcon: { enabled: true }
+      }
+    });
+
+    tour.addStep({
+      id: 'welcome',
+      text: 'Welcome to BodyBlueprint AI! Let me show you around.',
+      buttons: [{ text: 'Next', action: tour.next }]
+    });
+
+    tour.addStep({
+      id: 'blueprint-step',
+      attachTo: { element: 'a[href="bmr.html"]', on: 'bottom' },
+      text: 'Click here to set your goals and calculate your BMR.',
+      buttons: [
+        { text: 'Back', action: tour.back },
+        { text: 'Next', action: tour.next }
+      ]
+    });
+
+    tour.addStep({
+      id: 'metrics-step',
+      attachTo: { element: 'a[href="weight.html"]', on: 'bottom' },
+      text: 'Track your weight and view your progress in Metrics.',
+      buttons: [
+        { text: 'Back', action: tour.back },
+        { text: 'Next', action: tour.next }
+      ]
+    });
+
+    tour.addStep({
+      id: 'fuel-step',
+      attachTo: { element: 'a[href="meals.html"]', on: 'bottom' },
+      text: 'Log your meals in Fuel and get real-time nutrition feedback.',
+      buttons: [
+        { text: 'Back', action: tour.back },
+        { text: 'Next', action: tour.next }
+      ]
+    });
+
+    tour.addStep({
+      id: 'trainer-step',
+      attachTo: { element: 'a[href="chat.html"]', on: 'bottom' },
+      text: 'Ask AL, your AI coach, for advice on training, diet, and recovery.',
+      buttons: [
+        { text: 'Back', action: tour.back },
+        { text: 'Next', action: tour.next }
+      ]
+    });
+
+    tour.addStep({
+      id: 'unlock-step',
+      attachTo: { element: 'a[href="unlock.html"]', on: 'bottom' },
+      text: 'Unlock full access for unlimited AI analysis — no accounts or tracking!',
+      buttons: [
+        { text: 'Back', action: tour.back },
+        { text: 'Done', action: tour.complete }
+      ]
+    });
+
+    const startBtn = document.getElementById('startTourBtn');
+    if (startBtn) {
+      startBtn.addEventListener('click', () => tour.start());
     }
   });
-
-  tour.addStep({
-    id: 'welcome',
-    text: 'Welcome to BodyBlueprint AI! Let me show you around.',
-    buttons: [
-      {
-        text: 'Next',
-        action: tour.next
-      }
-    ]
-  });
-
-  tour.addStep({
-    id: 'blueprint-step',
-    attachTo: { element: 'a[href="bmr.html"]', on: 'bottom' },
-    text: 'Click here to set your goals and calculate your BMR.',
-    buttons: [
-      { text: 'Back', action: tour.back },
-      { text: 'Next', action: tour.next }
-    ]
-  });
-
-  tour.addStep({
-    id: 'metrics-step',
-    attachTo: { element: 'a[href="weight.html"]', on: 'bottom' },
-    text: 'Track your weight and view your progress in Metrics.',
-    buttons: [
-      { text: 'Back', action: tour.back },
-      { text: 'Next', action: tour.next }
-    ]
-  });
-
-  tour.addStep({
-    id: 'fuel-step',
-    attachTo: { element: 'a[href="meals.html"]', on: 'bottom' },
-    text: 'Log your meals in Fuel and get real-time nutrition feedback.',
-    buttons: [
-      { text: 'Back', action: tour.back },
-      { text: 'Next', action: tour.next }
-    ]
-  });
-
-  tour.addStep({
-    id: 'trainer-step',
-    attachTo: { element: 'a[href="chat.html"]', on: 'bottom' },
-    text: 'Ask AL, your AI coach, for advice on training, diet, and recovery.',
-    buttons: [
-      { text: 'Back', action: tour.back },
-      { text: 'Next', action: tour.next }
-    ]
-  });
-
-  tour.addStep({
-    id: 'unlock-step',
-    attachTo: { element: 'a[href="unlock.html"]', on: 'bottom' },
-    text: 'Unlock full access for unlimited AI analysis — no accounts or tracking!',
-    buttons: [
-      { text: 'Back', action: tour.back },
-      { text: 'Done', action: tour.complete }
-    ]
-  });
-
-  document.getElementById('startTourBtn').addEventListener('click', () => tour.start());
 </script>
 
   </body>
