@@ -254,6 +254,46 @@ main {
   border-radius: 10px;
 }
 
+/* --------------- Feedback Form Section --------------- */
+
+.feedback-form {
+  max-width: 600px;
+  margin: 4em auto;
+  padding: 2em;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.feedback-form h2 {
+  margin-bottom: 0.5em;
+  font-size: 1.5em;
+}
+
+.feedback-form p {
+  color: #555;
+  font-size: 0.95em;
+  margin-bottom: 1.5em;
+}
+
+.feedback-form input,
+.feedback-form textarea {
+  width: 100%;
+  padding: 0.8em;
+  margin: 0.6em 0 1.2em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1em;
+}
+
+.feedback-form .cta-button {
+  padding: 0.9em 1.5em;
+  font-size: 1em;
+  cursor: pointer;
+}
+
 /* --------------- Privacy Section --------------- */
 .privacy {
   background: #fff;
