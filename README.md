@@ -1,1 +1,1 @@
-Copyright BodyBlueprintAI 2025
+© 2025 BodyBlueprint AI. All rights reserved.
