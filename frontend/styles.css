@@ -189,15 +189,6 @@ nav ul li a:hover i {
   }
 }
 
-/* --------------- How to Steps --------------- */
-
-.how-to-steps p {
-  font-size: 0.9rem;
-  line-height: 1.5em;
-  margin-bottom: 1em;
-}
-
-
 /* --------------- Main Container --------------- */
 main {
   margin: 0 auto;
