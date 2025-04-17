@@ -38,6 +38,10 @@
 <meta name="twitter:description" content="Unlock Your Body’s Full Potential — Guided by AI.">
 <meta name="twitter:image" content="https://www.bodyblueprintai.life/bb2025.png">
 
+<!-- Shepherd.js styles and scripts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@8.4.1/dist/css/shepherd.css" />
+<script src="https://cdn.jsdelivr.net/npm/shepherd.js@8.4.1/dist/js/shepherd.min.js"></script>
+
 <!-- ✅ Favicon (optional) -->
 <link rel="icon" type="image/png" href="/bb2025.png">
 
@@ -95,13 +99,15 @@
     <!-- HERO SECTION -->
 <section class="hero">
  <h1>
-        <YEEWWW>
+    <!-- YEEWWW -->
         <span id="siteTitle" class="highlighted-title">BodyBlueprint AI</span>
       </h1>
   <p>Unlock Your Body's Full Aesthetic Potential. Guided by AI.</p>
       <p>
         BodyBlueprint AI analyzes your weight, meals, and training — a world-class high-performance lab in your pocket, powered by the latest AI, totally private, no ads, available 24/7.
       </p>
+
+<button id="startTourBtn" class="cta-button" style="margin-top: 1em;">🧭 Show Me Around</button>
 
 <div style="background: rgba(255, 255, 255, 0.08); padding: 1.5em; border-radius: 12px; margin: 2em auto; max-width: 800px; font-size: 0.9rem; line-height: 1.6; text-align: left;">
   <h3 style="text-align: center; color: #fff; font-size: 1.2rem; margin-bottom: 1em;">📘 How to Use BodyBlueprint AI</h3>
@@ -282,6 +288,80 @@
       }
     });
   }
+</script>
+
+<script>
+  const tour = new Shepherd.Tour({
+    useModalOverlay: true,
+    defaultStepOptions: {
+      classes: 'shepherd-theme-arrows',
+      scrollTo: true,
+      cancelIcon: { enabled: true }
+    }
+  });
+
+  tour.addStep({
+    id: 'welcome',
+    text: 'Welcome to BodyBlueprint AI! Let me show you around.',
+    buttons: [
+      {
+        text: 'Next',
+        action: tour.next
+      }
+    ]
+  });
+
+  tour.addStep({
+    id: 'blueprint-step',
+    attachTo: { element: 'a[href="bmr.html"]', on: 'bottom' },
+    text: 'Click here to set your goals and calculate your BMR.',
+    buttons: [
+      { text: 'Back', action: tour.back },
+      { text: 'Next', action: tour.next }
+    ]
+  });
+
+  tour.addStep({
+    id: 'metrics-step',
+    attachTo: { element: 'a[href="weight.html"]', on: 'bottom' },
+    text: 'Track your weight and view your progress in Metrics.',
+    buttons: [
+      { text: 'Back', action: tour.back },
+      { text: 'Next', action: tour.next }
+    ]
+  });
+
+  tour.addStep({
+    id: 'fuel-step',
+    attachTo: { element: 'a[href="meals.html"]', on: 'bottom' },
+    text: 'Log your meals in Fuel and get real-time nutrition feedback.',
+    buttons: [
+      { text: 'Back', action: tour.back },
+      { text: 'Next', action: tour.next }
+    ]
+  });
+
+  tour.addStep({
+    id: 'trainer-step',
+    attachTo: { element: 'a[href="chat.html"]', on: 'bottom' },
+    text: 'Ask AL, your AI coach, for advice on training, diet, and recovery.',
+    buttons: [
+      { text: 'Back', action: tour.back },
+      { text: 'Next', action: tour.next }
+    ]
+  });
+
+  tour.addStep({
+    id: 'unlock-step',
+    attachTo: { element: 'a[href="unlock.html"]', on: 'bottom' },
+    text: 'Unlock full access for unlimited AI analysis — no accounts or tracking!',
+    buttons: [
+      { text: 'Back', action: tour.back },
+      { text: 'Done', action: tour.complete }
+    ]
+  });
+
+  document.getElementById('startTourBtn').addEventListener('click', () => tour.start());
 </script>
 
   </body>
