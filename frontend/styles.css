@@ -189,34 +189,6 @@ nav ul li a:hover i {
   }
 }
 
-/* --------------- How to Box --------------- */
-
-.how-to-box {
-  background-color: #f5faff;
-  border-left: 5px solid #4a90e2;
-  padding: 1em 1.5em;
-  margin-top: 1.5em;
-  margin-bottom: 2em;
-  border-radius: 8px;
-  font-size: 0.95rem;
-}
-
-.how-to-box h3 {
-  margin-top: 0;
-  font-size: 1.2rem;
-  color: #333;
-}
-
-.how-to-box ul {
-  padding-left: 1.2em;
-  margin: 0;
-}
-
-.how-to-box li {
-  margin-bottom: 0.5em;
-  line-height: 1.5em;
-}
-
 /* --------------- Main Container --------------- */
 main {
   margin: 0 auto;
