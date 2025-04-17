@@ -230,6 +230,10 @@ main {
   color: #2196f3;
   margin-right: 0.3em;
 }
+#installFeatureBox {
+  background: #f0f8ff;
+  border: 2px dashed #0d0d0d;
+}
 
 /* --- Progress Bar Container --- */
 .progress-bar-container {

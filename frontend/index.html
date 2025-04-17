@@ -95,6 +95,12 @@
             coach.
           </p>
         </a>
+        
+        <a href="#" id="installFeatureBox" class="feature" style="background: #f0f8ff;">
+          <h3><i class="fas fa-download"></i> Install App</h3>
+          <p>Get the full BodyBlueprint AI experience on your device.</p>
+        </a>
+
         <a
           href="unlock.html"
           id="unlockFeatureBox"
@@ -134,12 +140,9 @@
       </section>
       <!-- 🚨 Insert SCRIPT TAGS properly here -->
       <p class="footer-note">
-        &copy; 2025 BodyBlueprint AI. Built on
-        <a href="https://glitch.com/" target="_blank" rel="noopener noreferrer"
-          >Glitch</a
-        >.
+        &copy; 2025 BodyBlueprint AI.
       </p>
-    </main>
+     </main>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         showApiUsage();
@@ -182,5 +185,35 @@
         }
       }
     </script>
+<script>
+  let deferredPrompt;
+  const installFeatureBox = document.getElementById("installFeatureBox");
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installFeatureBox) {
+      installFeatureBox.style.display = "block";
+    }
+  });
+
+  if (installFeatureBox) {
+    installFeatureBox.style.display = "none"; // hide initially
+    installFeatureBox.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === "accepted") {
+            console.log("✅ App installed");
+          }
+          deferredPrompt = null;
+          installFeatureBox.style.display = "none";
+        });
+      }
+    });
+  }
+</script>
+
   </body>
 </html>
