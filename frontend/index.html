@@ -38,15 +38,6 @@
 <meta name="twitter:description" content="Unlock Your Body’s Full Potential — Guided by AI.">
 <meta name="twitter:image" content="https://www.bodyblueprintai.life/bb2025.png">
 
-<!-- Shepherd.js styles and scripts -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@8.4.1/dist/css/shepherd.css" />
-
-<!-- ✨ Popper (required by Shepherd) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2"></script>
-
-<!-- Shepherd -->
-<script src="https://cdn.jsdelivr.net/npm/shepherd.js@8.4.1/dist/js/shepherd.min.js"></script>
-
 <!-- ✅ Favicon (optional) -->
 <link rel="icon" type="image/png" href="/bb2025.png">
 
@@ -296,6 +287,12 @@
   }
 </script>
 
+<!-- Shepherd.js styles and scripts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@8.4.1/dist/css/shepherd.css" />
+
+<!-- Shepherd -->
+<script src="https://cdn.jsdelivr.net/npm/shepherd.js@8.4.1/dist/js/shepherd.min.js"></script>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const tour = new Shepherd.Tour({
@@ -365,7 +362,7 @@
 
     const startBtn = document.getElementById('startTourBtn');
     if (startBtn) {
-      startBtn.addEventListener('click', () => tour.start());
+      startBtn.addEventListener('click', () => setTimeout(() => tour.start(), 300));
     }
   });
 </script>
