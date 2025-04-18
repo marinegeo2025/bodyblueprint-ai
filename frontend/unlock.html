@@ -4,6 +4,77 @@
   <title>Unlock | BodyBlueprint AI</title>
   <meta name="description" content="Unlock unlimited access to the latest AI powered aesthetic health and fitness coaching. No accounts. No tracking. 100% private." />
 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Metrics | BodyBlueprint AI</title>
+    <meta name="description" content="Track your weight daily, visualize trends, and get instant AI-powered feedback with BodyBlueprint AI." />
+
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<!-- ✅ ADD THIS Font Awesome link here too -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+    <!-- Link to your updated Modern Biohacker CSS -->
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Luxon & Chart.js time adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
+
+    <style>
+      /* Chart Container for Responsive Layout */
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 800px; /* Adjust as needed */
+        margin: 0 auto; /* Center the chart */
+        height: 400px; /* Chart height */
+      }
+
+      /* Make the table more streamlined */
+      #weightTable {
+        margin: 1em auto;
+        width: 100%;
+        max-width: 600px;
+        border-collapse: collapse;
+      }
+      #weightTable th,
+      #weightTable td {
+        border: 1px solid #ccc;
+        padding: 0.5em;
+        text-align: center;
+      }
+      #weightTable thead {
+        background: #f2f2f2;
+      }
+      .delete-btn {
+        background-color: #dc3545; /* a red tone */
+        color: #fff;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .delete-btn:hover {
+        background-color: #b02a37;
+      }
+      .reset-btn {
+        float: right;
+        margin-bottom: 1em;
+      }
+    </style>
+  </head>
+
+  <body>
+
+
   <!-- ✅ ADD THIS Font Awesome link -->
   <link
     rel="stylesheet"
