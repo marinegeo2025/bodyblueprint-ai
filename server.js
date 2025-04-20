@@ -72,7 +72,7 @@ app.post("/api/analyze-meal", async (req, res) => {
     if (weightData && weightData.length >= 10) {
       // Use the LAST 10 entries instead of the first 10 entries
       const past10Days = weightData.slice(-10);
-      const weights = past10Days.map(entry => entry.weight);
+      const weights = past10Days.map(entry => entry.weightKg);
       const firstWeight = weights[0];
       const lastWeight = weights[weights.length - 1];
 
@@ -147,7 +147,7 @@ You MUST:
 
 **Weight Trends**
 Here are the recent weight measurements with dates:
-${weightData.map(w => `- ${w.date}: ${w.weight} kg`).join("\n")}
+${weightData.map(w => `- ${w.date}: ${w.weightKg} kg`).join("\n")}
 
 Analyze if actual weight changes match expected changes based on the target calories and BMR.
 
