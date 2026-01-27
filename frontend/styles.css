@@ -105,8 +105,8 @@ nav ul li a:hover i {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(15, 18, 25, 0.65); /* controls contrast */
-  backdrop-filter: blur(2px); /* subtle premium feel */
+  background: rgba(10, 12, 18, 0.35); /* controls contrast */
+  backdrop-filter: blur(1px); /* subtle premium feel */
   z-index: 0;
 }
 
