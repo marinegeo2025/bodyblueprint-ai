@@ -91,11 +91,11 @@ nav ul li a:hover i {
   text-align: center;
 
   /* 🔥 Presentation swirl background */
-  background-image: url("/assets/bg-swirl.png");
+  background-image: url("bg-swirl.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-
+  
   /* Slight softness */
   overflow: hidden;
 }
