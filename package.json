@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A minimalist nutrition and meal tracking app with AI-powered recommendations",
   "engines": {
-    "node": "16.x"
+    "node": "24.x"
   },
   "scripts": {
     "start": "node server.js",
