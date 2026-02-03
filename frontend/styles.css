@@ -403,7 +403,7 @@ select:focus {
    ------------------------------- */
 .feedback-form label {
   display: block;
-  text-align: left;
+  text-align: center;
   width: 100%;
   margin-bottom: 6px;
   margin-top: 12px;
