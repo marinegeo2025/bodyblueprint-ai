@@ -1,1 +1,1 @@
-© 2025 BodyBlueprint AI. All rights reserved.
+Love Peace and Health © 2025 BodyBlueprint AI. All rights reserved.
