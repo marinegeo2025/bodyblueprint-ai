@@ -1,19 +1,18 @@
-BodyBlueprint AI - Custom License
+Copyright (c) 2026 Al Barnard
 
-Copyright © 2025 BodyBlueprint AI. All rights reserved.
+All rights reserved.
 
-This software, including all HTML, CSS, JavaScript, text, assets, and media files, is proprietary and protected by copyright laws.
+This software and all associated files are the exclusive property of the author.
+No part of this codebase may be reproduced, copied, modified, distributed, or
+used in any form without explicit written permission from the author.
 
-You may:
-- Use the app for personal or non-commercial fitness tracking.
+You are NOT permitted to:
+- Use this code in personal, academic, or commercial projects
+- Redistribute or publish any portion of the code
+- Modify, adapt, reverse engineer, or create derivative works
+- Train AI models, datasets, or tools on this code
+- Host, deploy, or serve this project on any public or private infrastructure
 
-You may not:
-- Copy, modify, redistribute, or resell the app or any part of its code, design, or content.
-- Reverse engineer or extract the app's logic, styling, or structure.
+Viewing the source code does NOT grant any rights to use it.
 
-This app is offered “as is” with no warranty.
-
-Use of this app implies agreement with these terms.
-
-© 2025 BodyBlueprint AI. All rights reserved.
-
+All rights reserved. No license granted.
