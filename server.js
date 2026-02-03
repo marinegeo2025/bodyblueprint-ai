@@ -91,7 +91,7 @@ app.post("/api/analyze-meal", async (req, res) => {
 
     // ✅ Call OpenAI with the assembled prompt
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-2024-08-06",
+      model: "gpt-5.2-2025-12-11",
       temperature: 0.3,
       top_p: 0.7,
         messages: [
