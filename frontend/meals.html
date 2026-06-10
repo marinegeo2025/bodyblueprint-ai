@@ -200,7 +200,29 @@
 
         <!-- Daily Summary -->
         <h3>Daily Summary</h3>
-        <p id="dailySummary">Awaiting meal entries...</p>
+<p id="dailySummary">Awaiting meal entries...</p>
+
+<hr style="margin: 2em 0" />
+
+<div id="feedbackSection"
+     style="display:none; text-align:center;">
+  <p><strong>Was this analysis helpful?</strong></p>
+
+  <button id="helpfulBtn" class="button-blue">
+    👍 Helpful
+  </button>
+
+  <button id="improveBtn" class="button-blue">
+    💡 Could Be Better
+  </button>
+
+  <div
+    id="feedbackThanks"
+    style="display:none; margin-top:1em; font-weight:bold;"
+  >
+    Thanks for helping improve BodyBlueprintAI! 🙌
+  </div>
+</div>
       </section>
     </main>
 
@@ -254,7 +276,12 @@
             document.getElementById("proteinProgress").style.width = "0%";
             document.getElementById("dailySummary").innerText =
               "Awaiting meal entries...";
+            document.getElementById("feedbackSection").style.display = "none";
+            document.getElementById("feedbackThanks").style.display = "none";
 
+            document.getElementById("helpfulBtn").style.display = "inline-block";
+            document.getElementById("improveBtn").style.display = "inline-block";
+            
             console.log("✅ Daily meal data has been reset!");
           });
 
@@ -331,10 +358,16 @@
 
           // 7) Update daily summary from server
           if (responseJson.daily_summary) {
-            document.getElementById("dailySummary").innerText =
-              responseJson.daily_summary;
-            localStorage.setItem("dailySummary", responseJson.daily_summary);
-          }
+  document.getElementById("dailySummary").innerText =
+    responseJson.daily_summary;
+
+  localStorage.setItem(
+    "dailySummary",
+    responseJson.daily_summary
+  );
+
+  document.getElementById("feedbackSection").style.display = "block";
+}
 
           // 8) Re-run UI restore in case you do more stuff
           updateUIFromStorage();
@@ -362,7 +395,7 @@
           usage++;
           localStorage.setItem("apiUsage", usage);
         }
-
+       
         // ----- THE MEAL FORM SUBMIT -----
         document
           .getElementById("mealForm")
@@ -465,6 +498,33 @@
           localStorage.setItem("totalProtein", newProtein);
         }
 
+        // ------------------------------
+// Daily Summary Feedback
+// ------------------------------
+
+document
+  .getElementById("helpfulBtn")
+  ?.addEventListener("click", () => {
+
+    window.open(
+      "https://forms.gle/UhYorsde4aYVE9mKA",
+      "_blank"
+    );
+
+    document.getElementById("feedbackThanks").style.display = "block";
+  });
+
+document
+  .getElementById("improveBtn")
+  ?.addEventListener("click", () => {
+
+    window.open(
+      "https://forms.gle/UhYorsde4aYVE9mKA",
+      "_blank"
+    );
+
+    document.getElementById("feedbackThanks").style.display = "block";
+  });
         // ----- HELPER: RESTORE UI FROM LOCALSTORAGE -----
         function updateUIFromStorage() {
           document.getElementById("mealList").innerHTML = "";
@@ -496,10 +556,14 @@
           )}%`;
 
           const dailySummary =
-            localStorage.getItem("dailySummary") || "Awaiting meal entries...";
-          document.getElementById("dailySummary").innerText = dailySummary;
-        }
+  localStorage.getItem("dailySummary") || "Awaiting meal entries...";
 
+document.getElementById("dailySummary").innerText = dailySummary;
+
+if (dailySummary !== "Awaiting meal entries...") {
+  document.getElementById("feedbackSection").style.display = "block";
+}
+}
         // Initial load
         updateUIFromStorage();
       });
