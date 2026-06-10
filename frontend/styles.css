@@ -465,3 +465,9 @@ select:focus {
   margin-top: 4px !important;
 }
 /* Labels remain unchanged */
+
+/* New Feedback Card - thx to mentor Neil!
+.feedback-card {
+  border: 2px solid #2196f3;
+  background: #f8fbff;
+}
